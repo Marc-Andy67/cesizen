@@ -108,18 +108,18 @@ class DiagnosticController extends AbstractController
     public function result(\App\Entity\Assessment $assessment, DiagnosticService $diagnosticService): Response
     {
         // Vérifier que l'assessment appartient bien à l'utilisateur courant, sauf si admin (à ajouter potentiellement)
-        if ($assessment->getUser() !== $this->getUser()) {
+        if ($assessment->getOwner() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous ne pouvez pas voir ce résultat.');
         }
 
-        $threshold = $diagnosticService->getThresholdForScore($assessment->getScore());
+        $threshold = $diagnosticService->getThresholdForScore($assessment->getTotalScore());
 
         return $this->render('front/diagnostic/result.html.twig', [
             'assessment' => $assessment,
-            'score' => $assessment->getScore(),
+            'score' => $assessment->getTotalScore(),
             'quiz_title' => $assessment->getQuiz()->getTitle(),
             'threshold' => $threshold,
-            'date' => $assessment->getCreatedAt(),
+            'date' => $assessment->getDate(),
             'is_anonymous' => false
         ]);
     }

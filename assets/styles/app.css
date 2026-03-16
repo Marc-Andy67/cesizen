@@ -1,5 +1,43 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-body {
-    background-color: skyblue;
+@theme {
+  --color-primary: #003189;
+  --color-primary-content: #ffffff;
+  --color-secondary: #0063CB;
+  --color-secondary-content: #ffffff;
+  --color-accent: #2D6A4F;
+  --color-accent-content: #ffffff;
+  --color-neutral: #161616;
+  --color-base-100: #F5F5FE;
+  --color-base-200: #EBEBFB;
+  --color-base-300: #DDDDDD;
+  --color-base-content: #161616;
+  --color-info: #0063CB;
+  --color-success: #18753C;
+  --color-warning: #B34000;
+  --color-error: #E1000F;
+
+  --font-sans: "Marianne", Arial, sans-serif;
+}
+
+@font-face {
+  font-family: "Marianne";
+  src: url("https://www.systeme-de-design.gouv.fr/fonts/Marianne-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Marianne";
+  src: url("https://www.systeme-de-design.gouv.fr/fonts/Marianne-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

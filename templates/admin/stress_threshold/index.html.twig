@@ -1,0 +1,54 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block admin_content %}
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Configuration des Seuils de Stress</h1>
+        <p class="text-gray-600 mt-2">Définit les paliers de stress et les recommandations qui s'afficheront après le questionnaire de Holmes & Rahe.</p>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow min-h-[400px]">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom public</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score Min</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score Max</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recommandation</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for item in pagination %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="font-medium text-gray-900">{{ item.name }}</span>
+                            <span class="text-xs text-gray-400 block">{{ item.level }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="font-bold text-indigo-600">{{ item.minScore }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="font-bold text-indigo-600">{{ item.maxScore|default('∞') }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-600 block w-64 truncate">{{ item.advice }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ path('app_admin_stress_threshold_edit', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded transition-colors inline-block mr-2">Éditer</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                            Aucun seuil configuré. Veuillez exécuter les fixtures.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(pagination, 'components/_pagination.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block admin_content %}
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Documentations</h1>
+        
+        <a href="{{ path('app_admin_documentation_new') }}" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-md transition-colors flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Nouvelle Documentation
+        </a>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow min-h-[400px]">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégories</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for doc in pagination %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="font-medium text-gray-900">{{ doc.title }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                {% for cat in doc.categories %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ cat.name }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-xs text-gray-400 italic">Aucune</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if doc.isActive %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publié</span>
+                            {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Brouillon</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ path('app_admin_documentation_edit', {'id': doc.id}) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded transition-colors">Éditer</a>
+
+                                <form method="post" action="{{ path('app_admin_documentation_toggle_active', {'id': doc.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir blasculez le statut de cette documentation ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle_active_doc' ~ doc.id) }}">
+                                    <button type="submit" class="text-{{ doc.isActive ? 'orange' : 'green' }}-600 hover:text-{{ doc.isActive ? 'orange' : 'green' }}-900 bg-{{ doc.isActive ? 'orange' : 'green' }}-50 px-3 py-1 rounded transition-colors" title="{% if doc.isActive %}Dépublier{% else %}Publier{% endif %}">
+                                        {% if doc.isActive %}Dépublier{% else %}Publier{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                            Aucune documentation trouvée.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(pagination, 'components/_pagination.html.twig') }}
+    </div>
+{% endblock %}

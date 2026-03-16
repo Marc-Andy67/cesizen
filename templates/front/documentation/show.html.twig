@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ documentation.title }} - CESIZen{% endblock %}
+
+{% block body %}
+    {{ include('components/_breadcrumb.html.twig', {
+        'breadcrumbs': [
+            {'label': 'Documentations', 'url': path('app_documentation_index')},
+            {'label': documentation.title}
+        ]
+    }) }}
+
+    <article class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden my-8">
+        <header class="bg-gradient-to-r from-green-800 to-green-600 px-8 py-10 md:py-16 text-white text-center">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-tight">{{ documentation.title }}</h1>
+            
+            <div class="flex flex-wrap justify-center gap-2 mt-4">
+                {% for cat in documentation.categories %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white bg-opacity-20 backdrop-blur-sm">
+                        {{ cat.name }}
+                    </span>
+                {% endfor %}
+            </div>
+        </header>
+
+        <div class="p-8 md:p-12 prose prose-lg prose-green max-w-none">
+            {# Le filtre raw permet d'interpréter le HTML généré par Trumbowyg #}
+            {{ documentation.content|raw }}
+        </div>
+        
+        <footer class="px-8 py-6 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+            <a href="{{ path('app_documentation_index') }}" class="text-green-700 font-medium hover:text-green-800 transition-colors inline-flex items-center focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                <svg class="w-4 h-4 mr-1 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                Retour aux articles
+            </a>
+            
+            {# Action optionnelle: Sauvegarder dans mon espace (A implémenter ultérieurement si besoin) #}
+        </footer>
+    </article>
+{% endblock %}

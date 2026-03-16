@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - CESIZen{% endblock %}
+
+{% block body %}
+    <div class="h-full flex flex-col items-center justify-center text-center py-20">
+        <h1 class="text-5xl font-extrabold text-green-800 tracking-tight leading-tight mb-6">
+            Prenez soin de votre <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-800">Santé Mentale</span>
+        </h1>
+        
+        <p class="text-lg text-gray-600 max-w-2xl mb-10 leading-relaxed">
+            Évaluez votre niveau de stress selon l'échelle de Holmes & Rahe, découvrez des ressources adaptées et prenez les mesures nécessaires pour améliorer votre bien-être au quotidien.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ path('app_register') }}" class="px-8 py-3 bg-green-700 hover:bg-green-800 text-white font-semibold rounded-lg shadow-md transition-all focus:outline-none focus:ring-4 focus:ring-green-300 transform hover:-translate-y-1">
+                Commencer mon diagnostic
+            </a>
+            
+            <a href="#" class="px-8 py-3 bg-white hover:bg-gray-50 text-green-800 font-semibold rounded-lg border border-gray-200 shadow-sm transition-all focus:outline-none focus:ring-4 focus:ring-gray-100 transform hover:-translate-y-1">
+                Lire la documentation
+            </a>
+        </div>
+    </div>
+{% endblock %}

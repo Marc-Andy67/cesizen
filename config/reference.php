@@ -622,7 +622,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     rate_limiter?: bool|array{ // Rate limiter configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         limiters?: array<string, array{ // Default: []
  *             lock_factory?: scalar|Param|null, // The service ID of the lock factory used by this limiter (or null to disable locking). // Default: "auto"
  *             cache_pool?: scalar|Param|null, // The cache pool to use for storing the current limiter state. // Default: "cache.rate_limiter"
@@ -638,7 +638,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     uid?: bool|array{ // Uid configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         default_uuid_version?: 7|6|4|1|Param, // Default: 7
  *         name_based_uuid_version?: 5|3|Param, // Default: 5
  *         name_based_uuid_namespace?: scalar|Param|null,
@@ -1455,6 +1455,97 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     generate_final_classes?: bool|Param, // Default: true
  *     generate_final_entities?: bool|Param, // Default: false
  * }
+ * @psalm-type SymfonycastsTailwindConfig = array{
+ *     input_css?: list<scalar|Param|null>,
+ *     config_file?: scalar|Param|null, // Path to the tailwind.config.js file // Default: "%kernel.project_dir%/tailwind.config.js"
+ *     binary?: scalar|Param|null, // The tailwind binary to use instead of downloading a new one // Default: null
+ *     binary_version?: scalar|Param|null, // Tailwind CLI version to download - null means the latest version // Default: null
+ *     binary_platform?: "auto"|"linux-arm64"|"linux-arm64-musl"|"linux-x64"|"linux-x64-musl"|"macos-arm64"|"macos-x64"|"windows-x64"|Param, // Tailwind CLI platform to download - "auto" will try to detect the platform automatically // Default: "auto"
+ *     postcss_config_file?: scalar|Param|null, // Path to PostCSS config file which is passed to the Tailwind CLI // Default: null
+ *     strict_mode?: bool|Param|null, // When enabled, an exception will be thrown if there are no built assets (default: false in `test` env, true otherwise) // Default: null
+ * }
+ * @psalm-type SymfonycastsResetPasswordConfig = array{
+ *     request_password_repository?: scalar|Param|null, // A class that implements ResetPasswordRequestRepositoryInterface - usually your ResetPasswordRequestRepository.
+ *     lifetime?: int|Param, // The length of time in seconds that a password reset request is valid for after it is created. // Default: 3600
+ *     throttle_limit?: int|Param, // Another password reset cannot be made faster than this throttle time in seconds. // Default: 3600
+ *     enable_garbage_collection?: bool|Param, // Enable/Disable automatic garbage collection. // Default: true
+ * }
+ * @psalm-type KnpPaginatorConfig = array{
+ *     default_options?: array{
+ *         sort_field_name?: scalar|Param|null, // Default: "sort"
+ *         sort_direction_name?: scalar|Param|null, // Default: "direction"
+ *         filter_field_name?: scalar|Param|null, // Default: "filterField"
+ *         filter_value_name?: scalar|Param|null, // Default: "filterValue"
+ *         page_name?: scalar|Param|null, // Default: "page"
+ *         distinct?: bool|Param, // Default: true
+ *         page_out_of_range?: scalar|Param|null, // Default: "ignore"
+ *         default_limit?: scalar|Param|null, // Default: 10
+ *     },
+ *     template?: array{
+ *         pagination?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/sliding.html.twig"
+ *         rel_links?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/rel_links.html.twig"
+ *         filtration?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/filtration.html.twig"
+ *         sortable?: scalar|Param|null, // Default: "@KnpPaginator/Pagination/sortable_link.html.twig"
+ *     },
+ *     page_range?: scalar|Param|null, // Default: 5
+ *     page_limit?: scalar|Param|null, // Default: null
+ *     convert_exception?: bool|Param, // Default: false
+ *     remove_first_page_param?: bool|Param, // Default: false
+ * }
+ * @psalm-type StofDoctrineExtensionsConfig = array{
+ *     orm?: array<string, array{ // Default: []
+ *         translatable?: scalar|Param|null, // Default: false
+ *         timestampable?: scalar|Param|null, // Default: false
+ *         blameable?: scalar|Param|null, // Default: false
+ *         sluggable?: scalar|Param|null, // Default: false
+ *         tree?: scalar|Param|null, // Default: false
+ *         loggable?: scalar|Param|null, // Default: false
+ *         ip_traceable?: scalar|Param|null, // Default: false
+ *         sortable?: scalar|Param|null, // Default: false
+ *         softdeleteable?: scalar|Param|null, // Default: false
+ *         uploadable?: scalar|Param|null, // Default: false
+ *         reference_integrity?: scalar|Param|null, // Default: false
+ *     }>,
+ *     mongodb?: array<string, array{ // Default: []
+ *         translatable?: scalar|Param|null, // Default: false
+ *         timestampable?: scalar|Param|null, // Default: false
+ *         blameable?: scalar|Param|null, // Default: false
+ *         sluggable?: scalar|Param|null, // Default: false
+ *         tree?: scalar|Param|null, // Default: false
+ *         loggable?: scalar|Param|null, // Default: false
+ *         ip_traceable?: scalar|Param|null, // Default: false
+ *         sortable?: scalar|Param|null, // Default: false
+ *         softdeleteable?: scalar|Param|null, // Default: false
+ *         uploadable?: scalar|Param|null, // Default: false
+ *         reference_integrity?: scalar|Param|null, // Default: false
+ *     }>,
+ *     class?: array{
+ *         translatable?: scalar|Param|null, // Default: "Gedmo\\Translatable\\TranslatableListener"
+ *         timestampable?: scalar|Param|null, // Default: "Gedmo\\Timestampable\\TimestampableListener"
+ *         blameable?: scalar|Param|null, // Default: "Gedmo\\Blameable\\BlameableListener"
+ *         sluggable?: scalar|Param|null, // Default: "Gedmo\\Sluggable\\SluggableListener"
+ *         tree?: scalar|Param|null, // Default: "Gedmo\\Tree\\TreeListener"
+ *         loggable?: scalar|Param|null, // Default: "Gedmo\\Loggable\\LoggableListener"
+ *         sortable?: scalar|Param|null, // Default: "Gedmo\\Sortable\\SortableListener"
+ *         softdeleteable?: scalar|Param|null, // Default: "Gedmo\\SoftDeleteable\\SoftDeleteableListener"
+ *         uploadable?: scalar|Param|null, // Default: "Gedmo\\Uploadable\\UploadableListener"
+ *         reference_integrity?: scalar|Param|null, // Default: "Gedmo\\ReferenceIntegrity\\ReferenceIntegrityListener"
+ *     },
+ *     softdeleteable?: array{
+ *         handle_post_flush_event?: bool|Param, // Default: false
+ *     },
+ *     uploadable?: array{
+ *         default_file_path?: scalar|Param|null, // Default: null
+ *         mime_type_guesser_class?: scalar|Param|null, // Default: "Stof\\DoctrineExtensionsBundle\\Uploadable\\MimeTypeGuesserAdapter"
+ *         default_file_info_class?: scalar|Param|null, // Default: "Stof\\DoctrineExtensionsBundle\\Uploadable\\UploadedFileInfo"
+ *         validate_writable_directory?: bool|Param, // Default: true
+ *     },
+ *     default_locale?: scalar|Param|null, // Default: "en"
+ *     translation_fallback?: bool|Param, // Default: false
+ *     persist_default_translation?: bool|Param, // Default: false
+ *     skip_translation_on_load?: bool|Param, // Default: false
+ *     metadata_cache_pool?: scalar|Param|null, // Default: null
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1468,6 +1559,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     twig_extra?: TwigExtraConfig,
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
+ *     symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *     knp_paginator?: KnpPaginatorConfig,
+ *     stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1484,6 +1579,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
  *         maker?: MakerConfig,
+ *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1498,6 +1597,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
+ *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1513,6 +1616,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
+ *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         knp_paginator?: KnpPaginatorConfig,
+ *         stof_doctrine_extensions?: StofDoctrineExtensionsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

@@ -1,0 +1,76 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+    
+    <div class="space-y-6">
+        <div>
+            {{ form_label(form.title, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.title, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
+            <div class="text-sm text-red-600 mt-1">
+                {{ form_errors(form.title) }}
+            </div>
+        </div>
+
+        <div>
+            {{ form_label(form.categories, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 p-4 border border-gray-200 rounded-md bg-gray-50">
+                {% for child in form.categories %}
+                    <div class="flex items-center">
+                        {{ form_widget(child, {'attr': {'class': 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'}}) }}
+                        {{ form_label(child, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900'}}) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="flex items-center bg-gray-50 p-4 border border-gray-200 rounded-md">
+            {{ form_widget(form.isActive, {'attr': {'class': 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'}}) }}
+            {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900 font-medium'}}) }}
+        </div>
+
+        <div>
+            {{ form_label(form.content, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.content) }}
+            <div class="text-sm text-red-600 mt-1">
+                {{ form_errors(form.content) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end pt-4 mt-6 border-t border-gray-200">
+        <a href="{{ path('app_admin_documentation_index') }}" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none mr-4">
+            Annuler
+        </a>
+        <button type="submit" class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+
+{{ form_end(form) }}
+
+{# Injection Trumbowyg CSS/JS pour le WYSIWYG #}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/trumbowyg.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/langs/fr.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.trumbowyg').trumbowyg({
+            lang: 'fr',
+            btns: [
+                ['viewHTML'],
+                ['undo', 'redo'],
+                ['formatting'],
+                ['strong', 'em', 'del'],
+                ['superscript', 'subscript'],
+                ['link'],
+                ['insertImage'],
+                ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+                ['unorderedList', 'orderedList'],
+                ['horizontalRule'],
+                ['removeformat'],
+                ['fullscreen']
+            ],
+            removeformatPasted: true
+        });
+    });
+</script>

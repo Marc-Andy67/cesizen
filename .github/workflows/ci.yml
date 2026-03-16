@@ -1,0 +1,209 @@
+name: 🔬 CI — Tests & Security
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.4"
+
+# ─────────────────────────────────────────────────────────────────
+# JOB 1 — TESTS UNITAIRES & FONCTIONNELS
+# ─────────────────────────────────────────────────────────────────
+jobs:
+  tests:
+    name: 🧪 Tests (PHPUnit & Panther)
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    
+    # 10. Setup Chrome pour Panther. (La variable d'env PANTHER_NO_SANDBOX est indispensable sur GH Actions)
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&charset=utf8"
+      APP_ENV: test
+      PANTHER_APP_ENV: test
+      PANTHER_NO_SANDBOX: 1
+      PANTHER_CHROME_ARGUMENTS: "--disable-dev-shm-usage"
+
+    # 6. Création BDD de test PostgreSQL 18
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cesizen_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      # 1. Checkout du code
+      - uses: actions/checkout@v4
+
+      # 2. Setup PHP 8.4 avec extensions pdo_pgsql, intl, mbstring, xml, zip
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_pgsql, intl, mbstring, xml, zip
+          # Activation de pcov au lieu de xdebug pour des calculs de couverture plus rapides
+          coverage: pcov
+
+      # 10.b Installation de Chromium pour Panther
+      - name: Install Chromium & ChromeDriver
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends chromium-browser chromium-chromedriver
+          echo "PANTHER_CHROME_DRIVER_BINARY=$(which chromedriver)" >> $GITHUB_ENV
+          echo "PANTHER_CHROME_BINARY=$(which chromium-browser)"    >> $GITHUB_ENV
+
+      # 3. Cache Composer (optimisation temps de build)
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ env.PHP_VERSION }}-
+
+      # 4. composer install --no-interaction
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts --no-interaction
+
+      # 13. npm install + npm run build (Tailwind)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install NPM dependencies & Build Tailwind
+        run: |
+          npm ci
+          npm run build
+
+      # 5. Copie .env.test → .env.test.local
+      - name: Prepare environment
+        run: cp .env.test .env.test.local || true
+
+      # 6.b migrations + fixtures
+      - name: Wait for PostgreSQL
+        run: |
+          while ! pg_isready -h 127.0.0.1 -p 5432 -U postgres; do
+            sleep 1
+          done
+      - name: Run migrations & Load fixtures
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+          php bin/console doctrine:fixtures:load --no-interaction --env=test
+
+      # 7. PHP CS Fixer (PSR-12) — bloque si violation
+      - name: PHP CS Fixer (PSR-12)
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
+      # 8. PHPStan niveau 6 — bloque si erreur
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --level=6 --no-progress --memory-limit=256M
+
+      # 9 & 11. PHPUnit tests unitaires & fonctionnels + rapport coverage XML
+      - name: Run PHPUnit
+        run: |
+          vendor/bin/phpunit \
+            --coverage-text \
+            --coverage-clover=coverage.xml \
+            --log-junit=junit.xml
+
+      # 12. Vérification coverage ≥ 70%
+      # Note: On utilise un script PHP simple pour parser le XML et vérifier le seuil minimal puisqu'il n'y a pas d'outil natif simple sans dépendance tierce.
+      - name: Check Code Coverage
+        run: |
+          php -r '
+            $xml = simplexml_load_file("coverage.xml");
+            $metrics = $xml->project->metrics;
+            $elements = (int)$metrics["elements"];
+            $coveredelements = (int)$metrics["coveredelements"];
+            $coverage = $elements > 0 ? ($coveredelements / $elements) * 100 : 0;
+            echo "Coverage: " . number_format($coverage, 2) . "%\n";
+            if ($coverage < 70) {
+              echo "Coverage is below 70% limit\n";
+              exit(1);
+            }
+          '
+
+      # Upload Test Reports as artifacts
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            coverage.xml
+            junit.xml
+            var/panther/
+
+# ─────────────────────────────────────────────────────────────────
+# JOB 2 — SECURITY (OWASP ZAP & Trivy)
+# ─────────────────────────────────────────────────────────────────
+  security:
+    name: 🔒 Security (ZAP & Trivy)
+    runs-on: ubuntu-latest
+    needs: tests # Le job dépend du succès des tests
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup PHP again for ZAP to have a dev server
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_pgsql, intl, mbstring, xml, zip
+      
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts --no-interaction
+
+      - name: Start Symfony Server for ZAP
+        run: |
+          php -S 127.0.0.1:8000 -t public/ &
+          sleep 5 # Laissons le temps au serveur de démarrer
+
+      # 14. OWASP ZAP scan sécurité
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://127.0.0.1:8000'
+          fail_action: false # Ne bloque peut-être pas initialement, mais configuré pour alerter au besoin
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      # 15. Trivy scan dépendances (CVE Composer / NPM)
+      - name: Trivy FS Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          exit-code: 1 # Bloque sur CRITICAL ou HIGH selon la demande
+
+      # 16. Upload artifacts (sécurité)
+      - name: Upload Trivy Results to Security Tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fs.sarif
+          category: trivy-fs

@@ -1,0 +1,42 @@
+{# templates/components/_pagination.html.twig (Template KnpPaginator) #}
+{% if pageCount > 1 %}
+    <nav aria-label="Pagination" class="flex justify-center mt-6">
+        <ul class="inline-flex -space-x-px text-sm items-center shadow-sm">
+            {% if previous is defined %}
+                <li>
+                    <a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page précédente">
+                        <span class="sr-only">Précédent</span>
+                        <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in pagesInRange %}
+                <li>
+                    {% if page != current %}
+                        <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page {{ page }}">
+                            {{ page }}
+                        </a>
+                    {% else %}
+                        <span aria-current="page" class="flex items-center justify-center px-3 h-8 text-green-800 border border-gray-300 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10">
+                            {{ page }}
+                        </span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            {% if next is defined %}
+                <li>
+                    <a rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page suivante">
+                        <span class="sr-only">Suivant</span>
+                        <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - CESIZen{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col md:flex-row gap-8">
+        {# Sidebar #}
+        <aside class="w-full md:w-64 bg-white shadow-md rounded-lg p-4 h-fit">
+            <h2 class="text-xl font-bold text-green-800 mb-6 border-b pb-2">Admin CESIZen</h2>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ path('app_admin_dashboard') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Tableau de bord
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_user_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_user_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Utilisateurs
+                        </a>
+                    </li>
+                    <li class="pt-4 pb-2">
+                        <span class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contenu</span>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_category_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_category_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Catégories
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_documentation_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_documentation_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Documentations
+                        </a>
+                    </li>
+                    <li class="pt-4 pb-2">
+                        <span class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Diagnostics</span>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_quiz_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_quiz_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Questionnaires
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_question_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_question_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Questions
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_admin_response_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_response_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Réponses
+                        </a>
+                    </li>
+                    <li class="pt-2">
+                        <a href="{{ path('app_admin_stress_threshold_index') }}" class="block px-4 py-2 rounded-md transition-colors hover:bg-green-50 {% if app.request.attributes.get('_route') starts with 'app_admin_stress_threshold_' %}bg-green-100 text-green-800 font-medium{% else %}text-gray-700{% endif %}">
+                            Seuils de Stress
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        {# Main content admin #}
+        <div class="flex-grow bg-white shadow-md rounded-lg p-6">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

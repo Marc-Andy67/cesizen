@@ -1,17 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr" class="bg-gray-50">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}CESIZen - Santé mentale et bien-être{% endblock %}</title>
+        <link rel="icon" href="/favicon.ico">
+        
         {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+        {# RGAA : Skip link pour aller directement au contenu principal #}
+        {{ include('components/_skip_link.html.twig') }}
+
+        <header class="bg-green-800 text-white shadow-md">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <a href="{{ path('app_home') }}" 
+                   class="text-2xl font-bold tracking-tight focus:outline-none focus:ring-2 focus:ring-white rounded px-1" 
+                   aria-label="Retour à l'accueil CESIZen">
+                    CESI<span class="text-green-300">Zen</span>
+                </a>
+                
+                <nav aria-label="Menu principal">
+                    <ul class="flex space-x-6 items-center font-medium">
+                        <li>
+                            <a href="{{ path('app_documentation_index') }}" 
+                               class="hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                Informations
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_diagnostic') }}" 
+                               class="hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                Diagnostic
+                            </a>
+                        </li>
+                        {% if app.user %}
+                            <li>
+                                <a href="{{ path('app_profile') }}" 
+                                   class="hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                    Mon Espace
+                                </a>
+                            </li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li>
+                                    <a href="{{ path('admin_dashboard') }}" 
+                                       class="hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                        Administration
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="{{ path('app_logout') }}" 
+                                   class="hover:text-red-300 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                    Déconnexion
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ path('app_login') }}" 
+                                   class="hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-white rounded px-2 py-1 transition-colors">
+                                    Connexion
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('app_register') }}" 
+                                   class="bg-white text-green-800 hover:bg-gray-100 rounded-md px-4 py-2 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-800 focus:ring-white">
+                                    Inscription
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main id="main-content" 
+              class="flex-grow container mx-auto px-4 py-8 focus:outline-none" 
+              tabindex="-1">
+            {{ include('components/_flash_messages.html.twig') }}
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="bg-gray-800 text-gray-300 py-8 text-sm mt-auto">
+            <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h2 class="text-white text-lg font-bold mb-4">CESIZen</h2>
+                    <p>Plateforme de santé mentale et gestion du stress commanditée par le Ministère de la Santé et de la Prévention français.</p>
+                </div>
+                <div>
+                    <h2 class="text-white font-bold mb-4">Liens utiles</h2>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" 
+                               class="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                                Mentions Légales
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" 
+                               class="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                                Politique de Confidentialité
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" 
+                               class="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                                CGU
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h2 class="text-white font-bold mb-4">Contact</h2>
+                    <p>Ministère de la Santé et de la Prévention</p>
+                    <p class="mt-2">
+                        <a href="https://www.sante.gouv.fr" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1">
+                            sante.gouv.fr
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 mt-6 pt-6 border-t border-gray-700 text-center text-gray-500">
+                <p>&copy; {{ "now"|date("Y") }} CESIZen — Tous droits réservés</p>
+            </div>
+        </footer>
+
     </body>
 </html>

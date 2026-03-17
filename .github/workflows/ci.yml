@@ -103,7 +103,7 @@ jobs:
         run: vendor/bin/php-cs-fixer fix --dry-run --diff --stop-on-violation
 
       - name: 🔍 PHPStan (level 6)
-        run: vendor/bin/phpstan analyse --level=6 --no-progress --memory-limit=256M
+        run: vendor/bin/phpstan analyse src --level=6 --no-progress --memory-limit=256M --no-ansi --configuration=phpstan.dist.neon
 
       - name: 🌐 Install Chromium for Panther
         run: |

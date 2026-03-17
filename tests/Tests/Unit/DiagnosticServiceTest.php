@@ -8,8 +8,10 @@ use App\Repository\ResponseRepository;
 use App\Repository\StressThresholdRepository;
 use App\Service\DiagnosticService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(DiagnosticService::class)]
 class DiagnosticServiceTest extends TestCase
 {
     private DiagnosticService $service;
@@ -22,7 +24,6 @@ class DiagnosticServiceTest extends TestCase
         $this->responseRepository = $this->createMock(ResponseRepository::class);
         $this->thresholdRepository = $this->createMock(StressThresholdRepository::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-
         $this->service = new DiagnosticService(
             $this->responseRepository,
             $this->thresholdRepository,
@@ -40,7 +41,6 @@ class DiagnosticServiceTest extends TestCase
     {
         $response1 = new Response();
         $response1->setPoints(100);
-
         $response2 = new Response();
         $response2->setPoints(45);
 
@@ -51,14 +51,12 @@ class DiagnosticServiceTest extends TestCase
             ->willReturn([$response1, $response2]);
 
         $score = $this->service->calculateScore([1, 2]);
-
         $this->assertSame(145, $score);
     }
 
     public function testGetThresholdForScoreLowStress(): void
     {
         $quiz = new \App\Entity\Quiz();
-
         $thresholdLow = new StressThreshold();
         $thresholdLow->setMinScore(0);
         $thresholdLow->setMaxScore(149);
@@ -70,14 +68,12 @@ class DiagnosticServiceTest extends TestCase
         $quiz->addStressThreshold($thresholdHigh);
 
         $result = $this->service->getThresholdForScore(100, $quiz);
-
         $this->assertSame($thresholdLow, $result);
     }
 
     public function testGetThresholdForScoreHighStress(): void
     {
         $quiz = new \App\Entity\Quiz();
-
         $thresholdLow = new StressThreshold();
         $thresholdLow->setMinScore(0);
         $thresholdLow->setMaxScore(149);
@@ -88,9 +84,14 @@ class DiagnosticServiceTest extends TestCase
         $thresholdHigh->setMaxScore(null);
         $quiz->addStressThreshold($thresholdHigh);
 
-        // Score 350
         $result = $this->service->getThresholdForScore(350, $quiz);
-
         $this->assertSame($thresholdHigh, $result);
+    }
+
+    public function testGetThresholdForScoreNoMatch(): void
+    {
+        $quiz = new \App\Entity\Quiz();
+        $result = $this->service->getThresholdForScore(100, $quiz);
+        $this->assertNull($result);
     }
 }

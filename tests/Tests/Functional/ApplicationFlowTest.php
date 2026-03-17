@@ -13,10 +13,10 @@ class ApplicationFlowTest extends PantherTestCase
 
         // 1. Visit Home Page
         $crawler = $client->request('GET', '/');
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'Evaluez et maîtrisez');
-        
+
         // 2. Click on "Se connecter" from Home Page
         $link = $crawler->selectLink('Commencer mon évaluation')->link();
         // Since it might go to register first, let's just go directly to login to test auth

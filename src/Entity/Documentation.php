@@ -87,6 +87,9 @@ class Documentation
         return $this;
     }
 
+    /**
+     * @return Collection<int, Category>
+     */
     public function getCategories(): Collection
     {
         return $this->categories;
@@ -108,6 +111,9 @@ class Documentation
         return $this;
     }
 
+    /**
+     * @return Collection<int, User>
+     */
     public function getUsers(): Collection
     {
         return $this->users;

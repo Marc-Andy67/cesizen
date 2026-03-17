@@ -200,6 +200,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Assessment>
+     */
     public function getAssessments(): Collection
     {
         return $this->assessments;
@@ -226,6 +229,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Documentation>
+     */
     public function getDocumentations(): Collection
     {
         return $this->documentations;
@@ -247,6 +253,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection<int, Quiz>
+     */
     public function getQuizzes(): Collection
     {
         return $this->quizzes;

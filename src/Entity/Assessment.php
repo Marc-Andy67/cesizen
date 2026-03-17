@@ -111,6 +111,9 @@ class Assessment
         return $this;
     }
 
+    /**
+     * @return Collection<int, Response>
+     */
     public function getResponses(): Collection
     {
         return $this->responses;

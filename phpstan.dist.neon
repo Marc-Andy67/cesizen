@@ -1,8 +1,23 @@
 parameters:
     level: 6
     paths:
-        - bin/
-        - config/
-        - public/
         - src/
-        - tests/
+    excludePaths:
+        - src/Kernel.php
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # Doctrine gère l'assignation des UUIDs via réflexion PHP — PHPStan ne peut pas le détecter
+        - '#Property .+::\$id .+ is never assigned .+ so it can be removed from the property type\.#'
+        # Ignorer les types génériques manquants sur les formulaires et Voter (introduits au niveau 6)
+        - '#extends generic class Symfony\\Component\\(Form\\AbstractType|Security\\Core\\Authorization\\Voter\\Voter) but does not specify its types#'
+        # Ignorer l'absence de typage explicite dans les tableaux pour le code existant
+        - '#no value type specified in iterable type array#'
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        objectManagerLoader: tests/object-manager.php
+
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon

@@ -48,7 +48,9 @@ class DiagnosticController extends AbstractController
 
             // Si l'utilisateur est connecté, on sauvegarde son résultat (Assessment complet)
             if ($this->getUser()) {
-                $assessment = $diagnosticService->saveAssessment($this->getUser(), $quiz, $submittedResponses, $score);
+                /** @var \App\Entity\User $user */
+                $user = $this->getUser();
+                $assessment = $diagnosticService->saveAssessment($user, $quiz, $submittedResponses, $score);
                 $em->flush();
 
                 return $this->redirectToRoute('app_diagnostic_result', ['id' => $assessment->getId()]);

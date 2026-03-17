@@ -1,0 +1,26 @@
+ -- ------------------------ 
+     Error                   
+ -- ------------------------ 
+     Internal error: Cannot  
+     instantiate custom      
+     generator : array (     
+       'class' =>            
+     'doctrine.uuid_generat  
+     or',                    
+     ) while analysing file  
+     C:\Users\marca\cesizen  
+     \src\Entity\User.php    
+                             
+     Run PHPStan with -v     
+     option and post the     
+     stack trace to:         
+     https://github.com/php  
+     stan/phpstan/issues/ne  
+     w?template=Bug_report.  
+     yaml                    
+                             
+ -- ------------------------ 
+
+
+ [ERROR] Found 1 error      
+

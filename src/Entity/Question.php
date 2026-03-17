@@ -92,6 +92,9 @@ class Question
         return $this;
     }
 
+    /**
+     * @return Collection<int, Response>
+     */
     public function getResponses(): Collection
     {
         return $this->responses;
@@ -118,6 +121,9 @@ class Question
         return $this;
     }
 
+    /**
+     * @return Collection<int, Quiz>
+     */
     public function getQuizzes(): Collection
     {
         return $this->quizzes;

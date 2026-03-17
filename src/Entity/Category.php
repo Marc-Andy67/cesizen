@@ -72,6 +72,9 @@ class Category
         return $this;
     }
 
+    /**
+     * @return Collection<int, Documentation>
+     */
     public function getDocumentations(): Collection
     {
         return $this->documentations;
@@ -96,6 +99,9 @@ class Category
         return $this;
     }
 
+    /**
+     * @return Collection<int, Quiz>
+     */
     public function getQuizzes(): Collection
     {
         return $this->quizzes;

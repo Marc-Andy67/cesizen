@@ -1,6 +1,6 @@
 # CESIZen
 
-**CESIZen** est une plateforme dédiée à la santé mentale et à la gestion du stress, développée pour le compte du Ministère de la Santé et de la Prévention français. Elle propose des ressources documentaires et un outil d'évaluation du stress basé sur l'échelle de réajustement social de Holmes et Rahe. 
+**CESIZen** est une plateforme dédiée à la santé mentale et à la gestion du stress, développée pour le compte du Ministère de la Santé et de la Prévention français. Elle propose des ressources documentaires et un outil d'évaluation du stress basé sur l'échelle de réajustement social de Holmes et Rahe.
 
 ## Prérequis
 

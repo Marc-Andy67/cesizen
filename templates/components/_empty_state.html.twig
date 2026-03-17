@@ -1,0 +1,40 @@
+{#
+    Composant Empty State DSFR / DaisyUI
+    
+    Variables :
+    - title (string) : Le titre principal (ex: "Aucun document trouvé")
+    - message (string) : Le texte explicatif
+    - icon (string/html) : Icône SVG (optionnelle, sinon icône dossier vide par défaut)
+    - action_url (string) : Lien du bouton (optionnel)
+    - action_label (string) : Texte du bouton (optionnel)
+#}
+
+<div class="flex flex-col items-center justify-center p-12 text-center bg-base-100 border border-base-200 border-dashed rounded-lg animate-fade-in my-8">
+    <div class="w-20 h-20 bg-base-200 text-dsfr-blue rounded-full flex items-center justify-center mb-6 shadow-inner">
+        {% if icon|default(false) %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {{ icon|raw }}
+            </svg>
+        {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+        {% endif %}
+    </div>
+    
+    <h3 class="text-xl font-bold text-dsfr-blue mb-2">{{ title }}</h3>
+    
+    {% if message|default(false) %}
+        <p class="text-base-content/70 max-w-md mx-auto mb-8 font-medium">
+            {{ message }}
+        </p>
+    {% endif %}
+
+    {% if action_url|default(false) and action_label|default(false) %}
+        {{ include('components/_button.html.twig', {
+            label: action_label,
+            variant: 'primary',
+            attr: 'href="' ~ action_url ~ '"'
+        }) }}
+    {% endif %}
+</div>

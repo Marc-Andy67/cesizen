@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
@@ -31,6 +32,10 @@ class Question
     /**
      * @var Collection<int, Response>
      */
+    #[Assert\Count(
+        min: 2,
+        minMessage: 'Une question doit avoir au minimum {{ limit }} réponses.'
+    )]
     #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'question', orphanRemoval: true)]
     private Collection $responses;
 

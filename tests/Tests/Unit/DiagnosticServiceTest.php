@@ -57,41 +57,39 @@ class DiagnosticServiceTest extends TestCase
 
     public function testGetThresholdForScoreLowStress(): void
     {
+        $quiz = new \App\Entity\Quiz();
+
         $thresholdLow = new StressThreshold();
         $thresholdLow->setMinScore(0);
         $thresholdLow->setMaxScore(149);
+        $quiz->addStressThreshold($thresholdLow);
 
         $thresholdHigh = new StressThreshold();
         $thresholdHigh->setMinScore(300);
         $thresholdHigh->setMaxScore(null);
+        $quiz->addStressThreshold($thresholdHigh);
 
-        $this->thresholdRepository
-            ->expects($this->once())
-            ->method('findBy')
-            ->willReturn([$thresholdLow, $thresholdHigh]);
-
-        $result = $this->service->getThresholdForScore(100);
+        $result = $this->service->getThresholdForScore(100, $quiz);
 
         $this->assertSame($thresholdLow, $result);
     }
 
     public function testGetThresholdForScoreHighStress(): void
     {
+        $quiz = new \App\Entity\Quiz();
+
         $thresholdLow = new StressThreshold();
         $thresholdLow->setMinScore(0);
         $thresholdLow->setMaxScore(149);
+        $quiz->addStressThreshold($thresholdLow);
 
         $thresholdHigh = new StressThreshold();
         $thresholdHigh->setMinScore(300);
         $thresholdHigh->setMaxScore(null);
-
-        $this->thresholdRepository
-            ->expects($this->once())
-            ->method('findBy')
-            ->willReturn([$thresholdLow, $thresholdHigh]);
+        $quiz->addStressThreshold($thresholdHigh);
 
         // Score 350
-        $result = $this->service->getThresholdForScore(350);
+        $result = $this->service->getThresholdForScore(350, $quiz);
 
         $this->assertSame($thresholdHigh, $result);
     }

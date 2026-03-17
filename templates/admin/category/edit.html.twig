@@ -1,11 +1,13 @@
 {% extends 'admin/base_admin.html.twig' %}
 
 {% block admin_content %}
-    <div class="mb-6 border-b pb-4">
-        <h1 class="text-2xl font-bold text-gray-800">Modifier la catégorie : {{ category.name }}</h1>
+    <div class="mb-6 border-b border-base-200 pb-4">
+        <h1 class="text-2xl font-extrabold text-dsfr-blue tracking-tight">Modifier la catégorie : {{ category.name }}</h1>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 max-w-2xl">
-        {{ include('admin/category/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    <div class="card bg-base-100 shadow-sm border border-base-200 w-full max-w-2xl rounded-sm">
+        <div class="card-body p-6">
+            {{ include('admin/category/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
     </div>
 {% endblock %}

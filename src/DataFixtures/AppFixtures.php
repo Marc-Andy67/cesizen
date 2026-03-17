@@ -101,7 +101,14 @@ class AppFixtures extends Fixture
             $manager->persist($doc);
         }
 
-        // 4. Seuils de stress
+        // 4. Questionnaire de Holmes et Rahe
+        $quiz = new Quiz();
+        $quiz->setTitle('Échelle d\'Évaluation de Réajustement Social de Holmes et Rahe');
+        $quiz->setDescription("L'échelle de Holmes et Rahe permet d'évaluer de manière statistique la corrélation existant entre le stress induit par divers événements de l'existence et la probabilité d'apparition de maladies (physiques, psychiques ou émotionnelles). Le postulat de départ est que le changement, qu'il soit heureux ou non, est par essence anxiogène.\n\nVeuillez cocher les événements suivants s'ils vous sont arrivés **au cours des 12 derniers mois**. Si un événement exceptionnel s'est produit plus d'une fois au cours des 12 derniers mois, vous ne devez cocher la case qu'une seule fois.");
+        $quiz->setIsActive(true);
+        $manager->persist($quiz);
+
+        // 5. Seuils de stress attachés au Quiz
         $thresholds = [
             [
                 'level' => 'LowStress',
@@ -131,6 +138,7 @@ class AppFixtures extends Fixture
 
         foreach ($thresholds as $tData) {
             $threshold = new StressThreshold();
+            $threshold->setQuiz($quiz);
             $threshold->setLevel($tData['level']);
             $threshold->setName($tData['name']);
             $threshold->setMinScore($tData['min']);
@@ -140,12 +148,7 @@ class AppFixtures extends Fixture
             $manager->persist($threshold);
         }
 
-        // 5. Questionnaire de Holmes et Rahe
-        $quiz = new Quiz();
-        $quiz->setTitle('Échelle d\'Évaluation de Réajustement Social de Holmes et Rahe');
-        $quiz->setDescription("L'échelle de Holmes et Rahe permet d'évaluer de manière statistique la corrélation existant entre le stress induit par divers événements de l'existence et la probabilité d'apparition de maladies (physiques, psychiques ou émotionnelles). Le postulat de départ est que le changement, qu'il soit heureux ou non, est par essence anxiogène.\n\nVeuillez cocher les événements suivants s'ils vous sont arrivés **au cours des 12 derniers mois**. Si un événement exceptionnel s'est produit plus d'une fois au cours des 12 derniers mois, vous ne devez cocher la case qu'une seule fois.");
-        $quiz->setIsActive(true);
-        $manager->persist($quiz);
+
 
         // Liste partielle des 43 items (ceux de poids hétérogène, pour démonstration)
         // Normalement il faut les 43, ici on en met une sélection représentative.
@@ -200,13 +203,21 @@ class AppFixtures extends Fixture
             $question->addQuiz($quiz);
             $manager->persist($question);
 
-            $response = new Response();
-            $response->setDescription('Oui');
-            $response->setPoints($item['score']);
-            $response->setPosition(1);
-            $response->setIsActive(true);
-            $response->setQuestion($question);
-            $manager->persist($response);
+            $responseOui = new Response();
+            $responseOui->setDescription('Oui');
+            $responseOui->setPoints($item['score']);
+            $responseOui->setPosition(1);
+            $responseOui->setIsActive(true);
+            $responseOui->setQuestion($question);
+            $manager->persist($responseOui);
+            
+            $responseNon = new Response();
+            $responseNon->setDescription('Non');
+            $responseNon->setPoints(0);
+            $responseNon->setPosition(2);
+            $responseNon->setIsActive(true);
+            $responseNon->setQuestion($question);
+            $manager->persist($responseNon);
         }
 
         $manager->flush();

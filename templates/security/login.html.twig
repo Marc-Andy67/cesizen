@@ -1,34 +1,90 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion - CESIZen{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<div class="flex justify-center items-center py-12 md:py-20 animate-fade-in">
+    <div class="card bg-base-100 shadow-sm border border-base-200 w-full max-w-lg rounded-sm">
+        <div class="card-body p-8 sm:p-10">
+            
+            <h1 class="text-3xl font-extrabold text-dsfr-blue mb-2 tracking-tight">Connexion</h1>
+            <p class="text-base-content/70 mb-8 font-medium">Accédez à votre espace personnel et retrouvez l'historique de vos diagnostics.</p>
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+            <form method="post" class="flex flex-col gap-5">
+                
+                {% if error %}
+                    {{ include('components/_alert.html.twig', {
+                        message: error.messageKey|trans(error.messageData, 'security'),
+                        type: 'error'
+                    }) }}
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-4 text-sm font-medium">
+                        Vous êtes déjà connecté(e) en tant que <span class="text-dsfr-blue font-bold">{{ app.user.userIdentifier }}</span>. 
+                        <a href="{{ logout_path() }}" class="text-dsfr-red hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-red outline-none rounded-sm transition-colors ml-1">Me déconnecter</a>
+                    </div>
+                {% endif %}
+
+                <div class="form-control w-full">
+                    <label for="inputEmail" class="label pb-1">
+                        <span class="label-text font-bold text-base-content">Adresse électronique</span>
+                        <span class="text-dsfr-red" aria-hidden="true">*</span>
+                    </label>
+                    <input type="email" 
+                           value="{{ last_username }}" 
+                           name="email" 
+                           id="inputEmail" 
+                           class="input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm" 
+                           autocomplete="email" 
+                           placeholder="jean.dupont@exemple.fr"
+                           required 
+                           autofocus
+                           aria-required="true">
+                </div>
+
+                <div class="form-control w-full">
+                    <label for="inputPassword" class="label pb-1">
+                        <span class="label-text font-bold text-base-content">Mot de passe</span>
+                        <span class="text-dsfr-red" aria-hidden="true">*</span>
+                    </label>
+                    <input type="password" 
+                           name="password" 
+                           id="inputPassword" 
+                           class="input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm" 
+                           autocomplete="current-password" 
+                           required
+                           aria-required="true">
+                    
+                    <label class="label pt-1 justify-end">
+                        <a href="{{ path('app_forgot_password_request') }}" class="label-text-alt text-dsfr-blue font-medium hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-blue-light outline-none rounded-sm transition-colors">Mot de passe oublié ?</a>
+                    </label>
+                </div>
+
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+                <div class="form-control -mt-2">
+                    <label class="label cursor-pointer justify-start gap-3 w-fit">
+                        <input type="checkbox" name="_remember_me" class="checkbox checkbox-primary border-base-300 rounded-sm [--chkbg:theme(colors.dsfr-blue)] [--chkfg:white]" />
+                        <span class="label-text font-medium text-base-content/90">Se souvenir de moi</span>
+                    </label>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-base-200">
+                    {{ include('components/_button.html.twig', {
+                        label: 'Se connecter',
+                        variant: 'primary',
+                        extra_classes: 'w-full'
+                    }) }}
+                </div>
+            </form>
+            
+            <div class="text-center mt-6 text-sm font-medium text-base-content/80">
+                Pas encore de compte ? 
+                <a href="{{ path('app_register') }}" class="text-dsfr-blue font-bold hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-blue-light outline-none rounded-sm transition-colors">Créer un compte</a>
+            </div>
+            
         </div>
-    {% endif %}
-
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
     </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+</div>
 {% endblock %}

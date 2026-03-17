@@ -1,0 +1,36 @@
+{#
+    Composant Statistique DSFR / DaisyUI
+    
+    Variables :
+    - value (string/int) : Le grand chiffre (ex: "43", "1 sur 5")
+    - label (string) : La description courte sous le chiffre
+    - icon (string/html) : Icône SVG (optionnel)
+    - trend (string) : up, down (optionnel, affiche une petite flèche)
+#}
+
+<div class="stat p-6 bg-white border border-base-200 shadow-sm rounded-sm hover:-translate-y-1 transition-transform duration-300">
+    {% if icon|default(false) %}
+        <div class="stat-figure text-dsfr-blue opacity-50">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
+                {{ icon|raw }}
+            </svg>
+        </div>
+    {% endif %}
+    
+    <div class="stat-value text-3xl font-bold text-dsfr-blue mb-1">
+        {{ value }}
+        
+        {% if trend|default(false) == 'up' %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline text-dsfr-green" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        {% elseif trend|default(false) == 'down' %}
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline text-dsfr-warning rotate-180" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        {% endif %}
+    </div>
+    <div class="stat-title text-sm whitespace-normal text-base-content/80 font-medium leading-tight">
+        {{ title|default(label|default('')) }}
+    </div>
+</div>

@@ -1,0 +1,39 @@
+PHPUnit 13.0.5 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.17
+Configuration: C:\Users\marca\cesizen\phpunit.dist.xml
+
+EE                                                                  2 / 2 (100%)
+
+Time: 00:25.580, Memory: 72.00 MB
+
+There were 2 errors:
+
+1) App\Tests\Functional\ApplicationFlowTest::testHomePageAndLogin
+Symfony\Component\Panther\Exception\RuntimeException: Could not start chrome. Exit code: 1 (General error). Error output: '.' nÔÇÖest pas reconnu en tant que commande interne
+ou externe, un programme ex├®cutable ou un fichier de commandes.
+
+
+C:\Users\marca\cesizen\vendor\symfony\panther\src\ProcessManager\WebServerReadinessProbeTrait.php:54
+C:\Users\marca\cesizen\vendor\symfony\panther\src\ProcessManager\ChromeManager.php:54
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:124
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:539
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:280
+C:\Users\marca\cesizen\tests\Tests\Functional\ApplicationFlowTest.php:15
+C:\Users\marca\cesizen\vendor\phpunit\phpunit\phpunit:104
+
+2) App\Tests\Functional\ApplicationFlowTest::testDiagnosticIndexPage
+Symfony\Component\Panther\Exception\RuntimeException: Could not start chrome. Exit code: 1 (General error). Error output: '.' nÔÇÖest pas reconnu en tant que commande interne
+ou externe, un programme ex├®cutable ou un fichier de commandes.
+
+
+C:\Users\marca\cesizen\vendor\symfony\panther\src\ProcessManager\WebServerReadinessProbeTrait.php:54
+C:\Users\marca\cesizen\vendor\symfony\panther\src\ProcessManager\ChromeManager.php:54
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:124
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:539
+C:\Users\marca\cesizen\vendor\symfony\panther\src\Client.php:280
+C:\Users\marca\cesizen\tests\Tests\Functional\ApplicationFlowTest.php:42
+C:\Users\marca\cesizen\vendor\phpunit\phpunit\phpunit:104
+
+ERRORS!
+Tests: 2, Assertions: 0, Errors: 2.

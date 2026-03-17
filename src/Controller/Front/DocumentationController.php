@@ -21,7 +21,7 @@ class DocumentationController extends AbstractController
         CategoryRepository $categoryRepository,
         PaginatorInterface $paginator
     ): Response {
-        $categoryId = $request->query->get('category');
+        $categoryIds = $request->query->all('categories');
         
         // On ne récupère que les documentations actives
         $queryBuilder = $documentationRepository->createQueryBuilder('d')
@@ -29,10 +29,10 @@ class DocumentationController extends AbstractController
             ->setParameter('active', true)
             ->orderBy('d.title', 'ASC');
 
-        if ($categoryId) {
+        if (!empty($categoryIds)) {
             $queryBuilder->innerJoin('d.categories', 'c')
-                         ->andWhere('c.id = :categoryId')
-                         ->setParameter('categoryId', $categoryId);
+                         ->andWhere('c.id IN (:categoryIds)')
+                         ->setParameter('categoryIds', $categoryIds);
         }
 
         $pagination = $paginator->paginate(
@@ -46,7 +46,7 @@ class DocumentationController extends AbstractController
         return $this->render('front/documentation/index.html.twig', [
             'pagination' => $pagination,
             'categories' => $categories,
-            'current_category' => $categoryId
+            'current_categories' => $categoryIds
         ]);
     }
 

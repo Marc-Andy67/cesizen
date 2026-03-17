@@ -1,0 +1,53 @@
+{#
+    Composant Card DSFR / DaisyUI
+    
+    Variables :
+    - title (string) : Titre de la carte
+    - content (string/html) : Contenu principal
+    - image (string) : URL de l'image d'illustration (optionnelle)
+    - image_alt (string) : Alt text obligatoire si image
+    - badge (string) : Texte du badge en haut (optionnel)
+    - badge_variant (string) : Variante du _badge.html.twig
+    - footer (string/html) : Actions/Boutons en bas de carte
+    - clickable_url (string) : Rend toute la carte cliquable (optionnel)
+#}
+
+<div class="card bg-base-100 shadow-sm border border-base-200 hover:shadow-md transition-shadow duration-300 overflow-hidden h-full group relative">
+    
+    {% if clickable_url|default(false) %}
+        <a href="{{ clickable_url }}" class="absolute inset-0 z-10 focus-visible:ring-4 focus-visible:ring-dsfr-blue-light focus-visible:ring-offset-2 outline-none rounded-none" aria-label="Lien vers {{ title }}">
+            <span class="sr-only">Lien vers {{ title }}</span>
+        </a>
+    {% endif %}
+
+    {% if image|default(false) %}
+        <figure class="aspect-video w-full bg-base-200 relative">
+            <img src="{{ image }}" alt="{{ image_alt|default('') }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            {% if badge|default(false) %}
+                <div class="absolute top-4 left-4 z-20">
+                    {{ include('components/_badge.html.twig', { label: badge, variant: badge_variant|default('new') }) }}
+                </div>
+            {% endif %}
+        </figure>
+    {% elseif badge|default(false) %}
+         <div class="px-6 pt-6 z-20 relative">
+            {{ include('components/_badge.html.twig', { label: badge, variant: badge_variant|default('new') }) }}
+        </div>
+    {% endif %}
+
+    <div class="card-body p-6 md:p-8 flex flex-col flex-grow z-20 relative pointer-events-none">
+        <h3 class="card-title text-xl font-bold text-base-content leading-tight mb-2">
+            {{ title }}
+        </h3>
+        
+        <div class="text-base-content/80 text-sm md:text-base leading-relaxed flex-grow">
+            {{ content|raw }}
+        </div>
+
+        {% if footer|default(false) %}
+            <div class="card-actions justify-end mt-6 pt-4 border-t border-base-200 pointer-events-auto">
+                {{ footer|raw }}
+            </div>
+        {% endif %}
+    </div>
+</div>

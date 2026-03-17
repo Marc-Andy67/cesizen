@@ -1,142 +1,162 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil - CESIZen{% endblock %}
+{% block title %}Mon Espace - CESIZen{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-    <!-- Header du Profil -->
-    <div class="bg-green-800 px-8 py-6 text-white flex justify-between items-center">
+<div class="py-8 md:py-12 max-w-7xl mx-auto space-y-8 animate-fade-in">
+
+    {# Header de section #}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-2 border-dsfr-blue pb-4">
         <div>
-            <h1 class="text-3xl font-bold">Mon Profil</h1>
-            <p class="text-green-200 mt-2">Gérez vos informations personnelles et vos préférences.</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-dsfr-blue tracking-tight">Mon Espace Personnel</h1>
+            <p class="text-base-content/70 mt-2 font-medium">Gérez vos informations personnelles, vos préférences et consultez l'historique de vos diagnostics.</p>
         </div>
         <div class="hidden md:block">
-            <svg class="w-16 h-16 text-green-600 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+            <svg class="w-12 h-12 text-dsfr-blue-light opacity-50" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
         </div>
     </div>
 
-    <div class="p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Historique des Diagnostics -->
-            <div class="md:col-span-3 mb-8">
-                <h2 class="text-xl font-semibold border-b border-gray-200 pb-2 mb-6 text-gray-800">Historique des évaluations de stress</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {# COLONNE PRINCIPALE : Historique #}
+        <div class="lg:col-span-2 space-y-8">
+            <section aria-labelledby="historique-title">
+                <h2 id="historique-title" class="text-2xl font-bold text-dsfr-blue mb-6">Mon historique d'évaluation</h2>
                 
                 {% if assessments is not empty %}
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <div class="relative h-64 md:h-80 w-full mb-6">
-                            <canvas id="stressHistoryChart"></canvas>
-                        </div>
-                        
-                        <div class="overflow-x-auto mt-6">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score LCU</th>
-                                        <th scope="col" class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Détails</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    {% for assessment in assessments %}
+                    <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm overflow-hidden">
+                        <div class="card-body p-6">
+                            
+                            <div class="relative h-64 md:h-80 w-full mb-8">
+                                <canvas id="stressHistoryChart" aria-label="Graphique d'évolution du niveau de stress" role="img"></canvas>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="table table-zebra w-full rounded-sm">
+                                    <caption class="sr-only">Historique détaillé de mes tests de stress</caption>
+                                    <thead class="bg-base-200 text-base-content">
                                         <tr>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ assessment.date|date('d/m/Y') }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ assessment.quiz.title }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-700">{{ assessment.totalScore }}</td>
-                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right">
-                                                <a href="{{ path('app_diagnostic_result', {'id': assessment.id}) }}" class="text-indigo-600 hover:text-indigo-900 transition-colors">Consulter</a>
-                                            </td>
+                                            <th scope="col" class="py-3 px-4 font-bold uppercase text-xs">Date</th>
+                                            <th scope="col" class="py-3 px-4 font-bold uppercase text-xs hidden sm:table-cell">Test</th>
+                                            <th scope="col" class="py-3 px-4 font-bold uppercase text-xs">Score LCU</th>
+                                            <th scope="col" class="py-3 px-4 font-bold uppercase text-xs text-right">Actions</th>
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {% for assessment in assessments %}
+                                            <tr class="hover">
+                                                <td class="px-4 py-3 font-medium">{{ assessment.date|date('d/m/Y') }}</td>
+                                                <td class="px-4 py-3 text-base-content/70 hidden sm:table-cell">{{ assessment.quiz.title }}</td>
+                                                <td class="px-4 py-3 font-bold text-dsfr-blue text-lg">{{ assessment.totalScore }}</td>
+                                                <td class="px-4 py-3 text-right">
+                                                    <a href="{{ path('app_diagnostic_result', {'id': assessment.id}) }}" class="btn btn-sm btn-outline text-dsfr-blue hover:bg-dsfr-blue transition-colors focus-visible:ring-2 focus-visible:ring-dsfr-blue outline-none border-dsfr-blue rounded-sm" aria-label="Consulter les détails du diagnostic du {{ assessment.date|date('d/m/Y') }}">Consulter</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 {% else %}
-                    <div class="bg-gray-50 px-6 py-10 rounded-lg border border-gray-200 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                        <p class="text-gray-500 mb-4">Vous n'avez passé aucun test de diagnostic pour le moment.</p>
-                        <a href="{{ path('app_diagnostic_index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 transition-colors">
-                            Passer un test
-                        </a>
-                    </div>
+                    {{ include('components/_empty_state.html.twig', {
+                        title: 'Aucun diagnostic trouvé',
+                        message: "Vous n'avez passé aucun test de diagnostic pour le moment.",
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />',
+                        action_label: 'Faire mon premier test',
+                        action_url: path('app_diagnostic_index')
+                    }) }}
                 {% endif %}
-            </div>
+            </section>
+        </div>
 
-            <!-- Formulaire de modification -->
-            <div class="md:col-span-2">
-                <h2 class="text-xl font-semibold border-b border-gray-200 pb-2 mb-6 text-gray-800">Mes informations</h2>
+        {# COLONNE SECONDAIRE : Paramètres #}
+        <div class="space-y-8">
+            <section aria-labelledby="infos-title">
+                <h2 id="infos-title" class="text-xl font-bold text-dsfr-blue border-b border-base-200 pb-2 mb-4">Mes informations</h2>
                 
-                {{ form_start(profileForm, {'attr': {'class': 'space-y-6'}}) }}
-                    
-                    <div>
-                        {{ form_label(profileForm.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-                        {{ form_widget(profileForm.name) }}
-                        <div class="text-sm text-red-600 mt-1">
-                            {{ form_errors(profileForm.name) }}
-                        </div>
+                <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
+                    <div class="card-body p-6">
+                        {{ form_start(profileForm, {'attr': {'class': 'flex flex-col gap-4'}}) }}
+                            
+                            <div class="form-control w-full">
+                                {{ form_label(profileForm.name, 'Nom ou pseudo (affiché)', {'label_attr': {'class': 'label pb-1 cursor-pointer font-bold'}}) }}
+                                {{ form_widget(profileForm.name, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm'}}) }}
+                                <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(profileForm.name) }}</div>
+                            </div>
+
+                            <div class="form-control w-full">
+                                {{ form_label(profileForm.email, 'Adresse de contact', {'label_attr': {'class': 'label pb-1 cursor-pointer font-bold'}}) }}
+                                {{ form_widget(profileForm.email, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm'}}) }}
+                                <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(profileForm.email) }}</div>
+                            </div>
+
+                            <div class="mt-2 text-right">
+                                {{ include('components/_button.html.twig', {
+                                    label: 'Mettre à jour',
+                                    variant: 'primary',
+                                    extra_classes: 'w-full md:w-auto'
+                                }) }}
+                            </div>
+                        {{ form_end(profileForm) }}
                     </div>
+                </div>
+            </section>
 
-                    <div>
-                        {{ form_label(profileForm.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-                        {{ form_widget(profileForm.email) }}
-                        <div class="text-sm text-red-600 mt-1">
-                            {{ form_errors(profileForm.email) }}
-                        </div>
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-                            Enregistrer les modifications
-                        </button>
-                    </div>
-
-                {{ form_end(profileForm) }}
-            </div>
-
-            <!-- Paramètres RGPD & Sécurité -->
-            <div>
-                <h2 class="text-xl font-semibold border-b border-gray-200 pb-2 mb-6 text-gray-800">Paramètres de sécurité</h2>
+            <section aria-labelledby="settings-title">
+                <h2 id="settings-title" class="text-xl font-bold text-dsfr-blue border-b border-base-200 pb-2 mb-4">Paramètres et Sécurité</h2>
                 
-                <div class="space-y-6">
-                    <!-- Exportation JSON -->
-                    <div class="bg-blue-50 p-4 rounded-md border border-blue-100">
-                        <h3 class="text-md font-medium text-blue-800 mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Exporter mes données
-                        </h3>
-                        <p class="text-sm text-blue-700 mb-4">Téléchargez toutes vos données personnelles au format JSON (RGPD).</p>
-                        <a href="{{ path('app_profile_export_data') }}" class="inline-flex w-full justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-blue-700 bg-white border border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                            Télécharger l'archive
-                        </a>
+                <div class="space-y-4">
+                    
+                    {# RGPD Export #}
+                    <div class="bg-blue-50 border-l-4 border-dsfr-blue p-4 rounded-r-sm shadow-sm flex flex-col items-start gap-2">
+                         <div class="flex items-center gap-2 text-dsfr-blue font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <h3>Mes données (RGPD)</h3>
+                        </div>
+                        <p class="text-sm text-dsfr-blue font-medium mb-2">Téléchargez l'ensemble de vos données d'utilisation personnelles (format JSON).</p>
+                        
+                        {{ include('components/_button.html.twig', {
+                            label: "Télécharger l'archive",
+                            variant: 'outline',
+                            size: 'sm',
+                            attr: 'href="' ~ path('app_profile_export_data') ~ '"'
+                        }) }}
                     </div>
                     
-                    <!-- Réinitialisation de mot de passe -->
-                    <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
-                        <h3 class="text-md font-medium text-gray-800 mb-2">Mot de passe</h3>
-                        <p class="text-sm text-gray-600 mb-4">Mettre à jour vos identifiants.</p>
-                        <a href="{{ path('app_forgot_password_request') }}" class="inline-flex w-full justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                    {# Password reset #}
+                    <div class="bg-base-100 border border-base-200 p-4 rounded-sm shadow-sm">
+                        <h3 class="font-bold text-base-content mb-1">Authentification</h3>
+                        <p class="text-sm text-base-content/70 mb-4">Modifier mon mot de passe via l'envoi d'un courriel.</p>
+                        
+                        <a href="{{ path('app_forgot_password_request') }}" class="btn btn-sm btn-neutral bg-white text-base-content hover:bg-base-200 border-base-300 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-dsfr-blue outline-none rounded-sm w-full md:w-auto">
                             Changer mon mot de passe
                         </a>
                     </div>
-
-                    <!-- Suppression de compte -->
-                    <div class="bg-red-50 p-4 rounded-md border border-red-100 mt-8">
-                        <h3 class="text-md font-medium text-red-800 mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            Zone de danger
-                        </h3>
-                        <p class="text-sm text-red-700 mb-4">Cette action anonymisera définitivement vos données. Elle est irréversible.</p>
+                    
+                    {# Danger Zone #}
+                    <div class="bg-red-50 border-l-4 border-dsfr-red p-4 rounded-r-sm shadow-sm flex flex-col items-start gap-2 mt-8">
+                         <div class="flex items-center gap-2 text-dsfr-red font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <h3>Zone de danger</h3>
+                        </div>
+                        <p class="text-sm text-dsfr-red font-medium mb-3">
+                            <span class="font-bold underline">Attention :</span> La suppression de compte est irréversible. Vos données personnelles seront anonymisées pour la recherche.
+                        </p>
                         
-                        <form method="post" action="{{ path('app_profile_delete') }}" onsubmit="return confirm('Êtes-vous absolument certain(e) de vouloir supprimer définitivement votre compte ? Cette action est irréversible et vos données associées seront anonymisées.');">
+                        <form method="post" action="{{ path('app_profile_delete') }}" onsubmit="return confirm('Êtes-vous absolument certain(e) de vouloir supprimer définitivement votre compte ? Cette action est irréversible et vos données associées seront anonymisées.');" class="w-full">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
-                            <button type="submit" class="w-full flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white border border-red-600 bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                                Supprimer mon compte
-                            </button>
+                            {{ include('components/_button.html.twig', {
+                                label: 'Supprimer définitivement',
+                                variant: 'danger',
+                                size: 'sm',
+                                extra_classes: 'w-full md:w-auto'
+                            }) }}
                         </form>
                     </div>
+
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </div>
@@ -159,13 +179,13 @@
                         datasets: [{
                             label: 'Score LCU (Niveau de Stress)',
                             data: dataPoints,
-                            borderColor: '#15803d', // Tailwind green-700
-                            backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                            borderColor: '#003189', // dsfr-blue
+                            backgroundColor: 'rgba(0, 49, 137, 0.1)',
                             borderWidth: 3,
-                            pointBackgroundColor: '#15803d',
+                            pointBackgroundColor: '#003189',
                             pointBorderColor: '#ffffff',
                             pointHoverBackgroundColor: '#ffffff',
-                            pointHoverBorderColor: '#15803d',
+                            pointHoverBorderColor: '#003189',
                             pointRadius: 5,
                             pointHoverRadius: 7,
                             fill: true,

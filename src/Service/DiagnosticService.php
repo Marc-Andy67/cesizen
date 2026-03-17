@@ -43,26 +43,23 @@ class DiagnosticService
     }
 
     /**
-     * Détermine le seuil de stress correspondant à un score.
+     * Détermine le palier de stress pour un score donné ET un quiz donné.
+     * Chaque quiz ayant ses propres paliers, on filtre par quiz.
      *
-     * @param int $score
-     * @return StressThreshold|null
+     * @param int  $score Score total calculé
+     * @param Quiz $quiz  Le quiz passé par l'utilisateur
+     *
+     * @return StressThreshold|null Le palier correspondant, null si aucun configuré
      */
-    public function getThresholdForScore(int $score): ?StressThreshold
+    public function getThresholdForScore(int $score, Quiz $quiz): ?StressThreshold
     {
-        // On récupère le seuil où le score est entre minScore et maxScore (ou juste >= minScore si maxScore est null)
-        $thresholds = $this->thresholdRepository->findBy([], ['minScore' => 'ASC']);
-        
-        foreach ($thresholds as $threshold) {
-            $min = $threshold->getMinScore();
+        foreach ($quiz->getStressThresholds() as $threshold) {
             $max = $threshold->getMaxScore();
-
-            if ($score >= $min && ($max === null || $score < $max)) {
+            if ($score >= $threshold->getMinScore() && ($max === null || $score <= $max)) {
                 return $threshold;
             }
         }
-
-        // Si aucun seuil ne correspond (ne devrait pas arriver avec une bonne conf)
+        
         return null;
     }
 

@@ -7,14 +7,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: QuizRepository::class)]
 class Quiz
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -49,15 +52,28 @@ class Quiz
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'quizzes')]
     private Collection $participants;
 
+    /**
+     * @var Collection<int, StressThreshold>
+     */
+    #[ORM\OneToMany(
+        targetEntity: StressThreshold::class, 
+        mappedBy: 'quiz', 
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    #[ORM\OrderBy(['minScore' => 'ASC'])]
+    private Collection $stressThresholds;
+
     public function __construct()
     {
         $this->assessments = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->participants = new ArrayCollection();
+        $this->stressThresholds = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
@@ -197,6 +213,36 @@ class Quiz
     {
         if ($this->participants->removeElement($participant)) {
             $participant->removeQuiz($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, StressThreshold>
+     */
+    public function getStressThresholds(): Collection
+    {
+        return $this->stressThresholds;
+    }
+
+    public function addStressThreshold(StressThreshold $stressThreshold): static
+    {
+        if (!$this->stressThresholds->contains($stressThreshold)) {
+            $this->stressThresholds->add($stressThreshold);
+            $stressThreshold->setQuiz($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStressThreshold(StressThreshold $stressThreshold): static
+    {
+        if ($this->stressThresholds->removeElement($stressThreshold)) {
+            // set the owning side to null (unless already changed)
+            if ($stressThreshold->getQuiz() === $this) {
+                $stressThreshold->setQuiz(null);
+            }
         }
 
         return $this;

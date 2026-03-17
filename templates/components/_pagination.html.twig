@@ -1,42 +1,64 @@
-{# templates/components/_pagination.html.twig (Template KnpPaginator) #}
-{% if pageCount > 1 %}
-    <nav aria-label="Pagination" class="flex justify-center mt-6">
-        <ul class="inline-flex -space-x-px text-sm items-center shadow-sm">
-            {% if previous is defined %}
-                <li>
-                    <a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page précédente">
-                        <span class="sr-only">Précédent</span>
-                        <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                </li>
+{#
+    Composant Pagination DSFR / DaisyUI
+    
+    Variables attendues :
+    - route (string) : Nom de la route Symfony pour les liens
+    - route_params (array) : Paramètres existants de la route (optionnel)
+    - current_page (int) : Page actuelle
+    - total_pages (int) : Nombre total de pages
+#}
+
+{% if total_pages is defined and total_pages > 1 %}
+    {% set route_params = route_params|default({}) %}
+    
+    <nav role="navigation" aria-label="Pagination" class="flex justify-center mt-10 mb-8 w-full">
+        <div class="join overflow-x-auto shadow-sm pb-2 sm:pb-0 block sm:flex">
+            {# FIXME: Pour simplifier le composant, on affiche Précédent / 1 2 3 / Suivant de façon basique #}
+            
+            {# Bouton Précédent #}
+            {% if current_page > 1 %}
+                <a href="{{ path(route, route_params|merge({page: current_page - 1})) }}" 
+                   class="join-item btn btn-outline btn-sm text-dsfr-blue border-base-300 hover:bg-dsfr-blue transition-colors outline-none focus-visible:ring-2 focus-visible:ring-dsfr-blue-light focus-visible:z-10"
+                   aria-label="Aller à la page précédente">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    <span class="hidden sm:inline">Précédent</span>
+                </a>
+            {% else %}
+                <button class="join-item btn btn-outline btn-sm border-base-300 btn-disabled" aria-disabled="true" tabindex="-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    <span class="hidden sm:inline">Précédent</span>
+                </button>
             {% endif %}
 
-            {% for page in pagesInRange %}
-                <li>
-                    {% if page != current %}
-                        <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page {{ page }}">
-                            {{ page }}
-                        </a>
-                    {% else %}
-                        <span aria-current="page" class="flex items-center justify-center px-3 h-8 text-green-800 border border-gray-300 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10">
-                            {{ page }}
-                        </span>
-                    {% endif %}
-                </li>
+            {# Numéros de pages #}
+            {% for i in 1..total_pages %}
+                {# Logique très simple : on montre toujours la première, la dernière, et les pages autour de la courante #}
+                {% if i == 1 or i == total_pages or (i >= current_page - 1 and i <= current_page + 1) %}
+                    <a href="{{ path(route, route_params|merge({page: i})) }}" 
+                       class="join-item btn btn-sm border-base-300 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-dsfr-blue-light focus-visible:z-10 {{ current_page == i ? 'btn-active bg-dsfr-blue text-white hover:bg-dsfr-blue-light border-dsfr-blue' : 'btn-outline text-dsfr-blue hover:bg-dsfr-blue' }}"
+                       {% if current_page == i %}aria-current="page"{% else %}aria-label="Aller à la page {{ i }}"{% endif %}
+                       title="Page {{ i }}">
+                        {{ i }}
+                    </a>
+                {% elseif (i == 2 and current_page > 3) or (i == total_pages - 1 and current_page < total_pages - 2) %}
+                    <button class="join-item btn btn-sm btn-disabled border-base-300" aria-hidden="true">...</button>
+                {% endif %}
             {% endfor %}
 
-            {% if next is defined %}
-                <li>
-                    <a rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:z-10" aria-label="Page suivante">
-                        <span class="sr-only">Suivant</span>
-                        <svg class="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                </li>
+            {# Bouton Suivant #}
+            {% if current_page < total_pages %}
+                <a href="{{ path(route, route_params|merge({page: current_page + 1})) }}" 
+                   class="join-item btn btn-outline btn-sm text-dsfr-blue border-base-300 hover:bg-dsfr-blue transition-colors outline-none focus-visible:ring-2 focus-visible:ring-dsfr-blue-light focus-visible:z-10"
+                   aria-label="Aller à la page suivante">
+                    <span class="hidden sm:inline">Suivant</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </a>
+            {% else %}
+                <button class="join-item btn btn-outline btn-sm border-base-300 btn-disabled" aria-disabled="true" tabindex="-1">
+                    <span class="hidden sm:inline">Suivant</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
             {% endif %}
-        </ul>
+        </div>
     </nav>
 {% endif %}

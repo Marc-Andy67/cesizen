@@ -1,22 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reset your password{% endblock %}
+{% block title %}Mot de passe oublié - CESIZen{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
-    <h1>Reset your password</h1>
+<div class="flex justify-center items-center py-12 md:py-20 animate-fade-in">
+    <div class="card bg-base-100 shadow-sm border border-base-200 w-full max-w-lg rounded-sm">
+        <div class="card-body p-8 sm:p-10">
+            
+            <h1 class="text-3xl font-extrabold text-dsfr-blue mb-2 tracking-tight">Mot de passe oublié ?</h1>
+            <p class="text-base-content/70 mb-8 font-medium">Saisissez l'adresse électronique liée à votre compte. Nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
-            <small>
-                Enter your email address, and we will send you a
-                link to reset your password.
-            </small>
+            {% for flash_error in app.flashes('reset_password_error') %}
+                {{ include('components/_alert.html.twig', {
+                    message: flash_error,
+                    type: 'error'
+                }) }}
+            {% endfor %}
+
+            {{ form_start(requestForm, {'attr': {'class': 'flex flex-col gap-5'}}) }}
+                
+                <div class="form-control w-full">
+                    {{ form_label(requestForm.email, 'Adresse électronique', {'label_attr': {'class': 'label pb-1'}}) }}
+                    {{ form_widget(requestForm.email, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm', 'placeholder': 'jean.dupont@exemple.fr', 'autocomplete': 'email'}}) }}
+                    <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(requestForm.email) }}</div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-base-200">
+                     <button type="submit" class="btn btn-primary w-full text-white hover:bg-dsfr-blue-light border-none font-bold rounded-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-dsfr-blue-light focus-visible:ring-offset-2 outline-none">
+                        M'envoyer le lien de réinitialisation
+                    </button>
+                </div>
+            {{ form_end(requestForm) }}
+            
+            <div class="text-center mt-6 text-sm font-medium text-base-content/80">
+                <a href="{{ path('app_login') }}" class="text-dsfr-blue font-bold hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-blue-light outline-none rounded-sm transition-colors">← Retour à la connexion</a>
+            </div>
+            
         </div>
-
-        <button class="btn btn-primary">Send password reset email</button>
-    {{ form_end(requestForm) }}
+    </div>
+</div>
 {% endblock %}

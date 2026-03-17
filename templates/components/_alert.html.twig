@@ -1,0 +1,35 @@
+{#
+    Composant Alert DSFR / DaisyUI (Flash messages ou infos contextuelles)
+    
+    Variables :
+    - message (string/html) : Le texte de l'alerte
+    - type (string) : success, warning, error, info (défaut)
+    - dismissible (bool) : Ajouter un bouton de fermeture
+#}
+
+{% set alert_types = {
+    'success': { 'class': 'alert-success bg-green-50 border-dsfr-green text-dsfr-green', 'icon': '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />' },
+    'warning': { 'class': 'alert-warning bg-orange-50 border-dsfr-warning text-dsfr-warning', 'icon': '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />' },
+    'error':   { 'class': 'alert-error bg-red-50 border-dsfr-red text-dsfr-red', 'icon': '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />' },
+    'info':    { 'class': 'alert-info bg-blue-50 border-dsfr-blue text-dsfr-blue', 'icon': '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />' }
+} %}
+
+{% set alert_type = type|default('info') %}
+{% set alert_style = alert_types[alert_type]|default(alert_types['info']) %}
+{% set is_dismissible = dismissible|default(false) %}
+
+<div role="alert" class="alert {{ alert_style.class }} rounded-sm border-l-4 border-y-0 border-r-0 shadow-sm p-4 text-sm font-medium flex items-start gap-3">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    {{ alert_style.icon|raw }}
+  </svg>
+  
+  <div class="flex-grow pt-0.5">
+    {{ message|raw }}
+  </div>
+
+  {% if is_dismissible %}
+      <button class="btn btn-sm btn-ghost btn-circle shrink-0 -mt-1 -mr-2 text-current outline-none focus-visible:ring-2 focus-visible:ring-current transition-colors" onclick="this.parentElement.remove();" aria-label="Fermer le message">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+  {% endif %}
+</div>

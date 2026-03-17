@@ -1,31 +1,27 @@
-{# This expects a 'breadcrumbs' variable which is an array of objects/arrays with 'label' and optional 'url' #}
-<nav aria-label="Fil d'Ariane" class="mb-4">
-    <ol class="flex items-center space-x-2 text-sm text-gray-600">
-        <li>
-            <a href="{{ path('app_home') }}" class="hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1 transition-colors">
-                <span class="sr-only">Accueil</span>
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
-            </a>
-        </li>
-        {% if breadcrumbs is defined %}
-            {% for item in breadcrumbs %}
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                        </svg>
-                        {% if loop.last or not item.url %}
-                            <span class="ml-2 text-gray-800 font-medium" aria-current="page">{{ item.label }}</span>
-                        {% else %}
-                            <a href="{{ item.url }}" class="ml-2 hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1 transition-colors">
-                                {{ item.label }}
-                            </a>
-                        {% endif %}
-                    </div>
+{#
+    Composant Breadcrumb (Fil d'Ariane) DSFR / DaisyUI
+    
+    Variables :
+    - items (array) : Tableau d'objets ou tableaux associatifs. 
+                      Ex: [{ label: 'Accueil', url: path('app_home') }, { label: 'Titre de la page' }]
+#}
+
+{% if items is defined and items|length > 0 %}
+<nav aria-label="Vous êtes ici :" class="text-sm text-base-content/70 mt-4 mb-6" data-component="breadcrumb">
+    <div class="breadcrumbs">
+        <ul class="flex flex-wrap items-center">
+            {% for item in items %}
+                <li class="flex items-center">
+                    {% if not loop.last and item.url is defined and item.url %}
+                        <a href="{{ item.url }}" class="hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-blue-light outline-none rounded-sm transition-all duration-200">
+                            {{ item.label }}
+                        </a>
+                    {% else %}
+                        <span class="font-bold text-base-content" aria-current="page">{{ item.label }}</span>
+                    {% endif %}
                 </li>
             {% endfor %}
-        {% endif %}
-    </ol>
+        </ul>
+    </div>
 </nav>
+{% endif %}

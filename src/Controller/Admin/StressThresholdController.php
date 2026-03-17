@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\StressThreshold;
 use App\Form\StressThresholdType;
+use App\Repository\QuizRepository;
 use App\Repository\StressThresholdRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -20,40 +21,31 @@ class StressThresholdController extends AbstractCrudController
     public function index(
         Request $request, 
         StressThresholdRepository $repository,
+        QuizRepository $quizRepository,
         PaginatorInterface $paginator
     ): Response {
         $queryBuilder = $repository->createQueryBuilder('s')
-            ->orderBy('s.minScore', 'ASC');
+            ->leftJoin('s.quiz', 'q')
+            ->addSelect('q')
+            ->orderBy('q.title', 'ASC')
+            ->addOrderBy('s.minScore', 'ASC');
+
+        $quizId = $request->query->get('quiz_id');
+        if ($quizId) {
+            $queryBuilder->andWhere('s.quiz = :quizId')
+                         ->setParameter('quizId', $quizId);
+        }
 
         $pagination = $paginator->paginate(
             $queryBuilder,
             $request->query->getInt('page', 1),
-            10
+            20
         );
 
         return $this->render('admin/stress_threshold/index.html.twig', [
             'pagination' => $pagination,
-        ]);
-    }
-
-    // Note: Normalement ces seuils sont fixes en BDD. On permet juste l'édition ici.
-    // La création est bloquée car ils sont liés au code (Stratégies).
-    
-    #[Route('/{id}/editer', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(StressThreshold $threshold, Request $request, EntityManagerInterface $em): Response
-    {
-        $form = $this->createForm(StressThresholdType::class, $threshold);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
-            $this->addSuccessFlash('Seuil de stress modifié avec succès.');
-            return $this->redirectToRoute('app_admin_stress_threshold_index');
-        }
-
-        return $this->render('admin/stress_threshold/edit.html.twig', [
-            'threshold' => $threshold,
-            'form' => $form->createView(),
+            'quizzes'    => $quizRepository->findAll(),
+            'current_quiz_id' => $quizId,
         ]);
     }
 }

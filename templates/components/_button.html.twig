@@ -1,0 +1,74 @@
+{# 
+    Composant Bouton DSFR / DaisyUI 
+    
+    Variables :
+    - label (string) : Texte du bouton
+    - variant (string) : primary (défaut), secondary, danger, outline
+    - size (string) : sm, md (défaut), lg
+    - icon (string) : SVG de l'icône (optionnel)
+    - type (string) : button, submit (défaut), reset
+    - is_loading (bool) : Affiche le spinner DaisyUI si true
+    - extra_classes (string) : Classes CSS supplémentaires
+    - attr (html attributes block) : attributs supplémentaires (href, disabled, etc.)
+#}
+
+{% set variant_classes = {
+    'primary': 'btn-primary text-white hover:bg-dsfr-blue-light border-none',
+    'secondary': 'btn-neutral bg-white text-dsfr-blue border border-dsfr-blue hover:bg-dsfr-blue hover:text-white',
+    'danger': 'btn-error text-white',
+    'outline': 'btn-outline text-dsfr-blue border-dsfr-blue hover:bg-dsfr-blue hover:text-white hover:border-dsfr-blue'
+} %}
+
+{% set size_classes = {
+    'sm': 'btn-sm text-sm px-4',
+    'md': 'btn-md px-6',
+    'lg': 'btn-lg px-8 text-lg'
+} %}
+
+{% set base_classes = 'btn font-bold rounded-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-dsfr-blue-light focus-visible:ring-offset-2 outline-none' %}
+{% set btn_variant = variant|default('primary') %}
+{% set btn_size = size|default('md') %}
+{% set btn_type = type|default('submit') %}
+
+{# Construction des classes #}
+{% set final_classes = [
+    base_classes,
+    variant_classes[btn_variant]|default(variant_classes['primary']),
+    size_classes[btn_size]|default(size_classes['md']),
+    extra_classes|default('')
+]|join(' ')|trim %}
+
+{# Vérifie si un href est fourni dans l'attribut attr pour rendre un lien #}
+{% set is_link = false %}
+{% if attr|default('') is not empty and 'href=' in attr %}
+    {% set is_link = true %}
+{% endif %}
+
+{% if is_link %}
+<a class="{{ final_classes }}"
+   {% if is_loading|default(false) %}disabled{% endif %}
+   {{ attr|default('')|raw }}>
+    
+    {% if is_loading|default(false) %}
+        <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
+    {% elseif icon|default(false) %}
+        <span class="mr-2 w-5 h-5 flex items-center justify-center">{{ icon|raw }}</span>
+    {% endif %}
+    
+    {{ label }}
+</a>
+{% else %}
+<button type="{{ btn_type }}" 
+        class="{{ final_classes }}"
+        {% if is_loading|default(false) %}disabled{% endif %}
+        {{ attr|default('')|raw }}>
+    
+    {% if is_loading|default(false) %}
+        <span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
+    {% elseif icon|default(false) %}
+        <span class="mr-2 w-5 h-5 flex items-center justify-center">{{ icon|raw }}</span>
+    {% endif %}
+    
+    {{ label }}
+</button>
+{% endif %}

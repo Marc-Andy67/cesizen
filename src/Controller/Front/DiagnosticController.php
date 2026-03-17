@@ -18,15 +18,10 @@ class DiagnosticController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(QuizRepository $quizRepository): Response
     {
-        // On récupère le test de Holmes et Rahe (le premier quiz actif)
-        $quiz = $quizRepository->findOneBy(['isActive' => true]);
-
-        if (!$quiz) {
-            return $this->render('front/diagnostic/unavailable.html.twig');
-        }
+        $quizzes = $quizRepository->findBy(['isActive' => true]);
 
         return $this->render('front/diagnostic/index.html.twig', [
-            'quiz' => $quiz,
+            'quizzes' => $quizzes,
         ]);
     }
 
@@ -48,7 +43,7 @@ class DiagnosticController extends AbstractController
 
             // Calcul du score via le service
             $score = $diagnosticService->calculateScore($submittedResponses);
-            $threshold = $diagnosticService->getThresholdForScore($score);
+            $threshold = $diagnosticService->getThresholdForScore($score, $quiz);
 
             // Si l'utilisateur est connecté, on sauvegarde son résultat (Assessment complet)
             if ($this->getUser()) {
@@ -112,7 +107,7 @@ class DiagnosticController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez pas voir ce résultat.');
         }
 
-        $threshold = $diagnosticService->getThresholdForScore($assessment->getTotalScore());
+        $threshold = $diagnosticService->getThresholdForScore($assessment->getTotalScore(), $assessment->getQuiz());
 
         return $this->render('front/diagnostic/result.html.twig', [
             'assessment' => $assessment,

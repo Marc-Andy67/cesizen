@@ -5,14 +5,17 @@ namespace App\Entity;
 use App\Repository\StressThresholdRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: StressThresholdRepository::class)]
 class StressThreshold
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $level = null;
@@ -32,7 +35,11 @@ class StressThreshold
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice = null;
 
-    public function getId(): ?int
+    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: 'stressThresholds')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Quiz $quiz = null;
+
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
@@ -100,6 +107,17 @@ class StressThreshold
     public function setAdvice(string $advice): static
     {
         $this->advice = $advice;
+        return $this;
+    }
+
+    public function getQuiz(): ?Quiz
+    {
+        return $this->quiz;
+    }
+
+    public function setQuiz(?Quiz $quiz): static
+    {
+        $this->quiz = $quiz;
         return $this;
     }
 }

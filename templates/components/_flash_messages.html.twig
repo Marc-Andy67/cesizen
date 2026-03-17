@@ -1,14 +1,22 @@
+{#
+    Composant qui lit automatiquement les messages flash de la session Symfony
+    et les affiche en utilisant _alert.html.twig.
+#}
+
 {% for label, messages in app.flashes %}
-    {% for message in messages %}
-        <div class="p-4 mb-4 rounded-lg flex items-center shadow-sm 
-            {% if label == 'success' %}bg-green-50 text-green-800 border-l-4 border-green-500
-            {% elseif label == 'error' %}bg-red-50 text-red-800 border-l-4 border-red-500
-            {% elseif label == 'warning' %}bg-yellow-50 text-yellow-800 border-l-4 border-yellow-500
-            {% else %}bg-blue-50 text-blue-800 border-l-4 border-blue-500{% endif %}" 
-            role="alert" aria-live="polite">
-            <div class="ml-3 text-sm font-medium">
-                {{ message }}
-            </div>
-        </div>
-    {% endfor %}
+    {# Mappons les labels Symfony standards vers les types de notre composant Alert #}
+    {% set alert_type = label %}
+    {% if label == 'danger' %}
+        {% set alert_type = 'error' %}
+    {% endif %}
+
+    <div class="mb-4 animate-fade-in">
+        {% for message in messages %}
+            {{ include('components/_alert.html.twig', {
+                message: message,
+                type: alert_type,
+                dismissible: true
+            }) }}
+        {% endfor %}
+    </div>
 {% endfor %}

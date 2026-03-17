@@ -4,9 +4,9 @@ namespace App\Form;
 
 use App\Entity\Question;
 use App\Entity\Response as QuizResponse;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,24 +18,20 @@ class ResponseType extends AbstractType
     {
         $builder
             ->add('description', TextareaType::class, [
-                'label' => 'Intitulé de la réponse (ex: "Oui", "Plusieurs fois", "Jamais")',
+                'label' => 'Intitulé de la réponse',
+                'required' => true,
             ])
             ->add('points', IntegerType::class, [
-                'label' => 'Points LCU (Life Change Units)',
+                'label' => 'Points',
+                'required' => true,
+                'attr' => [
+                    'min' => 0
+                ]
             ])
-            ->add('position', IntegerType::class, [
-                'label' => 'Ordre d\'affichage',
-                'required' => false,
-                'data' => 1
-            ])
+            ->add('position', HiddenType::class)
             ->add('isActive', CheckboxType::class, [
-                'label' => 'Actif',
+                'label' => 'Active',
                 'required' => false,
-            ])
-            ->add('question', EntityType::class, [
-                'class' => Question::class,
-                'choice_label' => 'title',
-                'label' => 'Question rattachée'
             ])
         ;
     }

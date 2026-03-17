@@ -3,10 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Question;
-use App\Entity\Quiz;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,7 +17,7 @@ class QuestionType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Titre (L\'événement Holmes & Rahe)'
+                'label' => 'Intitulé de la question'
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description (Optionnel)',
@@ -28,13 +27,15 @@ class QuestionType extends AbstractType
                 'label' => 'Actif',
                 'required' => false,
             ])
-            ->add('quizzes', EntityType::class, [
-                'class' => Quiz::class,
-                'choice_label' => 'title',
-                'multiple' => true,
-                'expanded' => true,
-                'label' => 'Lier à des questionnaires',
-                'required' => false,
+            ->add('responses', CollectionType::class, [
+                'entry_type' => ResponseType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => 'Réponses',
+                'attr' => [
+                    'data-min-responses' => 2
+                ]
             ])
         ;
     }

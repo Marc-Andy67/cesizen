@@ -1,0 +1,22 @@
+{#
+    Composant Badge DSFR / DaisyUI
+    
+    Variables :
+    - label (string) : Texte du badge
+    - variant (string) : success, warning, error, info, new, neutral (défaut)
+#}
+
+{% set variants = {
+    'success': 'badge-success text-success font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'warning': 'badge-warning text-warning-content font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'error': 'badge-error text-error-content font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'info': 'badge-info text-primary bg-primary/10 border-none font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'new': 'badge-primary text-primary-content bg-primary border-none font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'neutral': 'badge-neutral text-base-content bg-base-200 border-none font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide'
+} %}
+
+{% set badge_variant = variant|default('neutral') %}
+
+<span class="badge {{ variants[badge_variant]|default(variants['neutral']) }}">
+    {{ label }}
+</span>

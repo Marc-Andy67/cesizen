@@ -2,44 +2,46 @@
 
 {% block admin_content %}
     <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Configuration des Seuils de Stress</h1>
-        <p class="text-gray-600 mt-2">Définit les paliers de stress et les recommandations qui s'afficheront après le questionnaire de Holmes & Rahe.</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-dsfr-blue tracking-tight">Configuration des Seuils de Stress</h1>
+        <p class="text-base-content/70 mt-2 font-medium">Définit les paliers de stress et les recommandations qui s'afficheront après le questionnaire de Holmes & Rahe.</p>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow min-h-[400px]">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <div class="overflow-x-auto rounded-sm border border-base-200">
+        <table class="table table-zebra table-sm md:table-md w-full">
+            <thead class="bg-base-200 text-base-content">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom public</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score Min</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score Max</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recommandation</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th class="font-bold text-[0.8rem] uppercase tracking-wider">Nom public</th>
+                    <th class="font-bold text-[0.8rem] uppercase tracking-wider">Score Min</th>
+                    <th class="font-bold text-[0.8rem] uppercase tracking-wider">Score Max</th>
+                    <th class="font-bold text-[0.8rem] uppercase tracking-wider">Recommandation</th>
+                    <th class="font-bold text-[0.8rem] uppercase tracking-wider text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody>
                 {% for item in pagination %}
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4">
-                            <span class="font-medium text-gray-900">{{ item.name }}</span>
-                            <span class="text-xs text-gray-400 block">{{ item.level }}</span>
+                    <tr class="hover">
+                        <td>
+                            <span class="font-bold text-base-content">{{ item.name }}</span>
+                            <span class="text-xs text-base-content/60 block font-medium">{{ item.level }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="font-bold text-indigo-600">{{ item.minScore }}</span>
+                        <td>
+                            <span class="font-extrabold text-dsfr-blue">{{ item.minScore }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="font-bold text-indigo-600">{{ item.maxScore|default('∞') }}</span>
+                        <td>
+                            <span class="font-extrabold text-dsfr-blue">{{ item.maxScore|default('∞') }}</span>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="text-sm text-gray-600 block w-64 truncate">{{ item.advice }}</span>
+                        <td>
+                            <span class="text-sm text-base-content/80 block w-64 truncate">{{ item.advice }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ path('app_admin_stress_threshold_edit', {'id': item.id}) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded transition-colors inline-block mr-2">Éditer</a>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ path('app_admin_stress_threshold_edit', {'id': item.id}) }}" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-blue font-medium">Éditer</a>
+                            </div>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                        <td colspan="5" class="py-12 text-center text-base-content/60 font-medium">
                             Aucun seuil configuré. Veuillez exécuter les fixtures.
                         </td>
                     </tr>
@@ -48,7 +50,9 @@
         </table>
     </div>
 
-    <div class="mt-4">
-        {{ knp_pagination_render(pagination, 'components/_pagination.html.twig') }}
-    </div>
+    {% if pagination.getTotalItemCount > 0 %}
+        <div class="mt-6 flex justify-center">
+            {{ knp_pagination_render(pagination, 'components/_pagination.html.twig') }}
+        </div>
+    {% endif %}
 {% endblock %}

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\StressThreshold;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,18 +16,23 @@ class StressThresholdType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('level', TextType::class, [
-                'label' => 'Identifiant technique (ex: LowStress)',
-                'disabled' => true, // L'identifiant correspond aux classes Strategy
-            ])
             ->add('name', TextType::class, [
-                'label' => 'Nom public (ex: Stress mineur)',
+                'label' => 'Nom du niveau',
+            ])
+            ->add('level', ChoiceType::class, [
+                'label' => 'Niveau / Gravité',
+                'choices' => [
+                    'Faible' => 'faible',
+                    'Modéré' => 'modere',
+                    'Élevé' => 'eleve',
+                    'Très Élevé' => 'tres_eleve'
+                ]
             ])
             ->add('minScore', IntegerType::class, [
                 'label' => 'Score minimum (inclus)',
             ])
             ->add('maxScore', IntegerType::class, [
-                'label' => 'Score maximum (exclu, optionnel)',
+                'label' => 'Score max (vide = illimité)',
                 'required' => false,
             ])
             ->add('description', TextareaType::class, [

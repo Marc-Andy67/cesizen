@@ -1,55 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Évaluer mon stress - CESIZen{% endblock %}
+{% block title %}Questionnaires Santé & Évaluation - CESIZen{% endblock %}
 
 {% block body %}
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="bg-white shadow-xl rounded-2xl overflow-hidden mb-8 border border-green-100">
-        <div class="bg-gradient-to-r from-green-800 to-green-600 px-6 py-10 md:py-16 text-center text-white">
-            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">{{ quiz.title }}</h1>
-            <p class="text-lg md:text-xl text-green-100 max-w-2xl mx-auto font-medium">Découvrez votre niveau d'exposition au stress en fonction des événements récents de votre vie.</p>
-        </div>
-        
-        <div class="p-6 md:p-10">
-            {% if quiz.description %}
-            <div class="prose prose-lg prose-green max-w-none mb-10 text-gray-700">
-                {{ quiz.description|nl2br }}
-            </div>
-            {% else %}
-            <div class="prose prose-lg prose-green max-w-none mb-10 text-gray-700">
-                <p>L'échelle d'évaluation de réajustement social (Échelle de Holmes et Rahe) aide à évaluer l'impact des événements de vie majeurs sur votre niveau de stress et de santé globale.</p>
-                <p>Cochez simplement les événements qui vous sont arrivés au cours des <strong>12 derniers mois</strong>. Si un événement exceptionnel s'est produit plus d'une fois, cochez-le quand même une seule fois.</p>
-            </div>
-            {% endif %}
+<div class="py-8 md:py-12 max-w-6xl mx-auto px-4 space-y-8 animate-fade-in">
 
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-10 rounded-r-lg">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-blue-700">
-                            <strong>Note :</strong> Ce questionnaire est un outil d'auto-évaluation et ne remplace pas une consultation ou un avis médical professionnel.
-                        </p>
+    {# HEADER #}
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-dsfr-blue tracking-tight mb-4">Évaluez votre santé mentale</h1>
+        <p class="text-lg md:text-xl text-base-content/80 font-medium max-w-3xl mx-auto">Parcourez nos différents questionnaires d'auto-évaluation pour mieux comprendre votre niveau de stress, d'anxiété ou votre équilibre de vie.</p>
+    </div>
+
+    {# GRID DES QUESTIONNAIRES #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for quiz in quizzes %}
+            
+            {% set footerButton %}
+                {{ include('components/_button.html.twig', {
+                    label: 'Démarrer le test',
+                    variant: 'primary',
+                    attr: 'href="' ~ path('app_diagnostic_take', {'id': quiz.id}) ~ '"',
+                    icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>'
+                }) }}
+            {% endset %}
+            
+            {% set categoriesList %}
+                <div class="flex flex-wrap gap-2 mt-4">
+                    {% for category in quiz.categories %}
+                        {{ include('components/_badge.html.twig', {
+                            label: category.name,
+                            variant: 'info'
+                        }) }}
+                    {% endfor %}
+                </div>
+            {% endset %}
+
+            {{ include('components/_card.html.twig', {
+                title: quiz.title,
+                content: quiz.description|nl2br|slice(0, 150) ~ '...',
+                footer: categoriesList ~ '<div class="mt-6">' ~ footerButton ~ '</div>',
+                shadow: 'md',
+                border: true
+            }) }}
+        {% else %}
+            {# Empty State #}
+            <div class="col-span-full">
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-6 md:p-10 text-center">
+                        <div class="mb-6 flex justify-center text-base-content/40">
+                            <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-dsfr-blue mb-4">Aucun questionnaire disponible</h2>
+                        <p class="text-base-content/80 font-medium">Revenez plus tard pour découvrir nos nouveaux tests d'auto-évaluation.</p>
                     </div>
                 </div>
             </div>
-
-            <div class="text-center">
-                <a href="{{ path('app_diagnostic_take', {'id': quiz.id}) }}" class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-bold rounded-full shadow-lg text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform hover:-translate-y-1 transition-all duration-200">
-                    Commencer le questionnaire
-                    <svg class="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                </a>
-                
-                {% if not app.user %}
-                <p class="mt-4 text-sm text-gray-500">
-                    <a href="{{ path('app_login') }}" class="text-green-600 font-medium hover:underline">Connectez-vous</a> pour sauvegarder votre résultat dans votre historique.
-                </p>
-                {% endif %}
-            </div>
-        </div>
+        {% endfor %}
     </div>
+
+    <div class="mt-12 text-center max-w-2xl mx-auto">
+        {{ include('components/_alert.html.twig', {
+            message: "<strong>Note importante :</strong> Nos questionnaires sont des outils d'auto-évaluation à titre indicatif. Ils ne remplacent en aucun cas un diagnostic ou un avis médical professionnel fourni par un praticien (médecin, psychologue...).",
+            type: 'info'
+        }) }}
+    </div>
+
 </div>
 {% endblock %}

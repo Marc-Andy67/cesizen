@@ -43,6 +43,6 @@ class ApplicationFlowTest extends PantherTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h1', 'Évaluation');
-        $this->assertSelectorExists('a.bg-green-700'); // "Commencer le questionnaire" button
+        $this->assertSelectorTextContains('a.btn-primary', 'Démarrer le test'); // "Démarrer le test" button
     }
 }

@@ -88,6 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -100,12 +101,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
+
         return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
         return $this;
     }
 
@@ -117,10 +120,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
         return $this;
     }
 
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function getName(): ?string
     {
@@ -130,6 +136,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -141,6 +148,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastConnection(?\DateTimeImmutable $lastConnection): static
     {
         $this->lastConnection = $lastConnection;
+
         return $this;
     }
 
@@ -152,6 +160,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreationDate(\DateTimeImmutable $creationDate): static
     {
         $this->creationDate = $creationDate;
+
         return $this;
     }
 
@@ -163,6 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFailedAttempt(?int $failedAttempt): static
     {
         $this->failedAttempt = $failedAttempt;
+
         return $this;
     }
 
@@ -174,6 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLockedUntil(?\DateTimeImmutable $lockedUntil): static
     {
         $this->lockedUntil = $lockedUntil;
+
         return $this;
     }
 
@@ -185,6 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -199,6 +211,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->assessments->add($assessment);
             $assessment->setOwner($this);
         }
+
         return $this;
     }
 
@@ -209,6 +222,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $assessment->setOwner(null);
             }
         }
+
         return $this;
     }
 
@@ -222,12 +236,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->documentations->contains($documentation)) {
             $this->documentations->add($documentation);
         }
+
         return $this;
     }
 
     public function removeDocumentation(Documentation $documentation): static
     {
         $this->documentations->removeElement($documentation);
+
         return $this;
     }
 
@@ -241,12 +257,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->quizzes->contains($quiz)) {
             $this->quizzes->add($quiz);
         }
+
         return $this;
     }
 
     public function removeQuiz(Quiz $quiz): static
     {
         $this->quizzes->removeElement($quiz);
+
         return $this;
     }
 }

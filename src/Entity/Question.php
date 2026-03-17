@@ -64,6 +64,7 @@ class Question
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -75,6 +76,7 @@ class Question
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -86,6 +88,7 @@ class Question
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -100,6 +103,7 @@ class Question
             $this->responses->add($response);
             $response->setQuestion($this);
         }
+
         return $this;
     }
 
@@ -110,6 +114,7 @@ class Question
                 $response->setQuestion(null);
             }
         }
+
         return $this;
     }
 
@@ -124,6 +129,7 @@ class Question
             $this->quizzes->add($quiz);
             $quiz->addQuestion($this);
         }
+
         return $this;
     }
 
@@ -132,6 +138,7 @@ class Question
         if ($this->quizzes->removeElement($quiz)) {
             $quiz->removeQuestion($this);
         }
+
         return $this;
     }
 }

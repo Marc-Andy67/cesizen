@@ -16,13 +16,13 @@ class DocumentationController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         DocumentationRepository $documentationRepository,
         CategoryRepository $categoryRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $categoryIds = $request->query->all('categories');
-        
+
         // On ne récupère que les documentations actives
         $queryBuilder = $documentationRepository->createQueryBuilder('d')
             ->where('d.isActive = :active')
@@ -46,7 +46,7 @@ class DocumentationController extends AbstractController
         return $this->render('front/documentation/index.html.twig', [
             'pagination' => $pagination,
             'categories' => $categories,
-            'current_categories' => $categoryIds
+            'current_categories' => $categoryIds,
         ]);
     }
 

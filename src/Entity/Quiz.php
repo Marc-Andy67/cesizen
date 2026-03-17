@@ -56,8 +56,8 @@ class Quiz
      * @var Collection<int, StressThreshold>
      */
     #[ORM\OneToMany(
-        targetEntity: StressThreshold::class, 
-        mappedBy: 'quiz', 
+        targetEntity: StressThreshold::class,
+        mappedBy: 'quiz',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]

@@ -4,7 +4,6 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,19 +16,19 @@ class UserController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         UserRepository $userRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         // Query paramètre pour une éventuelle recherche
         $query = $request->query->get('q', '');
-        
+
         $queryBuilder = $userRepository->createQueryBuilder('u')
             ->orderBy('u.creationDate', 'DESC');
-            
+
         if ($query) {
             $queryBuilder->andWhere('u.email LIKE :q OR u.name LIKE :q')
-                         ->setParameter('q', '%' . $query . '%');
+                         ->setParameter('q', '%'.$query.'%');
         }
 
         $pagination = $paginator->paginate(
@@ -40,7 +39,7 @@ class UserController extends AbstractCrudController
 
         return $this->render('admin/user/index.html.twig', [
             'pagination' => $pagination,
-            'search_query' => $query
+            'search_query' => $query,
         ]);
     }
 
@@ -50,9 +49,9 @@ class UserController extends AbstractCrudController
         // Validation CSRF simple
         if ($this->isCsrfTokenValid('toggle_active'.$user->getId(), $request->request->get('_token'))) {
             $user->setIsActive(!$user->isActive());
-            
+
             // Si on désactive, on force peut-être le logout (pour une future itération).
-            
+
             $this->entityManager->flush();
             $this->addSuccessFlash('Le statut de l\'utilisateur a été modifié avec succès.');
         } else {
@@ -67,25 +66,26 @@ class UserController extends AbstractCrudController
     {
         if ($this->isCsrfTokenValid('toggle_role'.$user->getId(), $request->request->get('_token'))) {
             $roles = $user->getRoles();
-            
+
             // On vérifie qu'on ne s'enlève pas les droits à soi-même
             /** @var User $currentUser */
             $currentUser = $this->getUser();
             if ($user === $currentUser && in_array('ROLE_ADMIN', $roles)) {
                 $this->addErrorFlash('Vous ne pouvez pas retirer vos propres droits administrateur.');
+
                 return $this->redirectToRoute('app_admin_user_index');
             }
 
             if (in_array('ROLE_ADMIN', $roles)) {
                 // Retire le rôle
                 $roles = array_diff($roles, ['ROLE_ADMIN']);
-                $this->addSuccessFlash('Les droits administrateur ont été retirés à ' . $user->getEmail());
+                $this->addSuccessFlash('Les droits administrateur ont été retirés à '.$user->getEmail());
             } else {
                 // Ajoute le rôle
                 $roles[] = 'ROLE_ADMIN';
-                $this->addSuccessFlash('L\'utilisateur ' . $user->getEmail() . ' a été promu administrateur.');
+                $this->addSuccessFlash('L\'utilisateur '.$user->getEmail().' a été promu administrateur.');
             }
-            
+
             $user->setRoles(array_unique($roles));
             $this->entityManager->flush();
         } else {

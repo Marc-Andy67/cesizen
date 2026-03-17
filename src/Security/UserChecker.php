@@ -37,22 +37,15 @@ class UserChecker implements UserCheckerInterface
 
         // Vérifie si le compte a été désactivé manuellement par un administrateur
         if (!$user->isActive()) {
-            throw new CustomUserMessageAccountStatusException(
-                'Votre compte a été désactivé. Veuillez contacter le support.'
-            );
+            throw new CustomUserMessageAccountStatusException('Votre compte a été désactivé. Veuillez contacter le support.');
         }
 
         // Vérifie si le compte est temporairement verrouillé (protection brute force)
         // lockedUntil est défini par LoginFailureSubscriber après 5 tentatives échouées
         $now = new \DateTimeImmutable();
-        if ($user->getLockedUntil() !== null && $now < $user->getLockedUntil()) {
+        if (null !== $user->getLockedUntil() && $now < $user->getLockedUntil()) {
             $formattedDate = $user->getLockedUntil()->format('d/m/Y à H:i:s');
-            throw new CustomUserMessageAccountStatusException(
-                sprintf(
-                    'Votre compte est verrouillé suite à de multiples tentatives échouées. Réessayez après le %s.',
-                    $formattedDate
-                )
-            );
+            throw new CustomUserMessageAccountStatusException(sprintf('Votre compte est verrouillé suite à de multiples tentatives échouées. Réessayez après le %s.', $formattedDate));
         }
     }
 

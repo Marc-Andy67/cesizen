@@ -4,12 +4,10 @@ namespace App\Controller\Admin;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
- * AbstractCrudController — Classe parente pour les contrôleurs d'administration (Pattern Template Method)
- * 
+ * AbstractCrudController — Classe parente pour les contrôleurs d'administration (Pattern Template Method).
+ *
  * Centralise les comportements communs (récupération de l'Entity Manager, vérifications des droits)
  * pour éviter la duplication de code dans les controllers de l'espace admin.
  */

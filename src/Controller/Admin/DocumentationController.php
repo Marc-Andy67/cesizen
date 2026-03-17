@@ -18,9 +18,9 @@ class DocumentationController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         DocumentationRepository $documentationRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $documentationRepository->createQueryBuilder('d')
             ->orderBy('d.title', 'ASC');
@@ -35,7 +35,7 @@ class DocumentationController extends AbstractCrudController
             'pagination' => $pagination,
         ]);
     }
-    
+
     #[Route('/{id}/toggle-active', name: 'toggle_active', methods: ['POST'])]
     public function toggleActive(Documentation $documentation, Request $request): Response
     {
@@ -64,6 +64,7 @@ class DocumentationController extends AbstractCrudController
             $em->persist($documentation);
             $em->flush();
             $this->addSuccessFlash('Documentation créée avec succès.');
+
             return $this->redirectToRoute('app_admin_documentation_index');
         }
 
@@ -81,6 +82,7 @@ class DocumentationController extends AbstractCrudController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addSuccessFlash('Documentation modifiée avec succès.');
+
             return $this->redirectToRoute('app_admin_documentation_index');
         }
 

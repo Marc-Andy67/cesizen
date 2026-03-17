@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Question;
 use App\Entity\Response as QuizResponse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -25,8 +24,8 @@ class ResponseType extends AbstractType
                 'label' => 'Points',
                 'required' => true,
                 'attr' => [
-                    'min' => 0
-                ]
+                    'min' => 0,
+                ],
             ])
             ->add('position', HiddenType::class)
             ->add('isActive', CheckboxType::class, [

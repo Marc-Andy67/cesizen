@@ -56,6 +56,7 @@ class Category
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -67,6 +68,7 @@ class Category
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -81,6 +83,7 @@ class Category
             $this->documentations->add($documentation);
             $documentation->addCategory($this);
         }
+
         return $this;
     }
 
@@ -89,6 +92,7 @@ class Category
         if ($this->documentations->removeElement($documentation)) {
             $documentation->removeCategory($this);
         }
+
         return $this;
     }
 
@@ -103,6 +107,7 @@ class Category
             $this->quizzes->add($quiz);
             $quiz->addCategory($this);
         }
+
         return $this;
     }
 
@@ -111,6 +116,7 @@ class Category
         if ($this->quizzes->removeElement($quiz)) {
             $quiz->removeCategory($this);
         }
+
         return $this;
     }
 }

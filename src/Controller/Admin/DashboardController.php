@@ -2,9 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\UserRepository;
 
 #[Route('/admin', name: 'app_admin_')]
 class DashboardController extends AbstractCrudController

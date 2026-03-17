@@ -20,12 +20,12 @@ class ProfileController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
-        
+
         $assessments = $entityManager->getRepository(\App\Entity\Assessment::class)->findBy(
             ['owner' => $user],
             ['date' => 'ASC']
         );
-        
+
         $chartDates = [];
         $chartScores = [];
         foreach ($assessments as $assessment) {
@@ -39,6 +39,7 @@ class ProfileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+
             return $this->redirectToRoute('app_profile_index');
         }
 
@@ -56,19 +57,19 @@ class ProfileController extends AbstractController
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        
+
         $data = $rgpdService->exportUserData($user);
 
         return $this->json($data, Response::HTTP_OK, [
-            'Content-Disposition' => 'attachment; filename="mes-donnees-cesizen.json"'
+            'Content-Disposition' => 'attachment; filename="mes-donnees-cesizen.json"',
         ]);
     }
 
     #[Route('/delete', name: 'delete', methods: ['POST'])]
     public function deleteAccount(
-        Request $request, 
+        Request $request,
         RgpdService $rgpdService,
-        \Symfony\Bundle\SecurityBundle\Security $security
+        \Symfony\Bundle\SecurityBundle\Security $security,
     ): Response {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -76,15 +77,17 @@ class ProfileController extends AbstractController
         if ($this->isCsrfTokenValid('delete_account', $request->request->get('_token'))) {
             // Déconnexion de l'utilisateur
             $security->logout(false);
-            
+
             // Anonymisation des données selon le RGPD
             $rgpdService->anonymizeUser($user);
 
             $this->addFlash('success', 'Votre compte a été supprimé definitivement conformément au RGPD.');
+
             return $this->redirectToRoute('app_home');
         }
 
         $this->addFlash('error', 'Token de sécurité invalide.');
+
         return $this->redirectToRoute('app_profile_index');
     }
 }

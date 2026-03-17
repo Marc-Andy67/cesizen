@@ -25,8 +25,8 @@ class StressThresholdType extends AbstractType
                     'Faible' => 'faible',
                     'Modéré' => 'modere',
                     'Élevé' => 'eleve',
-                    'Très Élevé' => 'tres_eleve'
-                ]
+                    'Très Élevé' => 'tres_eleve',
+                ],
             ])
             ->add('minScore', IntegerType::class, [
                 'label' => 'Score minimum (inclus)',

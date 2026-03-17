@@ -24,8 +24,9 @@ class RgpdService
 
     /**
      * Exporte les données personnelles d'un utilisateur au format JSON.
-     * 
+     *
      * @param User $user Utilisateur concerné
+     *
      * @return array Tableau associatif des données personnelles
      */
     public function exportUserData(User $user): array
@@ -45,10 +46,10 @@ class RgpdService
 
     /**
      * Anonymise un utilisateur suite à une demande de suppression (Droit à l'oubli).
-     * 
-     * Plutôt que de supprimer la ligne en base (qui pourrait casser des clés étrangères 
+     *
+     * Plutôt que de supprimer la ligne en base (qui pourrait casser des clés étrangères
      * ou fausser des statistiques globales de diagnostics anonymisés), on écrase les PII.
-     * 
+     *
      * @param User $user Utilisateur à anonymiser
      */
     public function anonymizeUser(User $user): void
@@ -58,10 +59,10 @@ class RgpdService
 
         $user->setEmail(sprintf('anonymized_%s@cesizen.local', $randomUuid));
         $user->setName('Utilisateur Anonyme');
-        
+
         // On rend le mot de passe inutilisable
         $user->setPassword(password_hash(random_bytes(32), PASSWORD_ARGON2I));
-        
+
         // On désactive le compte
         $user->setIsActive(false);
 

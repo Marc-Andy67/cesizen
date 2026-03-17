@@ -18,9 +18,9 @@ class QuestionController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         QuestionRepository $questionRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $questionRepository->createQueryBuilder('q')
             ->orderBy('q.title', 'ASC');
@@ -49,6 +49,7 @@ class QuestionController extends AbstractCrudController
             $em->persist($question);
             $em->flush();
             $this->addSuccessFlash('Question créée avec succès.');
+
             return $this->redirectToRoute('app_admin_question_index');
         }
 
@@ -66,6 +67,7 @@ class QuestionController extends AbstractCrudController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addSuccessFlash('Question modifiée avec succès.');
+
             return $this->redirectToRoute('app_admin_question_index');
         }
 

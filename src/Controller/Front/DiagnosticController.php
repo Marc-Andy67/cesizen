@@ -35,9 +35,10 @@ class DiagnosticController extends AbstractController
         if ($request->isMethod('POST')) {
             // Le formulaire soumet un tableau de réponses (ID de la réponse pour chaque question)
             $submittedResponses = $request->request->all('responses');
-            
+
             if (empty($submittedResponses)) {
                 $this->addFlash('error', 'Veuillez répondre à au moins une question ou confirmer que vous n\'avez vécu aucun de ces événements.');
+
                 return $this->redirectToRoute('app_diagnostic_take', ['id' => $quiz->getId()]);
             }
 
@@ -49,7 +50,7 @@ class DiagnosticController extends AbstractController
             if ($this->getUser()) {
                 $assessment = $diagnosticService->saveAssessment($this->getUser(), $quiz, $submittedResponses, $score);
                 $em->flush();
-                
+
                 return $this->redirectToRoute('app_diagnostic_result', ['id' => $assessment->getId()]);
             }
 
@@ -59,7 +60,7 @@ class DiagnosticController extends AbstractController
                 'quiz_id' => $quiz->getId(),
                 'quiz_title' => $quiz->getTitle(),
                 'threshold_id' => $threshold ? $threshold->getId() : null,
-                'date' => new \DateTimeImmutable()
+                'date' => new \DateTimeImmutable(),
             ]);
 
             return $this->redirectToRoute('app_diagnostic_result_anonymous');
@@ -71,7 +72,7 @@ class DiagnosticController extends AbstractController
 
         return $this->render('front/diagnostic/take.html.twig', [
             'quiz' => $quiz,
-            'questions' => $questions
+            'questions' => $questions,
         ]);
     }
 
@@ -94,7 +95,7 @@ class DiagnosticController extends AbstractController
             'quiz_title' => $result['quiz_title'],
             'threshold' => $threshold,
             'date' => $result['date'],
-            'is_anonymous' => true
+            'is_anonymous' => true,
         ]);
     }
 
@@ -115,7 +116,7 @@ class DiagnosticController extends AbstractController
             'quiz_title' => $assessment->getQuiz()->getTitle(),
             'threshold' => $threshold,
             'date' => $assessment->getDate(),
-            'is_anonymous' => false
+            'is_anonymous' => false,
         ]);
     }
 }

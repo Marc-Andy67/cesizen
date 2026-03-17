@@ -85,6 +85,7 @@ class QuizController extends AbstractController
             if (!$quiz->isActive()) {
                 if (!$this->canBeActivated($quiz)) {
                     $this->addFlash('error', 'Impossible d\'activer ce questionnaire : il doit avoir au moins une question active, et chaque question active doit avoir au moins 2 réponses actives.');
+
                     return $this->redirectToRoute('app_admin_quiz_index');
                 }
             }
@@ -103,6 +104,7 @@ class QuizController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$quiz->getId(), $request->request->get('_token'))) {
             if (!$quiz->getAssessments()->isEmpty()) {
                 $this->addFlash('error', 'Impossible de supprimer ce questionnaire car des évaluations (assessments) y sont déjà rattachées.');
+
                 return $this->redirectToRoute('app_admin_quiz_index');
             }
 
@@ -115,18 +117,18 @@ class QuizController extends AbstractController
     }
 
     /**
-     * Vérifie si le quiz respecte les règles pour être actif (1 question min, 2 réponses min par question)
+     * Vérifie si le quiz respecte les règles pour être actif (1 question min, 2 réponses min par question).
      */
     private function canBeActivated(Quiz $quiz): bool
     {
         $activeQuestions = 0;
         foreach ($quiz->getQuestions() as $question) {
             if ($question->isActive()) {
-                $activeQuestions++;
+                ++$activeQuestions;
                 $activeResponsesCount = 0;
                 foreach ($question->getResponses() as $response) {
                     if ($response->isActive()) {
-                        $activeResponsesCount++;
+                        ++$activeResponsesCount;
                     }
                 }
                 if ($activeResponsesCount < 2) {
@@ -134,6 +136,7 @@ class QuizController extends AbstractController
                 }
             }
         }
+
         return $activeQuestions > 0;
     }
 }

@@ -59,6 +59,7 @@ class Assessment
     public function setTotalScore(int $totalScore): static
     {
         $this->totalScore = $totalScore;
+
         return $this;
     }
 
@@ -70,6 +71,7 @@ class Assessment
     public function setDate(\DateTimeImmutable $date): static
     {
         $this->date = $date;
+
         return $this;
     }
 
@@ -81,6 +83,7 @@ class Assessment
     public function setStressLevel(?int $stressLevel): static
     {
         $this->stressLevel = $stressLevel;
+
         return $this;
     }
 
@@ -92,6 +95,7 @@ class Assessment
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
         return $this;
     }
 
@@ -103,6 +107,7 @@ class Assessment
     public function setQuiz(?Quiz $quiz): static
     {
         $this->quiz = $quiz;
+
         return $this;
     }
 
@@ -116,12 +121,14 @@ class Assessment
         if (!$this->responses->contains($response)) {
             $this->responses->add($response);
         }
+
         return $this;
     }
 
     public function removeResponse(Response $response): static
     {
         $this->responses->removeElement($response);
+
         return $this;
     }
 }

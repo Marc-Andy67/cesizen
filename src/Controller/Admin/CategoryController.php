@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use App\Repository\CategoryRepository;
 use App\Form\CategoryType;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +18,9 @@ class CategoryController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         CategoryRepository $categoryRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $categoryRepository->createQueryBuilder('c')
             ->orderBy('c.name', 'ASC');
@@ -47,6 +47,7 @@ class CategoryController extends AbstractCrudController
             $em->persist($category);
             $em->flush();
             $this->addSuccessFlash('Catégorie créée avec succès.');
+
             return $this->redirectToRoute('app_admin_category_index');
         }
 
@@ -64,6 +65,7 @@ class CategoryController extends AbstractCrudController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addSuccessFlash('Catégorie modifiée avec succès.');
+
             return $this->redirectToRoute('app_admin_category_index');
         }
 

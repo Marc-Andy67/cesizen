@@ -18,9 +18,9 @@ class ResponseController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         ResponseRepository $responseRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $responseRepository->createQueryBuilder('r')
             ->innerJoin('r.question', 'q')
@@ -52,6 +52,7 @@ class ResponseController extends AbstractCrudController
             $em->persist($quizResponse);
             $em->flush();
             $this->addSuccessFlash('Réponse créée avec succès.');
+
             // On peut rediriger vers la même question ou vers la liste
             return $this->redirectToRoute('app_admin_response_index');
         }
@@ -70,6 +71,7 @@ class ResponseController extends AbstractCrudController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addSuccessFlash('Réponse modifiée avec succès.');
+
             return $this->redirectToRoute('app_admin_response_index');
         }
 

@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 /**
  * LoginSubscriber — Gère les événements de connexion réussie ou échouée.
- * 
+ *
  * Cette classe implémente le pattern Observer via le système d'événements de Symfony.
  * Elle permet une protection contre les attaques par force brute (Brute Force Protection) :
  * - Incrémente le compteur de tentatives échouées sur une `LoginFailureEvent`
@@ -49,7 +49,7 @@ class LoginSubscriber implements EventSubscriberInterface
 
         // Incrémente le nombre de tentatives échouées
         $failedAttempts = $user->getFailedAttempt() ?? 0;
-        $failedAttempts++;
+        ++$failedAttempts;
         $user->setFailedAttempt($failedAttempts);
 
         // Si on atteint 5 tentatives échouées, on verrouille le compte pour 15 minutes

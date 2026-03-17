@@ -59,6 +59,7 @@ class Response
     public function setPoints(int $points): static
     {
         $this->points = $points;
+
         return $this;
     }
 
@@ -70,6 +71,7 @@ class Response
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -81,6 +83,7 @@ class Response
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -92,6 +95,7 @@ class Response
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -103,6 +107,7 @@ class Response
     public function setQuestion(?Question $question): static
     {
         $this->question = $question;
+
         return $this;
     }
 
@@ -117,6 +122,7 @@ class Response
             $this->assessments->add($assessment);
             $assessment->addResponse($this);
         }
+
         return $this;
     }
 
@@ -125,6 +131,7 @@ class Response
         if ($this->assessments->removeElement($assessment)) {
             $assessment->removeResponse($this);
         }
+
         return $this;
     }
 }

@@ -17,7 +17,7 @@ class QuestionType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Intitulé de la question'
+                'label' => 'Intitulé de la question',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description (Optionnel)',
@@ -34,8 +34,8 @@ class QuestionType extends AbstractType
                 'by_reference' => false,
                 'label' => 'Réponses',
                 'attr' => [
-                    'data-min-responses' => 2
-                ]
+                    'data-min-responses' => 2,
+                ],
             ])
         ;
     }

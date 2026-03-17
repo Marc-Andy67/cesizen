@@ -16,7 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     public function __construct(
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
     }
 
@@ -33,7 +33,7 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
 
         $users = [];
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 5; ++$i) {
             $user = new User();
             $user->setEmail("user{$i}@cesizen.fr");
             $user->setRoles(['ROLE_USER']);
@@ -51,7 +51,7 @@ class AppFixtures extends Fixture
             'Gestion du Stress' => 'Techniques et astuces pour réduire l\'anxiété au quotidien.',
             'Équilibre Vie Pro/Perso' => 'Conseils pour mieux concilier travail et vie privée.',
         ];
-        
+
         $categories = [];
         foreach ($categoriesData as $name => $desc) {
             $category = new Category();
@@ -66,27 +66,27 @@ class AppFixtures extends Fixture
             [
                 'title' => 'Comprendre le Burnout',
                 'content' => '<p>Le syndrome d\'épuisement professionnel se traduit par un épuisement physique, émotionnel et mental...</p><ul><li>Symptôme 1</li><li>Symptôme 2</li></ul>',
-                'cats' => [$categories[0], $categories[2]]
+                'cats' => [$categories[0], $categories[2]],
             ],
             [
                 'title' => 'La technique Pomodoro',
                 'content' => '<p>Améliorez votre productivité et limitez votre stress au travail grâce à des cycles de travail courts (25 min de travail, 5 min de pause).</p>',
-                'cats' => [$categories[1], $categories[2]]
+                'cats' => [$categories[1], $categories[2]],
             ],
             [
                 'title' => 'La cohérence cardiaque',
                 'content' => '<p>Pratiquer la cohérence cardiaque 3 fois par jour pendant 5 minutes permet de réguler son niveau de stress de manière efficace et immédiate.</p>',
-                'cats' => [$categories[0], $categories[1]]
+                'cats' => [$categories[0], $categories[1]],
             ],
             [
                 'title' => 'Importance du sommeil',
                 'content' => '<p>Un sommeil de qualité est le premier pilier de la santé mentale. Voici 10 conseils pour mieux dormir...</p>',
-                'cats' => [$categories[0]]
+                'cats' => [$categories[0]],
             ],
             [
                 'title' => 'Les signes précurseurs de l\'anxiété',
                 'content' => '<p>L\'anxiété peut prendre plusieurs formes, mais certains signes corporels peuvent nous alerter (rythme cardiaque, tensions, troubles digestifs...).</p>',
-                'cats' => [$categories[0], $categories[1]]
+                'cats' => [$categories[0], $categories[1]],
             ],
         ];
 
@@ -116,7 +116,7 @@ class AppFixtures extends Fixture
                 'min' => 0,
                 'max' => 149,
                 'desc' => 'Votre niveau de stress estimé est faible. Vous semblez avoir traversé une période relativement stable et sans heurts majeurs récemment.',
-                'advice' => 'Maintenez vos bonnes habitudes de vie. Continuez à pratiquer une activité physique régulière et à veiller sur la qualité de votre sommeil. Poursuivez l\'utilisation de méthodes de relaxation légères si vous en ressentez le besoin.'
+                'advice' => 'Maintenez vos bonnes habitudes de vie. Continuez à pratiquer une activité physique régulière et à veiller sur la qualité de votre sommeil. Poursuivez l\'utilisation de méthodes de relaxation légères si vous en ressentez le besoin.',
             ],
             [
                 'level' => 'ModerateStress',
@@ -124,7 +124,7 @@ class AppFixtures extends Fixture
                 'min' => 150,
                 'max' => 299,
                 'desc' => 'Votre score indique un niveau de stress modéré. Vous accumulez actuellement plusieurs événements générateurs de changements (positifs ou négatifs) qui augmentent votre charge mentale globale et majorent le risque de développer un trouble d\'adaptation.',
-                'advice' => 'Il est important d\'être à l\'écoute de votre corps. Introduisez des sas de décompression dans votre journée. Nous vous encourageons vivement à consulter notre section documentation pour découvrir des techniques de gestion du stress ou à en parler à un proche de confiance ou à un professionnel.'
+                'advice' => 'Il est important d\'être à l\'écoute de votre corps. Introduisez des sas de décompression dans votre journée. Nous vous encourageons vivement à consulter notre section documentation pour découvrir des techniques de gestion du stress ou à en parler à un proche de confiance ou à un professionnel.',
             ],
             [
                 'level' => 'HighStress',
@@ -132,7 +132,7 @@ class AppFixtures extends Fixture
                 'min' => 300,
                 'max' => null,
                 'desc' => 'Vos résultats témoignent d\'un niveau de stress très élevé ou chronique. Les événements récents de votre vie sollicitent très fortement vos capacités d\'adaptation et le risque sur votre santé (notamment cardiovasculaire et mentale) est significatif.',
-                'advice' => 'Nous vous conseillons très fortement de consulter votre médecin traitant, un psychologue ou la médecine du travail. Ils sauront vous accompagner et vous orienter. En attendant, privilégiez le repos au maximum et n\'hésitez pas à déléguer ce qui peut l\'être pour réduire votre charge immédiate.'
+                'advice' => 'Nous vous conseillons très fortement de consulter votre médecin traitant, un psychologue ou la médecine du travail. Ils sauront vous accompagner et vous orienter. En attendant, privilégiez le repos au maximum et n\'hésitez pas à déléguer ce qui peut l\'être pour réduire votre charge immédiate.',
             ],
         ];
 
@@ -147,8 +147,6 @@ class AppFixtures extends Fixture
             $threshold->setAdvice($tData['advice']);
             $manager->persist($threshold);
         }
-
-
 
         // Liste partielle des 43 items (ceux de poids hétérogène, pour démonstration)
         // Normalement il faut les 43, ici on en met une sélection représentative.
@@ -210,7 +208,7 @@ class AppFixtures extends Fixture
             $responseOui->setIsActive(true);
             $responseOui->setQuestion($question);
             $manager->persist($responseOui);
-            
+
             $responseNon = new Response();
             $responseNon->setDescription('Non');
             $responseNon->setPoints(0);

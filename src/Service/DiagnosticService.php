@@ -15,26 +15,23 @@ class DiagnosticService
     public function __construct(
         private readonly ResponseRepository $responseRepository,
         private readonly StressThresholdRepository $thresholdRepository,
-        private readonly EntityManagerInterface $em
+        private readonly EntityManagerInterface $em,
     ) {
     }
 
     /**
      * Calcule le score total (LCU) à partir d'un tableau d'IDs de réponses.
-     *
-     * @param array $responseIds
-     * @return int
      */
     public function calculateScore(array $responseIds): int
     {
         $score = 0;
-        
+
         if (empty($responseIds)) {
             return $score;
         }
 
         $responses = $this->responseRepository->findBy(['id' => $responseIds]);
-        
+
         foreach ($responses as $response) {
             $score += $response->getPoints();
         }
@@ -55,11 +52,11 @@ class DiagnosticService
     {
         foreach ($quiz->getStressThresholds() as $threshold) {
             $max = $threshold->getMaxScore();
-            if ($score >= $threshold->getMinScore() && ($max === null || $score <= $max)) {
+            if ($score >= $threshold->getMinScore() && (null === $max || $score <= $max)) {
                 return $threshold;
             }
         }
-        
+
         return null;
     }
 

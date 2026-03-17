@@ -5,12 +5,12 @@ namespace App\Security\Voter;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * UserVoter — Gère les autorisations sur l'entité User.
- * 
+ *
  * Ce Voter implémente les règles métier pour savoir qui peut voir, modifier ou supprimer un utilisateur :
  * - Un administrateur (ROLE_ADMIN) a tous les droits
  * - Un utilisateur peut voir, modifier ou supprimer son propre compte
@@ -50,7 +50,7 @@ class UserVoter extends Voter
         }
 
         // Pour les droits classiques, on vérifie que l'utilisateur connecté est le même que le sujet
-        /** @var User $subject */
+        /* @var User $subject */
         return match ($attribute) {
             self::VIEW => $this->canView($subject, $user),
             self::EDIT => $this->canEdit($subject, $user),

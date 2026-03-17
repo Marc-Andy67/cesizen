@@ -2,11 +2,8 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\StressThreshold;
-use App\Form\StressThresholdType;
 use App\Repository\QuizRepository;
 use App\Repository\StressThresholdRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,10 +16,10 @@ class StressThresholdController extends AbstractCrudController
 {
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(
-        Request $request, 
+        Request $request,
         StressThresholdRepository $repository,
         QuizRepository $quizRepository,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $repository->createQueryBuilder('s')
             ->leftJoin('s.quiz', 'q')
@@ -44,7 +41,7 @@ class StressThresholdController extends AbstractCrudController
 
         return $this->render('admin/stress_threshold/index.html.twig', [
             'pagination' => $pagination,
-            'quizzes'    => $quizRepository->findAll(),
+            'quizzes' => $quizRepository->findAll(),
             'current_quiz_id' => $quizId,
         ]);
     }

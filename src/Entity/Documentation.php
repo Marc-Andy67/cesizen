@@ -59,6 +59,7 @@ class Documentation
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -70,6 +71,7 @@ class Documentation
     public function setContent(string $content): static
     {
         $this->content = $content;
+
         return $this;
     }
 
@@ -81,6 +83,7 @@ class Documentation
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
         return $this;
     }
 
@@ -94,12 +97,14 @@ class Documentation
         if (!$this->categories->contains($category)) {
             $this->categories->add($category);
         }
+
         return $this;
     }
 
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
         return $this;
     }
 
@@ -114,6 +119,7 @@ class Documentation
             $this->users->add($user);
             $user->addDocumentation($this);
         }
+
         return $this;
     }
 
@@ -122,6 +128,7 @@ class Documentation
         if ($this->users->removeElement($user)) {
             $user->removeDocumentation($this);
         }
+
         return $this;
     }
 }

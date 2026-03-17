@@ -19,7 +19,7 @@ class QuizType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Titre'
+                'label' => 'Titre',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',

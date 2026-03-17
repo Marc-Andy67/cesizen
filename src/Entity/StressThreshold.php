@@ -52,6 +52,7 @@ class StressThreshold
     public function setLevel(string $level): static
     {
         $this->level = $level;
+
         return $this;
     }
 
@@ -63,6 +64,7 @@ class StressThreshold
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -74,6 +76,7 @@ class StressThreshold
     public function setMinScore(int $minScore): static
     {
         $this->minScore = $minScore;
+
         return $this;
     }
 
@@ -85,6 +88,7 @@ class StressThreshold
     public function setMaxScore(?int $maxScore): static
     {
         $this->maxScore = $maxScore;
+
         return $this;
     }
 
@@ -96,6 +100,7 @@ class StressThreshold
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -107,6 +112,7 @@ class StressThreshold
     public function setAdvice(string $advice): static
     {
         $this->advice = $advice;
+
         return $this;
     }
 
@@ -118,6 +124,7 @@ class StressThreshold
     public function setQuiz(?Quiz $quiz): static
     {
         $this->quiz = $quiz;
+
         return $this;
     }
 }

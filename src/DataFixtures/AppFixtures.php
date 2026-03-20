@@ -138,7 +138,6 @@ class AppFixtures extends Fixture
 
         foreach ($thresholds as $tData) {
             $threshold = new StressThreshold();
-            $threshold->setQuiz($quiz);
             $threshold->setLevel($tData['level']);
             $threshold->setName($tData['name']);
             $threshold->setMinScore($tData['min']);

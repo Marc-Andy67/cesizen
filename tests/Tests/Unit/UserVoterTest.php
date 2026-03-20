@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[CoversClass(UserVoter::class)]
+#[CoversClass(User::class)]
 class UserVoterTest extends TestCase
 {
     private UserVoter $voter;

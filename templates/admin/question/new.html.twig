@@ -8,7 +8,45 @@
         </a>
     </div>
 
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error mb-4">{{ message }}</div>
+    {% endfor %}
+
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 max-w-3xl">
         {{ include('admin/question/_form.html.twig') }}
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrapper = document.getElementById('responses-wrapper');
+            const addButton = document.getElementById('add-response');
+            if (!wrapper || !addButton) return;
+            
+            let index = parseInt(wrapper.dataset.index) || 0;
+            
+            addButton.addEventListener('click', function() {
+                let visualIndex = document.querySelectorAll('.response-item').length + 1;
+                const prototype = wrapper.dataset.prototype;
+                const newFormStr = prototype.replace(/__name__/g, index).replace(/__number__/g, visualIndex);
+                
+                const temp = document.createElement('div');
+                temp.innerHTML = newFormStr.trim();
+                wrapper.appendChild(temp.firstChild);
+                
+                index++;
+            });
+            
+            wrapper.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-remove-response')) {
+                    e.target.closest('.response-item').remove();
+                    document.querySelectorAll('.response-number').forEach((badge, idx) => {
+                        badge.textContent = 'Réponse ' + (idx + 1);
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

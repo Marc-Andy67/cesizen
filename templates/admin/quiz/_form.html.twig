@@ -1,35 +1,79 @@
 {{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
     
-    <div class="space-y-4">
-        <div>
-            {{ form_label(form.title, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.title, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.title) }}
+    <div class="space-y-8">
+        
+        {# En-tête : titre + statut actif #}
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 pb-4 border-b border-gray-200">
+            <div class="flex-grow w-full">
+                {{ form_label(form.title, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.title, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
+                <div class="text-sm text-red-600 mt-1">{{ form_errors(form.title) }}</div>
+            </div>
+            <div class="flex items-center bg-gray-50 px-4 py-2 border border-gray-200 rounded-md md:mt-6 shrink-0">
+                {{ form_widget(form.isActive, {'attr': {'class': 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'}}) }}
+                {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900 font-medium whitespace-nowrap'}}) }}
             </div>
         </div>
 
-        <div>
-            {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.description, {'attr': {'rows': 3, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.description) }}
+        {# Section 1 : Informations générales #}
+        <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Informations Générales</h3>
+            <div class="mb-4">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                {{ form_widget(form.description, {'attr': {'rows': 4, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
+                <div class="text-sm text-red-600 mt-1">{{ form_errors(form.description) }}</div>
             </div>
         </div>
 
-        <div class="flex items-center bg-gray-50 p-4 border border-gray-200 rounded-md">
-            {{ form_widget(form.isActive, {'attr': {'class': 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'}}) }}
-            {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900 font-medium'}}) }}
+        {# Section 2 : Configuration (catégories & stress thresholds) #}
+        <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Configuration du questionnaire</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% if form.categories is defined %}
+                    <div>
+                        {{ form_label(form.categories, 'Catégories (Thématiques)', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.categories, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800', 'style': 'height: 120px;'}}) }}
+                        <div class="text-sm text-red-600 mt-1">{{ form_errors(form.categories) }}</div>
+                    </div>
+                {% endif %}
+
+                {% if form.stressThresholds is defined %}
+                    <div>
+                        {{ form_label(form.stressThresholds, 'Seuils de Stress associés', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                        {{ form_widget(form.stressThresholds, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800', 'style': 'height: 120px;'}}) }}
+                        <div class="text-sm text-red-600 mt-1">{{ form_errors(form.stressThresholds) }}</div>
+                    </div>
+                {% endif %}
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs éléments.</p>
         </div>
 
-        <div>
-            {{ form_label(form.questions, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
-            {{ form_widget(form.questions, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800', 'style': 'height: 200px;'}}) }}
-            <p class="text-xs text-gray-500 mt-1">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs questions.</p>
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.questions) }}
+        {# Section 3 : Questions associées #}
+        <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Questions Associées</h3>
+            <div>
+                {{ form_label(form.questions, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                {{ form_widget(form.questions, {'attr': {'class': 'select select-bordered rounded-sm w-full', 'style': 'height: 250px;'}}) }}
+                <p class="text-xs text-gray-500 mt-1">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs questions.</p>
+                <div class="text-sm text-red-600 mt-1">
+                    {{ form_errors(form.questions) }}
+                </div>
             </div>
+            
+            {% if quiz is defined and quiz.questions|length > 0 %}
+                <div class="mt-6 border-t border-gray-200 pt-4">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Questions actuellement associées ({{ quiz.questions|length }}) :</p>
+                    <div class="flex flex-wrap gap-2">
+                    {% for question in quiz.questions %}
+                        <span class="badge badge-neutral gap-1 rounded-sm shadow-sm py-3 px-3 cursor-pointer">
+                            {{ question.title }}
+                        </span>
+                    {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
+
     </div>
 
     <div class="flex justify-end pt-4 mt-6 border-t border-gray-200">

@@ -41,10 +41,20 @@ class LoginSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $user = $passport->getUser();
+        try {
+            $user = $passport->getUser();
+        } catch (\LogicException) {
+            // Throttling actif — pas de user accessible, on ignore
+            return;
+        }
 
         if (!$user instanceof User) {
             return;
+        }
+
+        $now = new \DateTimeImmutable();
+        if ($user->getLockedUntil() !== null && $now < $user->getLockedUntil()) {
+            return; // déjà verrouillé, on ne fait rien
         }
 
         // Incrémente le nombre de tentatives échouées
@@ -52,9 +62,9 @@ class LoginSubscriber implements EventSubscriberInterface
         ++$failedAttempts;
         $user->setFailedAttempt($failedAttempts);
 
-        // Si on atteint 5 tentatives échouées, on verrouille le compte pour 15 minutes
+        // Si on atteint 5 tentatives échouées, on verrouille le compte pour 1 jour
         if ($failedAttempts >= 5) {
-            $user->setLockedUntil(new \DateTimeImmutable('+15 minutes'));
+            $user->setLockedUntil(new \DateTimeImmutable('+1 day'));
         }
 
         $this->entityManager->flush();

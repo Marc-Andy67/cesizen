@@ -44,7 +44,8 @@ class UserChecker implements UserCheckerInterface
         // lockedUntil est défini par LoginFailureSubscriber après 5 tentatives échouées
         $now = new \DateTimeImmutable();
         if (null !== $user->getLockedUntil() && $now < $user->getLockedUntil()) {
-            $formattedDate = $user->getLockedUntil()->format('d/m/Y à H:i:s');
+            $lockedUntil = $user->getLockedUntil()->setTimezone(new \DateTimeZone('Europe/Paris'));
+            $formattedDate = $lockedUntil->format('d/m/Y à H:i:s');
             throw new CustomUserMessageAccountStatusException(sprintf('Votre compte est verrouillé suite à de multiples tentatives échouées. Réessayez après le %s.', $formattedDate));
         }
     }

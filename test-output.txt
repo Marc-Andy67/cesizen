@@ -1,0 +1,8 @@
+PHPUnit 13.0.5 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.17
+Configuration: C:\Users\marca\cesizen\phpunit.xml.dist
+
+
+Fatal error: Declaration of App\Security\Voter\UserVoter::voteOnAttribute(string $attribute, $subject, Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token): bool must be compatible with Symfony\Component\Security\Core\Authorization\Voter\Voter::voteOnAttribute(string $attribute, mixed $subject, Symfony\Component\Security\Core\Authentication\Token\TokenInterface $token, ?Symfony\Component\Security\Core\Authorization\Voter\Vote $vote = null): bool in C:\Users\marca\cesizen\src\Security\Voter\UserVoter.php on line 25
+Fatal error: Premature end of PHP process when running App\Tests\Unit\UserVoterTest::testSupportsAndNotSupports.

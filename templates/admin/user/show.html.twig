@@ -1,0 +1,82 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détails de l'utilisateur{% endblock %}
+
+{% block body %}
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Détails de l'utilisateur : {{ user.name }}</h1>
+        <div class="space-x-2">
+            <a href="{{ path('app_admin_user_index') }}" class="btn btn-outline">Retour à la liste</a>
+            <a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" class="btn" style="background-color: #003189; color: white;">Modifier</a>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl max-w-2xl mx-auto">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Informations</h2>
+            
+            <table class="table w-full">
+                <tbody>
+                    <tr>
+                        <th class="w-1/3">ID</th>
+                        <td>{{ user.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom complet</th>
+                        <td>{{ user.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de création</th>
+                        <td>{{ user.creationDate|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dernière connexion</th>
+                        <td>{{ user.lastConnection ? user.lastConnection|date('d/m/Y H:i') : 'Jamais' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Statut</th>
+                        <td>
+                            {% if user.isActive %}
+                                <span class="badge" style="background-color: #2D6A4F; color: white;">Actif</span>
+                            {% else %}
+                                <span class="badge" style="background-color: #E1000F; color: white;">Inactif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Rôles</th>
+                        <td>
+                            {% for role in user.roles %}
+                                <span class="badge badge-outline mr-1">{{ role }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+                {% if is_granted('USER_TOGGLE_ACTIVE', user) %}
+                    <form method="post" action="{{ path('app_admin_user_toggle_active', {'id': user.id}) }}" class="inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_active' ~ user.id) }}">
+                        <button class="btn btn-sm {% if user.isActive %}btn-outline btn-error{% else %}btn-success{% endif %}">
+                            {% if user.isActive %}Désactiver{% else %}Réactiver{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if is_granted('USER_TOGGLE_ROLE', user) %}
+                    <form method="post" action="{{ path('app_admin_user_toggle_role', {'id': user.id}) }}" class="inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_role' ~ user.id) }}">
+                        <button class="btn btn-sm btn-outline">
+                            {% if 'ROLE_ADMIN' in user.roles %}Rétrograder Admin{% else %}Promouvoir Admin{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

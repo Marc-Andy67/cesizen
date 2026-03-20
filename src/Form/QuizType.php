@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\Question;
 use App\Entity\Quiz;
+use App\Repository\QuestionRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -37,19 +39,22 @@ class QuizType extends AbstractType
                 'label' => 'Catégories',
                 'required' => false,
             ])
-            ->add('questions', CollectionType::class, [
-                'entry_type' => QuestionType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'label' => false,
-            ])
-            ->add('stressThresholds', CollectionType::class, [
-                'entry_type' => StressThresholdType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'label' => false,
+            ->add('questions', EntityType::class, [
+                'class' => Question::class,
+                'choice_label' => 'title',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'label' => 'Questions associées au questionnaire',
+                'attr' => [
+                    'class' => 'select select-bordered w-full h-48 rounded-sm',
+                    'size' => 8,
+                ],
+                'query_builder' => function (QuestionRepository $repo) {
+                    return $repo->createQueryBuilder('q')
+                        ->where('q.isActive = true')
+                        ->orderBy('q.title', 'ASC');
+                },
             ])
         ;
     }

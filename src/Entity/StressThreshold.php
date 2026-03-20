@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\StressThresholdRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -35,9 +37,13 @@ class StressThreshold
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice = null;
 
-    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: 'stressThresholds')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Quiz $quiz = null;
+    #[ORM\ManyToMany(targetEntity: Quiz::class, mappedBy: 'stressThresholds')]
+    private Collection $quizzes;
+
+    public function __construct()
+    {
+        $this->quizzes = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -116,14 +122,29 @@ class StressThreshold
         return $this;
     }
 
-    public function getQuiz(): ?Quiz
+    /**
+     * @return Collection<int, Quiz>
+     */
+    public function getQuizzes(): Collection
     {
-        return $this->quiz;
+        return $this->quizzes;
     }
 
-    public function setQuiz(?Quiz $quiz): static
+    public function addQuiz(Quiz $quiz): static
     {
-        $this->quiz = $quiz;
+        if (!$this->quizzes->contains($quiz)) {
+            $this->quizzes->add($quiz);
+            $quiz->addStressThreshold($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuiz(Quiz $quiz): static
+    {
+        if ($this->quizzes->removeElement($quiz)) {
+            $quiz->removeStressThreshold($this);
+        }
 
         return $this;
     }

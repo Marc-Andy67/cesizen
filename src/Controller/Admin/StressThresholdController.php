@@ -2,6 +2,8 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\StressThreshold;
+use App\Form\Admin\StressThresholdType;
 use App\Repository\QuizRepository;
 use App\Repository\StressThresholdRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -22,14 +24,13 @@ class StressThresholdController extends AbstractCrudController
         PaginatorInterface $paginator,
     ): Response {
         $queryBuilder = $repository->createQueryBuilder('s')
-            ->leftJoin('s.quiz', 'q')
+            ->leftJoin('s.quizzes', 'q')
             ->addSelect('q')
-            ->orderBy('q.title', 'ASC')
-            ->addOrderBy('s.minScore', 'ASC');
+            ->orderBy('s.minScore', 'ASC');
 
         $quizId = $request->query->get('quiz_id');
         if ($quizId) {
-            $queryBuilder->andWhere('s.quiz = :quizId')
+            $queryBuilder->andWhere(':quizId MEMBER OF s.quizzes')
                          ->setParameter('quizId', $quizId);
         }
 
@@ -44,5 +45,60 @@ class StressThresholdController extends AbstractCrudController
             'quizzes' => $quizRepository->findAll(),
             'current_quiz_id' => $quizId,
         ]);
+    }
+
+    #[Route('/nouveau', name: 'new', methods: ['GET', 'POST'])]
+    public function new(Request $request): Response
+    {
+        $stressThreshold = new StressThreshold();
+
+        $form = $this->createForm(StressThresholdType::class, $stressThreshold);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($stressThreshold);
+            $this->entityManager->flush();
+
+            $this->addSuccessFlash('Le seuil de stress a été créé avec succès.');
+
+            return $this->redirectToRoute('app_admin_stress_threshold_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('admin/stress_threshold/new.html.twig', [
+            'stress_threshold' => $stressThreshold,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/editer', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, StressThreshold $stressThreshold): Response
+    {
+        $form = $this->createForm(StressThresholdType::class, $stressThreshold);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+            $this->addSuccessFlash('Le seuil de stress a été mis à jour avec succès.');
+
+            return $this->redirectToRoute('app_admin_stress_threshold_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('admin/stress_threshold/edit.html.twig', [
+            'stress_threshold' => $stressThreshold,
+            'form' => $form,
+        ]);
+    }
+
+
+    #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, StressThreshold $stressThreshold): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$stressThreshold->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($stressThreshold);
+            $this->entityManager->flush();
+            $this->addSuccessFlash('Le seuil a été supprimé définitivement.');
+        }
+
+        return $this->redirectToRoute('app_admin_stress_threshold_index', [], Response::HTTP_SEE_OTHER);
     }
 }

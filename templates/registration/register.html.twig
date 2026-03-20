@@ -34,7 +34,17 @@
                 <div class="form-control w-full">
                     {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'label pb-1'}}) }}
                     {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm'}}) }}
-                    <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(registrationForm.plainPassword) }}</div>
+                    
+                    <div id="password-checklist" aria-live="polite" class="bg-base-200 rounded p-3 mt-2 text-sm">
+                        <ul class="space-y-1">
+                            <li id="req-length" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Au moins 12 caractères</li>
+                            <li id="req-upper" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Une lettre majuscule (A-Z)</li>
+                            <li id="req-lower" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Une lettre minuscule (a-z)</li>
+                            <li id="req-number" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Un chiffre (0-9)</li>
+                            <li id="req-special" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Un caractère spécial (!@#$%^&*...)</li>
+                        </ul>
+                    </div>       
+                    <!-- <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(registrationForm.plainPassword) }}</div> -->
                 </div>
 
                 <div class="form-control mt-2">
@@ -60,4 +70,42 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInput = document.getElementById('registration_form_plainPassword') 
+    ?? document.querySelector('input[type="password"]');
+            if (!passwordInput) return;
+
+            const criteria = {
+                'req-length': (v) => v.length >= 12,
+                'req-upper': (v) => /[A-Z]/.test(v),
+                'req-lower': (v) => /[a-z]/.test(v),
+                'req-number': (v) => /[0-9]/.test(v),
+                'req-special': (v) => /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(v)
+            };
+
+            passwordInput.addEventListener('input', (e) => {
+                const value = e.target.value;
+                for (const [id, testFn] of Object.entries(criteria)) {
+                    const el = document.getElementById(id);
+                    if (!el) continue;
+                    
+                    const icon = el.querySelector('.icon');
+                    if (testFn(value)) {
+                        el.classList.remove('text-error');
+                        el.classList.add('text-success');
+                        icon.textContent = '✓';
+                    } else {
+                        el.classList.remove('text-success');
+                        el.classList.add('text-error');
+                        icon.textContent = '✗';
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier l'utilisateur{% endblock %}
+
+{% block body %}
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Modifier l'utilisateur : {{ user.name }}</h1>
+        <a href="{{ path('app_admin_user_show', {'id': user.id}) }}" class="btn btn-outline">Annuler</a>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl max-w-2xl mx-auto">
+        <div class="card-body">
+            {{ form_start(form) }}
+            
+            <div class="form-control w-full mb-4">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name) }}
+                {{ form_errors(form.name) }}
+            </div>
+
+            <div class="form-control w-full mb-4">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email) }}
+                {{ form_errors(form.email) }}
+            </div>
+
+            <div class="form-control mb-6">
+                <label class="label cursor-pointer justify-start gap-4">
+                    {{ form_widget(form.isActive) }}
+                    <span class="label-text">{{ form.isActive.vars.label }}</span>
+                </label>
+                {{ form_errors(form.isActive) }}
+            </div>
+
+            <div class="card-actions justify-end">
+                <button type="submit" class="btn" style="background-color: #003189; color: white;">Enregistrer les modifications</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

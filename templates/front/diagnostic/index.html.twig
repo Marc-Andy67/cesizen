@@ -12,7 +12,7 @@
     </div>
 
     {# GRID DES QUESTIONNAIRES #}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="{% if quizzes|length == 1 %}max-w-md mx-auto{% else %}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6{% endif %}">
         {% for quiz in quizzes %}
             
             {% set footerButton %}

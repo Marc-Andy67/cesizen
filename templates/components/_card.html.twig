@@ -7,6 +7,7 @@
     - image (string) : URL de l'image d'illustration (optionnelle)
     - image_alt (string) : Alt text obligatoire si image
     - badge (string) : Texte du badge en haut (optionnel)
+    - badges (array) : Liste de badges (optionnel, priorité sur badge)
     - badge_variant (string) : Variante du _badge.html.twig
     - footer (string/html) : Actions/Boutons en bas de carte
     - clickable_url (string) : Rend toute la carte cliquable (optionnel)
@@ -23,12 +24,24 @@
     {% if image|default(false) %}
         <figure class="aspect-video w-full bg-base-200 relative">
             <img src="{{ image }}" alt="{{ image_alt|default('') }}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-            {% if badge|default(false) %}
+            {% if badges|default(false) %}
+                <div class="absolute top-4 left-4 z-20 flex flex-wrap gap-1">
+                    {% for b in badges %}
+                        {{ include('components/_badge.html.twig', { label: b.label|default(b), variant: b.variant|default(badge_variant|default('new')) }) }}
+                    {% endfor %}
+                </div>
+            {% elseif badge|default(false) %}
                 <div class="absolute top-4 left-4 z-20">
                     {{ include('components/_badge.html.twig', { label: badge, variant: badge_variant|default('new') }) }}
                 </div>
             {% endif %}
         </figure>
+    {% elseif badges|default(false) %}
+         <div class="px-6 pt-6 z-20 relative flex flex-wrap gap-1">
+            {% for b in badges %}
+                {{ include('components/_badge.html.twig', { label: b.label|default(b), variant: b.variant|default(badge_variant|default('new')) }) }}
+            {% endfor %}
+        </div>
     {% elseif badge|default(false) %}
          <div class="px-6 pt-6 z-20 relative">
             {{ include('components/_badge.html.twig', { label: badge, variant: badge_variant|default('new') }) }}

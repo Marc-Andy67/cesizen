@@ -1,0 +1,56 @@
+   1) src\Security\Voter\UserVoter.php
+      ---------- begin diff ----------
+--- C:\Users\marca\cesizen\src\Security\Voter\UserVoter.php
++++ C:\Users\marca\cesizen\src\Security\Voter\UserVoter.php
+@@ -48,6 +48,7 @@
+                 if (in_array('ROLE_ADMIN', $subjectUser->getRoles(), true)) {
+                     throw new AccessDeniedException('Cannot delete an admin user.');
+                 }
++
+                 return true;
+         }
+ 
+
+      ----------- end diff -----------
+
+   2) tests\Tests\Unit\DiagnosticServiceTest.php
+      ---------- begin diff ----------
+--- C:\Users\marca\cesizen\tests\Tests\Unit\DiagnosticServiceTest.php
++++ C:\Users\marca\cesizen\tests\Tests\Unit\DiagnosticServiceTest.php
+@@ -94,4 +94,4 @@
+         $result = $this->service->getThresholdForScore(100, $quiz);
+         $this->assertNull($result);
+     }
+-}
+\ No newline at end of file
++}
+
+      ----------- end diff -----------
+
+   3) tests\Tests\Unit\UserVoterTest.php
+      ---------- begin diff ----------
+--- C:\Users\marca\cesizen\tests\Tests\Unit\UserVoterTest.php
++++ C:\Users\marca\cesizen\tests\Tests\Unit\UserVoterTest.php
+@@ -43,7 +43,7 @@
+     public function testAnonymousUserCannotDoAnything(): void
+     {
+         $targetUser = new User();
+-        
++
+         $token = $this->createMock(TokenInterface::class);
+         $token->method('getUser')->willReturn(null);
+ 
+@@ -57,7 +57,7 @@
+     public function testAdminCanEditAnyUser(): void
+     {
+         $targetUser = new User();
+-        
++
+         $loggedUser = new User();
+         $loggedUser->setRoles(['ROLE_ADMIN']);
+ 
+
+      ----------- end diff -----------
+
+
+Found 3 of 68 files that can be fixed in 2.427 seconds, 56.00 MB memory used

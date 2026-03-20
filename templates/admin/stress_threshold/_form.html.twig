@@ -1,61 +1,44 @@
-{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
-    
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            {{ form_label(form.level, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.level, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-gray-100 text-gray-800'}}) }}
-            <p class="text-xs text-gray-500 mt-1">Identifiant non modifiable.</p>
+        <div class="form-control w-full">
+            {{ form_label(form.level, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.level) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.level) }}</div>
         </div>
 
-        <div>
-            {{ form_label(form.name, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.name, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.name) }}
-            </div>
+        <div class="form-control w-full">
+            {{ form_label(form.name, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.name) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.name) }}</div>
         </div>
 
-        <div>
-            {{ form_label(form.minScore, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.minScore, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.minScore) }}
-            </div>
+        <div class="form-control w-full">
+            {{ form_label(form.minScore, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.minScore) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.minScore) }}</div>
         </div>
 
-        <div>
-            {{ form_label(form.maxScore, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-            {{ form_widget(form.maxScore, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-            <p class="text-xs text-gray-500 mt-1">Laissez vide si le score n'a pas de limite (ex: > 300).</p>
-            <div class="text-sm text-red-600 mt-1">
-                {{ form_errors(form.maxScore) }}
-            </div>
+        <div class="form-control w-full">
+            {{ form_label(form.maxScore, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.maxScore) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.maxScore) }}</div>
         </div>
-    </div>
+        
+        <div class="form-control w-full md:col-span-2">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.description) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.description) }}</div>
+        </div>
 
-    <div>
-        {{ form_label(form.description, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-        {{ form_widget(form.description, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-        <div class="text-sm text-red-600 mt-1">
-            {{ form_errors(form.description) }}
+        <div class="form-control w-full md:col-span-2">
+            {{ form_label(form.advice, null, {'label_attr': {'class': 'label font-bold'}}) }}
+            {{ form_widget(form.advice) }}
+            <div class="text-error text-sm mt-1">{{ form_errors(form.advice) }}</div>
         </div>
     </div>
 
-    <div>
-        {{ form_label(form.advice, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-        {{ form_widget(form.advice, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-        <div class="text-sm text-red-600 mt-1">
-            {{ form_errors(form.advice) }}
-        </div>
+    <div class="mt-6 flex justify-end gap-2">
+        <a href="{{ path('app_admin_stress_threshold_index') }}" class="btn btn-ghost">Annuler</a>
+        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
     </div>
-
-    <div class="flex justify-end pt-4 mt-6 border-t border-gray-200">
-        <a href="{{ path('app_admin_stress_threshold_index') }}" class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none mr-4">
-            Annuler
-        </a>
-        <button type="submit" class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-            {{ button_label|default('Enregistrer') }}
-        </button>
-    </div>
-
 {{ form_end(form) }}

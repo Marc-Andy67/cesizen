@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ResponseRepository::class)]
+#[ORM\Table(name: '`response`')]
 class Response
 {
     #[ORM\Id]

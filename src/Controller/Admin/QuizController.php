@@ -25,7 +25,7 @@ class QuizController extends AbstractController
     }
 
     #[Route('/nouveau', name: 'app_admin_quiz_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, \App\Repository\StressThresholdRepository $stressThresholdRepository): Response
     {
         $quiz = new Quiz();
         $form = $this->createForm(QuizType::class, $quiz);
@@ -46,14 +46,19 @@ class QuizController extends AbstractController
             return $this->redirectToRoute('app_admin_quiz_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $availableThresholds = $quiz->getId() 
+            ? $stressThresholdRepository->findAvailableForQuiz($quiz) 
+            : $stressThresholdRepository->findBy([], ['minScore' => 'ASC']);
+
         return $this->render('admin/quiz/form.html.twig', [
             'quiz' => $quiz,
             'form' => $form,
+            'available_thresholds' => $availableThresholds,
         ]);
     }
 
     #[Route('/{id}/modifier', name: 'app_admin_quiz_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Quiz $quiz, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Quiz $quiz, EntityManagerInterface $entityManager, \App\Repository\QuestionRepository $questionRepo, \App\Repository\StressThresholdRepository $stressThresholdRepository): Response
     {
         $form = $this->createForm(QuizType::class, $quiz);
         $form->handleRequest($request);
@@ -71,10 +76,77 @@ class QuizController extends AbstractController
             return $this->redirectToRoute('app_admin_quiz_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $activeQuestions = $questionRepo->findBy(['isActive' => true], ['title' => 'ASC']);
+        $availableQuestions = array_filter($activeQuestions, function($q) use ($quiz) {
+            return !$quiz->getQuestions()->contains($q);
+        });
+
+        $availableThresholds = $quiz->getId() 
+            ? $stressThresholdRepository->findAvailableForQuiz($quiz) 
+            : $stressThresholdRepository->findBy([], ['minScore' => 'ASC']);
+
         return $this->render('admin/quiz/form.html.twig', [
             'quiz' => $quiz,
             'form' => $form,
+            'available_questions' => $availableQuestions,
+            'available_thresholds' => $availableThresholds,
         ]);
+    }
+
+    #[Route('/{id}/associer-question/{questionId}', name: 'app_admin_quiz_attach_question', methods: ['POST'])]
+    public function attachQuestion(Request $request, Quiz $quiz, string $questionId, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('attach_question' . $quiz->getId(), $request->request->get('_token'))) {
+            $question = $em->getRepository(\App\Entity\Question::class)->find($questionId);
+            if ($question) {
+                $quiz->addQuestion($question);
+                $em->flush();
+                $this->addFlash('success', 'Question associée au questionnaire.');
+            }
+        }
+        return $this->redirectToRoute('app_admin_quiz_edit', ['id' => $quiz->getId()]);
+    }
+
+    #[Route('/{id}/dissocier-question/{questionId}', name: 'app_admin_quiz_detach_question', methods: ['POST'])]
+    public function detachQuestion(Request $request, Quiz $quiz, string $questionId, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('detach_question' . $quiz->getId(), $request->request->get('_token'))) {
+            $question = $em->getRepository(\App\Entity\Question::class)->find($questionId);
+            if ($question) {
+                $quiz->removeQuestion($question);
+                $em->flush();
+                $this->addFlash('success', 'Question dissociée du questionnaire.');
+            }
+        }
+        return $this->redirectToRoute('app_admin_quiz_edit', ['id' => $quiz->getId()]);
+    }
+
+    #[Route('/{id}/associer-seuil/{thresholdId}', name: 'app_admin_quiz_attach_threshold', methods: ['POST'])]
+    public function attachThreshold(Request $request, Quiz $quiz, string $thresholdId, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('attach_threshold' . $quiz->getId(), $request->request->get('_token'))) {
+            $threshold = $em->getRepository(\App\Entity\StressThreshold::class)->find($thresholdId);
+            if ($threshold) {
+                $quiz->addStressThreshold($threshold);
+                $em->flush();
+                $this->addFlash('success', 'Seuil associé avec succès.');
+            }
+        }
+        return $this->redirectToRoute('app_admin_quiz_edit', ['id' => $quiz->getId()]);
+    }
+
+    #[Route('/{id}/dissocier-seuil/{thresholdId}', name: 'app_admin_quiz_detach_threshold', methods: ['POST'])]
+    public function detachThreshold(Request $request, Quiz $quiz, string $thresholdId, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('detach_threshold' . $quiz->getId(), $request->request->get('_token'))) {
+            $threshold = $em->getRepository(\App\Entity\StressThreshold::class)->find($thresholdId);
+            if ($threshold) {
+                $quiz->removeStressThreshold($threshold);
+                $em->flush();
+                $this->addFlash('success', 'Seuil retiré du questionnaire.');
+            }
+        }
+        return $this->redirectToRoute('app_admin_quiz_edit', ['id' => $quiz->getId()]);
     }
 
     #[Route('/{id}/toggle', name: 'app_admin_quiz_toggle', methods: ['POST'])]

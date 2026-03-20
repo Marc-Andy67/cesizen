@@ -55,12 +55,12 @@ class Quiz
     /**
      * @var Collection<int, StressThreshold>
      */
-    #[ORM\OneToMany(
+    #[ORM\ManyToMany(
         targetEntity: StressThreshold::class,
-        mappedBy: 'quiz',
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
+        inversedBy: 'quizzes',
+        cascade: ['persist']
     )]
+    #[ORM\JoinTable(name: 'quiz_stress_threshold')]
     #[ORM\OrderBy(['minScore' => 'ASC'])]
     private Collection $stressThresholds;
 
@@ -230,7 +230,6 @@ class Quiz
     {
         if (!$this->stressThresholds->contains($stressThreshold)) {
             $this->stressThresholds->add($stressThreshold);
-            $stressThreshold->setQuiz($this);
         }
 
         return $this;
@@ -238,12 +237,7 @@ class Quiz
 
     public function removeStressThreshold(StressThreshold $stressThreshold): static
     {
-        if ($this->stressThresholds->removeElement($stressThreshold)) {
-            // set the owning side to null (unless already changed)
-            if ($stressThreshold->getQuiz() === $this) {
-                $stressThreshold->setQuiz(null);
-            }
-        }
+        $this->stressThresholds->removeElement($stressThreshold);
 
         return $this;
     }

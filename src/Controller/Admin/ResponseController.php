@@ -44,11 +44,21 @@ class ResponseController extends AbstractCrudController
         $quizResponse = new QuizResponse();
         $quizResponse->setIsActive(true);
         $quizResponse->setPosition(1);
+        $quizResponse->setPoints(0);
 
         $form = $this->createForm(ResponseType::class, $quizResponse);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $question = $quizResponse->getQuestion();
+            if ($question !== null) {
+                $question->addResponse($quizResponse);
+            } else {
+                $this->addFlash('error', 'Veuillez sélectionner une question.');
+                return $this->render('admin/response/new.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
             $em->persist($quizResponse);
             $em->flush();
             $this->addSuccessFlash('Réponse créée avec succès.');

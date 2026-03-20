@@ -12,6 +12,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
+#[ORM\Table(name: '`question`')]
 class Question
 {
     #[ORM\Id]
@@ -36,7 +37,7 @@ class Question
         min: 2,
         minMessage: 'Une question doit avoir au minimum {{ limit }} réponses.'
     )]
-    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'question', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Response::class, mappedBy: 'question', orphanRemoval: true, cascade: ['persist'])]
     private Collection $responses;
 
     /**

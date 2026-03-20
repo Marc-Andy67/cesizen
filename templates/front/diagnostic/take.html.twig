@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Passer le diagnostic - {{ quiz.title }} - CESIZen{% endblock %}
+
+{% block body %}
+<div class="py-8 md:py-12 max-w-4xl mx-auto px-4 space-y-8 animate-fade-in">
+    
+    {# En-tête du questionnaire #}
+    <div class="text-center mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-dsfr-blue tracking-tight mb-4">{{ quiz.title }}</h1>
+        {% if quiz.description %}
+            <p class="text-lg text-base-content/80 font-medium max-w-3xl mx-auto">{{ quiz.description|nl2br }}</p>
+        {% endif %}
+    </div>
+
+    {# Formulaire #}
+    <form action="{{ path('app_diagnostic_take', {'id': quiz.id}) }}" method="POST" class="space-y-8">
+        
+        {# Token CSRF #}
+        <input type="hidden" name="_token" value="{{ csrf_token('diagnostic') }}">
+
+        {# Liste des questions #}
+        <div class="space-y-6">
+            {% for question in questions %}
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                    <div class="card-body p-6 md:p-8">
+                        <h2 class="card-title text-xl font-bold text-dsfr-blue mb-2">
+                            {{ question.title }}
+                        </h2>
+                        
+                        {% if question.description %}
+                            <p class="text-base-content/70 text-sm mb-4">{{ question.description }}</p>
+                        {% endif %}
+
+                        <div class="mt-4 space-y-3">
+                            {% for response in question.responses %}
+                                <label class="flex items-start gap-4 p-3 rounded-lg border border-base-200 hover:border-dsfr-blue hover:bg-base-200/50 cursor-pointer transition-colors group">
+                                    <input type="radio" 
+                                           name="responses[{{ question.id }}]" 
+                                           value="{{ response.id }}" 
+                                           required
+                                           class="radio radio-primary mt-1 border-base-300" />
+                                    <div class="flex-grow">
+                                        <span class="text-base font-medium group-hover:text-dsfr-blue transition-colors block">
+                                            {{ response.description }}
+                                        </span>
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    <span>Aucune question n'est disponible pour ce questionnaire.</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Boutons d'action #}
+        <div class="flex justify-between items-center bg-base-200 p-6 rounded-xl border border-base-300 mt-10">
+            <a href="{{ path('app_diagnostic_index') }}" class="btn btn-ghost hover:bg-base-300 focus-visible:ring-2 focus-visible:ring-dsfr-blue outline-none transition-colors font-medium">
+                Annuler
+            </a>
+            <button type="submit" class="btn btn-primary bg-[#003189] hover:bg-[#002366] border-none text-white px-8 focus-visible:ring-4 focus-visible:ring-dsfr-blue/50 outline-none">
+                Calculer mon score
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

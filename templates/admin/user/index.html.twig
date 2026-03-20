@@ -73,18 +73,42 @@
                             <div class="flex justify-end gap-2">
                                 {# Toggle Active #}
                                 {% if app.user != user %}
-                                    <form method="post" action="{{ path('app_admin_user_toggle_active', {'id': user.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir {% if user.isActive %}désactiver{% else %}activer{% endif %} ce compte ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_active' ~ user.id) }}">
-                                        <button type="submit" class="btn btn-xs rounded-sm {% if user.isActive %}btn-error btn-outline{% else %}btn-success btn-outline{% endif %}" title="{% if user.isActive %}Désactiver{% else %}Activer{% endif %}">
-                                            {% if user.isActive %}Désactiver{% else %}Activer{% endif %}
-                                        </button>
-                                    </form>
+                                    {% if is_granted('USER_TOGGLE_ACTIVE', user) %}
+                                        <form method="post" action="{{ path('app_admin_user_toggle_active', {'id': user.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir {% if user.isActive %}désactiver{% else %}activer{% endif %} ce compte ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle_active' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-xs rounded-sm {% if user.isActive %}btn-error btn-outline{% else %}btn-success btn-outline{% endif %}" title="{% if user.isActive %}Désactiver{% else %}Activer{% endif %}">
+                                                {% if user.isActive %}Désactiver{% else %}Activer{% endif %}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
                                 
-                                    {# Toggle Admin Role #}
+                                {# Toggle Admin Role #}
+                                {% if is_granted('USER_TOGGLE_ROLE', user) %}
                                     <form method="post" action="{{ path('app_admin_user_toggle_role', {'id': user.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir {% if 'ROLE_ADMIN' in user.roles %}retirer les droits administrateur de{% else %}promouvoir administrateur{% endif %} cet utilisateur ?');">
                                         <input type="hidden" name="_token" value="{{ csrf_token('toggle_role' ~ user.id) }}">
                                         <button type="submit" class="btn btn-xs rounded-sm {% if 'ROLE_ADMIN' in user.roles %}btn-ghost border border-base-300 text-base-content/70 hover:bg-base-300{% else %}bg-purple-100 text-purple-700 hover:bg-purple-200 border-none{% endif %}" title="{% if 'ROLE_ADMIN' in user.roles %}Retirer Admin{% else %}Rendre Admin{% endif %}">
                                             {% if 'ROLE_ADMIN' in user.roles %}Rétrograder{% else %}Promouvoir{% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                {# Unlock Account #}
+                                {% if user.lockedUntil is not null and user.lockedUntil > date() %}
+                                    <form method="post" action="{{ path('app_admin_user_unlock', {'id': user.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir débloquer ce compte ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('unlock_user' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-xs btn-warning rounded-sm" title="Débloquer">
+                                            Débloquer
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                {# Delete Account #}
+                                {% if 'ROLE_ADMIN' not in user.roles and app.user != user %}
+                                    <form method="post" action="{{ path('app_admin_user_delete', {'id': user.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce compte ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_user' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-xs btn-error rounded-sm" title="Supprimer">
+                                            Supprimer
                                         </button>
                                     </form>
                                 {% endif %}
@@ -105,7 +129,7 @@
     {# Pagination KnpPaginatorBundle #}
     {% if pagination.getTotalItemCount > 0 %}
         <div class="mt-6 flex justify-center">
-            {{ knp_pagination_render(pagination, 'components/_pagination.html.twig') }}
+            {{ knp_pagination_render(pagination, 'components/_knp_pagination.html.twig') }}
         </div>
     {% endif %}
 {% endblock %}

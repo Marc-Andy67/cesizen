@@ -63,7 +63,7 @@ class DiagnosticService
     /**
      * Récupère un seuil par son ID (utilisé pour les utilisateurs non connectés).
      */
-    public function getThresholdById(int $id): ?StressThreshold
+    public function getThresholdById(string $id): ?StressThreshold
     {
         return $this->thresholdRepository->find($id);
     }

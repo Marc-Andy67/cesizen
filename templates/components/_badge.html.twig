@@ -7,7 +7,7 @@
 #}
 
 {% set variants = {
-    'success': 'badge-success text-success font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
+    'success': 'font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide border-none',
     'warning': 'badge-warning text-warning-content font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
     'error': 'badge-error text-error-content font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
     'info': 'badge-info text-primary bg-primary/10 border-none font-bold rounded-sm px-2 py-3 uppercase text-[0.7rem] tracking-wide',
@@ -17,6 +17,6 @@
 
 {% set badge_variant = variant|default('neutral') %}
 
-<span class="badge {{ variants[badge_variant]|default(variants['neutral']) }}">
+<span class="badge {{ variants[badge_variant]|default(variants['neutral']) }}" {% if badge_variant == 'success' %}style="background-color: #2D6A4F; color: #FFFFFF;"{% endif %}>
     {{ label }}
 </span>

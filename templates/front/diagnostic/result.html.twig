@@ -27,11 +27,12 @@
         <div class="p-8 md:p-12 text-center border-b border-base-200 bg-base-200/50">
             <p class="text-sm font-bold text-base-content/60 uppercase tracking-widest mb-2">Votre Score LCU</p>
             
-            <div class="text-6xl md:text-8xl font-black text-dsfr-blue tracking-tighter">
-                {{ score }}
+            <div class="text-lg font-semibold text-dsfr-blue mt-2">
+                Résultat calculé et traité conformément au RGPD.
             </div>
-            
-            <p class="text-sm text-base-content/60 mt-2 font-medium">Life Change Units (Unités de Changement de Vie)</p>
+            <p class="text-sm text-base-content/60 mt-1 font-medium">
+                Vos données ne sont pas conservées sans votre consentement.
+            </p>
         </div>
 
         {# RÉSULTAT ET SEUIL #}
@@ -71,7 +72,7 @@
         {% else %}
             {{ include('components/_button.html.twig', {
                 label: 'Mon historique',
-                variant: 'secondary',
+                variant: 'outline',
                 attr: 'href="' ~ path('app_profile_index') ~ '"'
             }) }}
         {% endif %}

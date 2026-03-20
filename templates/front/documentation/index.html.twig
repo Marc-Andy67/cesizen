@@ -8,7 +8,7 @@
     {# HEADER SECTION #}
     <div class="text-center max-w-3xl mx-auto mb-12">
         <h1 class="text-3xl md:text-5xl font-extrabold text-dsfr-blue mb-4 tracking-tight">Ressources & Prévention</h1>
-        <p class="text-lg md:text-xl text-base-content/70 font-medium">Explorez notre base de connaissances rédigée par des professionnels sur la santé mentale, le stress et les méthodes de relaxation.</p>
+        <p class="text-lg md:text-xl text-base-content/70 font-medium">Stress, anxiété, burn-out, troubles du sommeil... Nos ressources sont rédigées par des professionnels de santé pour vous accompagner à chaque étape. Prenez soin de vous, vous le méritez.</p>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8 items-start">
@@ -60,11 +60,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% for doc in pagination %}
                     
+                    {% set doc_badges = [] %}
+                    {% for cat in doc.categories %}
+                        {% set doc_badges = doc_badges|merge([{'label': cat.name, 'variant': 'info'}]) %}
+                    {% endfor %}
+                    
                     {# Utilisation du composant _card #}
                     {{ include('components/_card.html.twig', {
                         title: doc.title,
-                        badge: doc.categories|length > 0 ? doc.categories[0].name : null,
-                        badge_variant: 'info',
+                        badges: doc_badges,
                         content: doc.content|striptags|slice(0, 150) ~ '...',
                         clickable_url: path('app_documentation_show', {'id': doc.id}),
                         footer: include('components/_button.html.twig', {

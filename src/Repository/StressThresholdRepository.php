@@ -40,4 +40,15 @@ class StressThresholdRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findAvailableForQuiz(\App\Entity\Quiz $quiz): array
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.quizzes', 'q')
+            ->where(':quiz NOT MEMBER OF s.quizzes')
+            ->setParameter('quiz', $quiz)
+            ->orderBy('s.minScore', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

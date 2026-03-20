@@ -1,4 +1,5 @@
-{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+    {{ form_errors(form) }}
     
     <div class="space-y-4">
         <div>
@@ -23,17 +24,97 @@
             {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900 font-medium'}}) }}
         </div>
 
-        <div>
-            {{ form_label(form.quizzes, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-4 border border-gray-200 rounded-md bg-gray-50">
-                {% for child in form.quizzes %}
-                    <div class="flex items-center">
-                        {{ form_widget(child, {'attr': {'class': 'h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'}}) }}
-                        {{ form_label(child, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900'}}) }}
-                    </div>
+
+    </div>
+
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Réponses</h3>
+        
+        {% if form.responses.vars.errors|length > 0 %}
+            <div class="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-3 mb-4">
+                {% for error in form.responses.vars.errors %}
+                    <p>{{ error.message }}</p>
                 {% endfor %}
             </div>
+        {% endif %}
+        
+        {% set prototype_html %}
+            <div class="response-item relative bg-base-200 p-4 rounded-sm border border-base-300 mb-4 transition-all">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="response-number badge badge-neutral badge-sm font-bold">Réponse __number__</span>
+                    <button type="button" class="btn-remove-response btn btn-xs btn-error btn-outline rounded-sm" aria-label="Supprimer cette réponse">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2 space-y-2">
+                        {{ form_label(form.responses.vars.prototype.description, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                        {{ form_widget(form.responses.vars.prototype.description, {'attr': {'class': 'textarea textarea-bordered textarea-sm w-full rounded-sm', 'rows': 2}}) }}
+                        <div class="text-xs text-error">{{ form_errors(form.responses.vars.prototype.description) }}</div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            {{ form_label(form.responses.vars.prototype.points, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                            {{ form_widget(form.responses.vars.prototype.points, {'attr': {'class': 'input input-sm input-bordered w-full rounded-sm'}}) }}
+                            <div class="text-xs text-error">{{ form_errors(form.responses.vars.prototype.points) }}</div>
+                        </div>
+                        <div class="space-y-1">
+                            {{ form_label(form.responses.vars.prototype.position, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                            {{ form_widget(form.responses.vars.prototype.position, {'attr': {'class': 'input input-sm input-bordered w-full rounded-sm'}}) }}
+                            <div class="text-xs text-error">{{ form_errors(form.responses.vars.prototype.position) }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-2">
+                    {{ form_widget(form.responses.vars.prototype.isActive, {'attr': {'class': 'checkbox checkbox-sm border-base-300'}}) }}
+                    {{ form_label(form.responses.vars.prototype.isActive, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80 cursor-pointer'}}) }}
+                </div>
+                {{ form_rest(form.responses.vars.prototype) }}
+            </div>
+        {% endset %}
+        
+        <div class="space-y-4" id="responses-wrapper" data-prototype="{{ prototype_html|e('html_attr') }}" data-index="{{ form.responses|length }}">
+            {% for response in form.responses %}
+                <div class="response-item relative bg-base-200 p-4 rounded-sm border border-base-300 mb-4 transition-all">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="response-number badge badge-neutral badge-sm font-bold">Réponse {{ loop.index }}</span>
+                        <button type="button" class="btn-remove-response btn btn-xs btn-error btn-outline rounded-sm" aria-label="Supprimer cette réponse">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2 space-y-2">
+                            {{ form_label(response.description, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                            {{ form_widget(response.description, {'attr': {'class': 'textarea textarea-bordered textarea-sm w-full rounded-sm', 'rows': 2}}) }}
+                            <div class="text-xs text-error">{{ form_errors(response.description) }}</div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="space-y-1">
+                                {{ form_label(response.points, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                                {{ form_widget(response.points, {'attr': {'class': 'input input-sm input-bordered w-full rounded-sm'}}) }}
+                                <div class="text-xs text-error">{{ form_errors(response.points) }}</div>
+                            </div>
+                            <div class="space-y-1">
+                                {{ form_label(response.position, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80'}}) }}
+                                {{ form_widget(response.position, {'attr': {'class': 'input input-sm input-bordered w-full rounded-sm'}}) }}
+                                <div class="text-xs text-error">{{ form_errors(response.position) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center gap-2">
+                        {{ form_widget(response.isActive, {'attr': {'class': 'checkbox checkbox-sm border-base-300'}}) }}
+                        {{ form_label(response.isActive, null, {'label_attr': {'class': 'text-sm font-medium text-base-content/80 cursor-pointer'}}) }}
+                    </div>
+                    {{ form_rest(response) }}
+                </div>
+            {% endfor %}
         </div>
+        
+        <button type="button" id="add-response" class="mt-4 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-md text-sm font-medium transition-colors">
+            + Ajouter une réponse
+        </button>
     </div>
 
     <div class="flex justify-end pt-4 mt-6 border-t border-gray-200">

@@ -45,6 +45,10 @@ class QuestionController extends AbstractCrudController
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Le formulaire contient des erreurs. Vérifiez que vous avez ajouté au moins 2 réponses.');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($question);
             $em->flush();

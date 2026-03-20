@@ -13,175 +13,208 @@
     {{ form_start(form, {'attr': {'class': 'space-y-8'}}) }}
 
         {# SECTION 1: Informations Générales #}
-        <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
-            <div class="card-body">
-                <h2 class="card-title text-xl text-base-content border-b border-base-200 pb-2 mb-4">Informations Générales</h2>
-                <div class="space-y-4">
-                    {{ form_row(form.title) }}
-                    {{ form_row(form.description) }}
-                    {{ form_row(form.categories) }}
-                    {{ form_row(form.isActive) }}
-                </div>
-            </div>
-        </div>
+        <div class="card bg-white shadow-sm border border-base-200 rounded-sm">
+            <div class="card-body p-6 md:p-8">
+                <h2 class="card-title text-xl text-base-content border-b border-base-200 pb-2 mb-6 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dsfr-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Informations Générales
+                </h2>
+                
+                <div class="space-y-6">
+                    {# Champ title #}
+                    <div>
+                        {{ form_label(form.title, 'Titre', {'label_attr': {'class': 'label text-sm font-bold text-base-content/80 uppercase tracking-wider mb-1'}}) }}
+                        {{ form_widget(form.title, {'attr': {'class': 'input input-bordered w-full rounded-sm focus:border-dsfr-blue', 'placeholder': 'Ex: Échelle de stress Holmes & Rahe'}}) }}
+                        <div class="text-xs text-base-content/50 mt-1">Nom affiché aux utilisateurs sur la page de diagnostic</div>
+                        <div class="text-error text-sm mt-1">{{ form_errors(form.title) }}</div>
+                    </div>
 
-        {# SECTION 2: Questions et Réponses #}
-        <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
-            <div class="card-body">
-                <div class="flex justify-between items-center border-b border-base-200 pb-2 mb-4">
-                    <h2 class="card-title text-xl text-base-content m-0">Questions</h2>
-                    <button type="button" class="btn btn-sm btn-primary rounded-sm" id="add-question-btn">
-                        + Ajouter une question
-                    </button>
-                </div>
+                    {# Champ description #}
+                    <div>
+                        {{ form_label(form.description, 'Description', {'label_attr': {'class': 'label text-sm font-bold text-base-content/80 uppercase tracking-wider mb-1'}}) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'textarea textarea-bordered w-full rounded-sm min-h-24 focus:border-dsfr-blue', 'placeholder': 'Décrivez l\'objectif de ce questionnaire...'}}) }}
+                        <div class="text-xs text-base-content/50 mt-1">Résumé affiché dans la card de présentation du quiz</div>
+                        <div class="text-error text-sm mt-1">{{ form_errors(form.description) }}</div>
+                    </div>
 
-                <div id="questions-wrapper"
-                     class="space-y-6"
-                     data-prototype="{{ form_widget(form.questions.vars.prototype)|e('html_attr') }}"
-                     data-index="{{ form.questions|length }}">
-
-                    {% for questionField in form.questions %}
-                        <div class="question-item card bg-base-200 p-4 rounded-sm border border-base-300 relative">
-                            {{ form_row(questionField.title) }}
-                            {{ form_row(questionField.description) }}
-                            {{ form_row(questionField.isActive) }}
-                            
-                            <div class="mt-4 border-t border-base-300 pt-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <h3 class="font-bold text-sm uppercase text-base-content/70">Réponses</h3>
-                                    <button type="button" class="btn btn-xs btn-outline add-response-btn" data-target="#responses-wrapper-{{ loop.index0 }}">
-                                        + Ajouter une réponse
-                                    </button>
-                                </div>
-                                
-                                <div id="responses-wrapper-{{ loop.index0 }}"
-                                     class="responses-wrapper space-y-3"
-                                     data-prototype="{{ form_widget(questionField.responses.vars.prototype)|e('html_attr') }}"
-                                     data-index="{{ questionField.responses|length }}">
-                                     
-                                     {% for responseField in questionField.responses %}
-                                        <div class="response-item flex flex-col md:flex-row gap-4 items-start p-3 bg-base-100 rounded-sm border border-base-200">
-                                            <div class="flex-grow w-full">
-                                                {{ form_row(responseField.description) }}
-                                                {{ form_row(responseField.points) }}
-                                                {{ form_row(responseField.isActive) }}
-                                                {{ form_widget(responseField.position) }}
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-error btn-square remove-btn mt-8" title="Supprimer la réponse">X</button>
-                                        </div>
-                                     {% endfor %}
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-error absolute top-4 right-4 remove-btn">Supprimer la question</button>
+                    {# Champ categories #}
+                    <div>
+                        {{ form_label(form.categories, 'Catégories', {'label_attr': {'class': 'label text-sm font-bold text-base-content/80 uppercase tracking-wider mb-1'}}) }}
+                        <div class="border border-base-300 rounded-sm p-4 bg-base-50">
+                            {{ form_widget(form.categories, {'attr': {'class': 'flex flex-wrap gap-4'}}) }}
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+                        <div class="text-xs text-base-content/50 mt-1">Permet de filtrer et classer le questionnaire</div>
+                        <div class="text-error text-sm mt-1">{{ form_errors(form.categories) }}</div>
+                    </div>
 
-        {# SECTION 3: Seuils de résultats #}
-        <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
-            <div class="card-body">
-                <div class="flex justify-between items-center border-b border-base-200 pb-2 mb-4">
-                    <h2 class="card-title text-xl text-base-content m-0">Seuils de résultats (Paliers)</h2>
-                    <button type="button" class="btn btn-sm btn-primary rounded-sm" id="add-threshold-btn">
-                        + Ajouter un palier
-                    </button>
-                </div>
-
-                <div id="thresholds-wrapper"
-                     class="space-y-4"
-                     data-prototype="{{ form_widget(form.stressThresholds.vars.prototype)|e('html_attr') }}"
-                     data-index="{{ form.stressThresholds|length }}">
-                     
-                    {% for thresholdField in form.stressThresholds %}
-                        <div class="threshold-item card bg-base-200 p-4 rounded-sm border border-base-300 relative">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {{ form_row(thresholdField.name) }}
-                                {{ form_row(thresholdField.level) }}
-                                {{ form_row(thresholdField.minScore) }}
-                                {{ form_row(thresholdField.maxScore) }}
-                            </div>
-                            {{ form_row(thresholdField.description) }}
-                            {{ form_row(thresholdField.advice) }}
-                            
-                            <button type="button" class="btn btn-sm btn-error absolute top-4 right-4 remove-btn">X</button>
+                    {# Champ isActive #}
+                    <div class="flex items-center justify-between bg-base-200 rounded-sm p-4 border border-base-300">
+                        <div>
+                            <p class="font-bold text-sm">Questionnaire actif</p>
+                            <p class="text-xs text-base-content/60">
+                                Les utilisateurs peuvent accéder à ce questionnaire
+                            </p>
                         </div>
-                    {% endfor %}
+                        {{ form_widget(form.isActive, {'attr': {'class': 'toggle toggle-primary'}}) }}
+                    </div>
                 </div>
             </div>
         </div>
+
+        {# Hidden select to keep questions mapped for main form submit #}
+        <div class="hidden">
+            {{ form_widget(form.questions) }}
+        </div>
+
+        {% if quiz.id %}
+            {# SECTION 2: Questions associées #}
+            <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
+                <div class="card-body">
+                    <div class="flex justify-between items-center border-b border-base-200 pb-2 mb-4">
+                        <h2 class="card-title text-xl text-base-content m-0">Questions Associées</h2>
+                        <button type="button" class="btn btn-sm btn-primary rounded-sm" onclick="questions_modal.showModal()">
+                            + Associer une question
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for question in quiz.questions %}
+                        <div class="card bg-base-200 p-4 rounded-sm border border-base-300">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="badge badge-neutral mb-2">Question {{ loop.index }}</span>
+                                    <h3 class="font-bold text-base-content">{{ question.title }}</h3>
+                                </div>
+                                <form action="{{ path('app_admin_quiz_detach_question', {id: quiz.id, questionId: question.id}) }}" method="post" data-turbo="false">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('detach_question' ~ quiz.id) }}">
+                                    <button type="submit" class="btn btn-xs btn-error btn-outline rounded-sm">Retirer</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-base-content/60">Aucune question associée.</p>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {# SECTION 3: Seuils de résultats #}
+            <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm mb-8">
+                <div class="card-body">
+                    <div class="flex justify-between items-center border-b border-base-200 pb-2 mb-4">
+                        <h2 class="card-title text-xl text-base-content m-0">Seuils de résultats (Paliers)</h2>
+                        <div class="flex gap-2">
+                            <button type="button" class="btn btn-sm btn-primary btn-outline rounded-sm" onclick="thresholds_modal.showModal()">
+                                + Associer un seuil existant
+                            </button>
+                            <a href="{{ path('app_admin_stress_threshold_new', {'quiz_id': quiz.id}) }}" class="btn btn-sm btn-primary rounded-sm">
+                                + Créer un nouveau seuil
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                    {% for threshold in quiz.stressThresholds %}
+                        <div class="card bg-base-200 p-4 rounded-sm border border-base-300 flex flex-row justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-base-content">{{ threshold.level }} - {{ threshold.name }}</h3>
+                                <p class="text-sm text-base-content/70">Score: {{ threshold.minScore }} à {{ threshold.maxScore }}</p>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <a href="{{ path('app_admin_stress_threshold_edit', {id: threshold.id}) }}" class="btn btn-xs btn-outline rounded-sm">Éditer</a>
+                                <form action="{{ path('app_admin_quiz_detach_threshold', {id: quiz.id, thresholdId: threshold.id}) }}" method="post" data-turbo="false">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('detach_threshold' ~ quiz.id) }}">
+                                    <button type="submit" class="btn btn-xs btn-warning rounded-sm">Retirer</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-sm text-base-content/60">Aucun seuil défini.</p>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            {# Modal for associating a question #}
+            <dialog id="questions_modal" class="modal">
+                <div class="modal-box bg-base-100 rounded-sm">
+                    <h3 class="font-bold text-lg mb-4 text-base-content">Associer une question</h3>
+                    
+                    <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                        {% if available_questions is defined and available_questions|length > 0 %}
+                            {% for q in available_questions %}
+                                <div class="flex justify-between items-center p-3 bg-base-200 border border-base-300 rounded-sm">
+                                    <span class="text-sm font-medium">{{ q.title }}</span>
+                                    <form action="{{ path('app_admin_quiz_attach_question', {id: quiz.id, questionId: q.id}) }}" method="post" data-turbo="false">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('attach_question' ~ quiz.id) }}">
+                                        <button type="submit" class="btn btn-xs btn-success text-white rounded-sm">Ajouter</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-sm text-base-content/60">Toutes les questions actives sont déjà associées.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <button class="btn btn-sm rounded-sm">Fermer</button>
+                        </form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
+            {# Modal for associating a threshold #}
+            <dialog id="thresholds_modal" class="modal">
+                <div class="modal-box bg-base-100 rounded-sm">
+                    <h3 class="font-bold text-lg mb-4 text-base-content">Associer un seuil existant</h3>
+                    
+                    <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                        {% if available_thresholds is defined and available_thresholds|length > 0 %}
+                            {% for t in available_thresholds %}
+                                <div class="flex justify-between items-center p-3 bg-base-200 border border-base-300 rounded-sm">
+                                    <span class="text-sm font-medium">{{ t.level }} - {{ t.name }} ({{ t.minScore }}{{ t.maxScore ? ' - ' ~ t.maxScore : ' +' }})</span>
+                                    <form action="{{ path('app_admin_quiz_attach_threshold', {id: quiz.id, thresholdId: t.id}) }}" method="post" data-turbo="false">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('attach_threshold' ~ quiz.id) }}">
+                                        <button type="submit" class="btn btn-xs btn-success text-white rounded-sm">Associer</button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-sm text-base-content/60">Aucun seuil disponible à associer.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="modal-action">
+                        <form method="dialog">
+                            <button class="btn btn-sm rounded-sm">Fermer</button>
+                        </form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+            
+        {% else %}
+            {# Creation mode placeholder #}
+            <div class="alert alert-info rounded-sm shadow-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 mr-2"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Veuillez enregistrer ce questionnaire une première fois pour pouvoir y associer des questions et des seuils de résultats.</span>
+            </div>
+        {% endif %}
 
         <div class="flex justify-end mt-8">
-            <button type="submit" class="btn btn-primary rounded-sm shadow-sm">{{ quiz.id ? 'Enregistrer les modifications' : 'Créer le questionnaire' }}</button>
+            <button type="submit" class="btn btn-primary btn-wide rounded-sm shadow-sm" formnovalidate>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                {{ quiz.id ? 'Enregistrer les modifications' : 'Créer le questionnaire' }}
+            </button>
         </div>
 
     {{ form_end(form) }}
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Logique générique pour l'ajout d'éléments CollectionType
-            function addFormToCollection($wrapper) {
-                let prototype = $wrapper.dataset.prototype;
-                let index = parseInt($wrapper.dataset.index);
-                let newForm = prototype.replace(/__name__/g, index);
-                
-                // Si la chaine contient un sous-__name__ pour les réponses de la nouvelle question, on ne le remplace pas ici.
-                // Cela est géré Symfony côté backend si on bind bien.
-                
-                $wrapper.insertAdjacentHTML('beforeend', newForm);
-                $wrapper.dataset.index = index + 1;
-                
-                // Réattacher les événements de suppression sur les nouveaux boutons
-                attachRemoveEvents();
-            }
-
-            function attachRemoveEvents() {
-                document.querySelectorAll('.remove-btn').forEach(btn => {
-                    // Evite d'attacher plusieurs fois l'événement
-                    if (!btn.dataset.eventAttached) {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            this.closest('.question-item, .response-item, .threshold-item').remove();
-                        });
-                        btn.dataset.eventAttached = 'true';
-                    }
-                });
-            }
-
-            // Questions
-            const questionWrapper = document.getElementById('questions-wrapper');
-            if (document.getElementById('add-question-btn')) {
-                document.getElementById('add-question-btn').addEventListener('click', () => addFormToCollection(questionWrapper));
-            }
-
-            // Réponses (délégation d'événement car les questions peuvent être créées dynamiquement)
-            document.body.addEventListener('click', function(e) {
-                if(e.target && e.target.classList.contains('add-response-btn')) {
-                    e.preventDefault();
-                    let targetSelector = e.target.getAttribute('data-target');
-                    // Gérer le cas où la question a juste été créée et "data-target" pointe vers #responses-wrapper-__name__
-                    let targetWrapper = document.querySelector(targetSelector);
-                    if (targetWrapper) {
-                        addFormToCollection(targetWrapper);
-                    } else {
-                        // Cas dynamique complexe: la cible n'est pas encore bien nommée.
-                        // On trouve le wrapper suivant le bouton cible
-                        let parentT = e.target.closest('.border-t').querySelector('.responses-wrapper');
-                        if (parentT) {
-                            addFormToCollection(parentT);
-                        }
-                    }
-                }
-            });
-
-            // Paliers
-            const thresholdWrapper = document.getElementById('thresholds-wrapper');
-            if (document.getElementById('add-threshold-btn')) {
-                document.getElementById('add-threshold-btn').addEventListener('click', () => addFormToCollection(thresholdWrapper));
-            }
-
-            attachRemoveEvents();
-        });
-    </script>
 {% endblock %}

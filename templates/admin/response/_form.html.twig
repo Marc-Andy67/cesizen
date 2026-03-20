@@ -1,4 +1,4 @@
-{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
     
     <div class="space-y-4">
         <div>
@@ -18,23 +18,12 @@
             </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                {{ form_label(form.points, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-                {{ form_widget(form.points, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-                <p class="text-xs text-gray-500 mt-1">Valeur de l'événement (ex: 100 pour la mortalité d'un conjoint).</p>
-                <div class="text-sm text-red-600 mt-1">
-                    {{ form_errors(form.points) }}
-                </div>
-            </div>
-
-            <div>
-                {{ form_label(form.position, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
-                {{ form_widget(form.position, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
-                <p class="text-xs text-gray-500 mt-1">Ordre d'affichage de la réponse (ex: 1 pour "Oui").</p>
-                <div class="text-sm text-red-600 mt-1">
-                    {{ form_errors(form.position) }}
-                </div>
+        <div>
+            {{ form_label(form.points, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.points, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-800'}}) }}
+            <p class="text-xs text-gray-500 mt-1">Valeur de l'événement (ex: 100 pour la mortalité d'un conjoint).</p>
+            <div class="text-sm text-red-600 mt-1">
+                {{ form_errors(form.points) }}
             </div>
         </div>
 

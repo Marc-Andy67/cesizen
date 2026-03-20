@@ -1,0 +1,37 @@
+{# templates/components/_knp_pagination.html.twig #}
+{% if pageCount > 1 %}
+<nav aria-label="Pagination Navigation" class="flex justify-center mt-6">
+    <div class="join">
+        {# Previous Page #}
+        {% if previous is defined %}
+            <a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="join-item btn btn-outline border-[#003189] text-[#003189] hover:bg-[#003189] hover:text-white hover:border-[#003189]" aria-label="Page précédente">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+        {% else %}
+            <button disabled class="join-item btn btn-outline border-base-300 text-base-content/40 hover:bg-transparent cursor-not-allowed" aria-label="Page précédente">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+        {% endif %}
+
+        {# Pages #}
+        {% for page in pagesInRange %}
+            {% if page == current %}
+                <span class="join-item btn bg-[#003189] border-[#003189] text-white hover:bg-[#003189]" aria-current="page">{{ page }}</span>
+            {% else %}
+                <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="join-item btn btn-outline border-[#003189] text-[#003189] hover:bg-[#003189] hover:text-white hover:border-[#003189]" aria-label="Aller à la page {{ page }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {# Next Page #}
+        {% if next is defined %}
+            <a rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="join-item btn btn-outline border-[#003189] text-[#003189] hover:bg-[#003189] hover:text-white hover:border-[#003189]" aria-label="Page suivante">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+        {% else %}
+            <button disabled class="join-item btn btn-outline border-base-300 text-base-content/40 hover:bg-transparent cursor-not-allowed" aria-label="Page suivante">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}

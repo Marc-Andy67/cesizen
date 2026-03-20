@@ -16,46 +16,46 @@
                     
                     <ul class="menu p-0 w-full gap-1">
                         <li>
-                            <a href="{{ path('app_admin_dashboard') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_dashboard') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Tableau de bord
                             </a>
                         </li>
                         <li>
-                            <a href="{{ path('app_admin_user_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_user_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_user_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_user_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Utilisateurs
                             </a>
                         </li>
                         
-                        <li class="menu-title text-base-content/60 font-bold uppercase text-[0.65rem] tracking-wider mt-4 mb-2 pb-1 border-b border-base-200">Contenu</li>
+                        <li class="menu-title mt-4 mb-2 pb-1 border-b border-base-200 uppercase text-[0.65rem] tracking-wider font-bold {% if (app.request.attributes.get('_route') starts with 'app_admin_category_') or (app.request.attributes.get('_route') starts with 'app_admin_documentation_') %}bg-base-200 text-dsfr-blue rounded-sm px-3{% else %}text-base-content/60{% endif %}">Contenu</li>
                         <li>
-                            <a href="{{ path('app_admin_category_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_category_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_category_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_category_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Catégories
                             </a>
                         </li>
                         <li>
-                            <a href="{{ path('app_admin_documentation_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_documentation_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_documentation_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_documentation_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Documentations
                             </a>
                         </li>
                         
-                        <li class="menu-title text-base-content/60 font-bold uppercase text-[0.65rem] tracking-wider mt-4 mb-2 pb-1 border-b border-base-200">Diagnostics</li>
+                        <li class="menu-title mt-4 mb-2 pb-1 border-b border-base-200 uppercase text-[0.65rem] tracking-wider font-bold {% if (app.request.attributes.get('_route') starts with 'app_admin_quiz_') or (app.request.attributes.get('_route') starts with 'app_admin_question_') or (app.request.attributes.get('_route') starts with 'app_admin_response_') or (app.request.attributes.get('_route') starts with 'app_admin_stress_threshold_') %}bg-base-200 text-dsfr-blue rounded-sm px-3{% else %}text-base-content/60{% endif %}">Diagnostics</li>
                         <li>
-                            <a href="{{ path('app_admin_quiz_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_quiz_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_quiz_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_quiz_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Questionnaires
                             </a>
                         </li>
                         <li>
-                            <a href="{{ path('app_admin_question_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_question_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_question_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_question_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Questions
                             </a>
                         </li>
                         <li>
-                            <a href="{{ path('app_admin_response_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_response_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_response_index') }}" class="rounded-sm font-medium {% if app.request.attributes.get('_route') starts with 'app_admin_response_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Réponses
                             </a>
                         </li>
                         <li>
-                            <a href="{{ path('app_admin_stress_threshold_index') }}" class="rounded-sm font-medium mt-2 {% if app.request.attributes.get('_route') starts with 'app_admin_stress_threshold_' %}!bg-dsfr-blue !text-white{% else %}text-base-content/80 hover:bg-base-200{% endif %}">
+                            <a href="{{ path('app_admin_stress_threshold_index') }}" class="rounded-sm font-medium mt-2 {% if app.request.attributes.get('_route') starts with 'app_admin_stress_threshold_' %}border-2 border-[#003189] !text-[#003189] bg-transparent font-bold focus:!bg-transparent active:!bg-transparent{% else %}text-base-content/80 hover:bg-base-200 focus:!bg-base-200 active:!bg-base-200 focus:!text-base-content{% endif %}">
                                 Seuils de Stress
                             </a>
                         </li>
@@ -65,7 +65,7 @@
         </aside>
 
         {# Main content admin #}
-        <div class="flex-grow w-full">
+        <div class="flex-grow w-full" data-turbo="false">
             <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm">
                 <div class="card-body p-6 md:p-10 !overflow-visible">
                     {% block admin_content %}{% endblock %}

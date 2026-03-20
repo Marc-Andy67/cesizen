@@ -89,7 +89,6 @@ class StressThresholdController extends AbstractCrudController
         ]);
     }
 
-
     #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, StressThreshold $stressThreshold): Response
     {

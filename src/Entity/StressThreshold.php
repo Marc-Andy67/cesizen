@@ -37,6 +37,7 @@ class StressThreshold
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice = null;
 
+    /** @var Collection<int, Quiz> */
     #[ORM\ManyToMany(targetEntity: Quiz::class, mappedBy: 'stressThresholds')]
     private Collection $quizzes;
 

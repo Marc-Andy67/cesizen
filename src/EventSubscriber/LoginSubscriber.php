@@ -53,7 +53,7 @@ class LoginSubscriber implements EventSubscriberInterface
         }
 
         $now = new \DateTimeImmutable();
-        if ($user->getLockedUntil() !== null && $now < $user->getLockedUntil()) {
+        if (null !== $user->getLockedUntil() && $now < $user->getLockedUntil()) {
             return; // déjà verrouillé, on ne fait rien
         }
 

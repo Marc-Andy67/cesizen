@@ -51,10 +51,11 @@ class ResponseController extends AbstractCrudController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $question = $quizResponse->getQuestion();
-            if ($question !== null) {
+            if (null !== $question) {
                 $question->addResponse($quizResponse);
             } else {
                 $this->addFlash('error', 'Veuillez sélectionner une question.');
+
                 return $this->render('admin/response/new.html.twig', [
                     'form' => $form->createView(),
                 ]);

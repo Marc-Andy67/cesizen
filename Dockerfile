@@ -48,6 +48,9 @@ RUN composer install \
 # ─── Stage 4 : Build Tailwind via PHP console ─────────────────────────────────
 FROM base AS tailwind_builder
 
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
 COPY --from=vendor /var/www/html/vendor vendor/
 COPY . .
 COPY --from=node_builder /app/node_modules node_modules/

@@ -200,8 +200,8 @@ jobs:
           target: php
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:php-latest
-            ghcr.io/${{ github.repository }}:php-sha-${{ github.sha }}
+            ghcr.io/${{ github.repository_owner | lower }}/cesizen:php-latest
+            ghcr.io/${{ github.repository_owner | lower }}/cesizen:php-sha-${{ github.sha }}
 
       - name: 🐳 Build & Push Nginx image
         uses: docker/build-push-action@v6
@@ -210,5 +210,5 @@ jobs:
           target: nginx
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:nginx-latest
-            ghcr.io/${{ github.repository }}:nginx-sha-${{ github.sha }}
+            ghcr.io/${{ github.repository_owner | lower }}/cesizen:nginx-latest
+            ghcr.io/${{ github.repository_owner | lower }}/cesizen:nginx-sha-${{ github.sha }}

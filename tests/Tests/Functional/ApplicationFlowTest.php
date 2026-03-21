@@ -21,4 +21,13 @@ class ApplicationFlowTest extends PantherTestCase
 
         $this->assertSelectorExists('form');
     }
+
+    public function testDiagnosticIndexPage(): void
+    {
+        $client = static::createPantherClient();
+        $client->request('GET', '/diagnostic/');
+
+        $this->assertSelectorExists('header');
+        $this->assertSelectorTextContains('h1', 'Évaluez votre santé mentale');
+    }
 }

@@ -12,4 +12,3 @@ compose.override.yaml
 .php-cs-fixer.cache
 tests/
 drivers/
-docker/

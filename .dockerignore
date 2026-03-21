@@ -7,9 +7,9 @@ var/panther
 vendor
 .env.local
 .env.*.local
+.env.dev
+compose.override.yaml
 .php-cs-fixer.cache
-phpunit.xml
-phpstan-output*
-php-cs-output*
 tests/
 drivers/
+docker/

@@ -31,7 +31,7 @@
         <server name="SHELL_VERBOSITY" value="-1"/>
         <server name="PANTHER_NO_SANDBOX" value="1"/>
         <server name="PANTHER_CHROME_ARGUMENTS" value="--disable-dev-shm-usage"/>
-         <env name="DATABASE_URL" value="postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&amp;charset=utf8"/>
+        <server name="DATABASE_URL" value="postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&amp;charset=utf8"/>
     </php>
     <extensions>
         <bootstrap class="Symfony\Component\Panther\ServerExtension" />

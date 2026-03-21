@@ -27,7 +27,8 @@ when@test:
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            #dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            url: 'postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&charset=utf8'
 
 when@prod:
     doctrine:

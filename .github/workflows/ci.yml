@@ -193,10 +193,22 @@ jobs:
             type=raw,value=latest
             type=sha,prefix=sha-
 
-      - name: 🐳 Build & Push Docker image
+      - name: 🐳 Build & Push PHP image
         uses: docker/build-push-action@v6
         with:
           context: .
+          target: php
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ghcr.io/${{ github.repository }}:php-latest
+            ghcr.io/${{ github.repository }}:php-sha-${{ github.sha }}
+
+      - name: 🐳 Build & Push Nginx image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: nginx
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:nginx-latest
+            ghcr.io/${{ github.repository }}:nginx-sha-${{ github.sha }}

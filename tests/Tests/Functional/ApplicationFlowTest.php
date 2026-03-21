@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Tests\Functional;
-
 use Symfony\Component\Panther\PantherTestCase;
 
 class ApplicationFlowTest extends PantherTestCase
@@ -10,7 +8,6 @@ class ApplicationFlowTest extends PantherTestCase
     {
         $client = static::createPantherClient();
         $client->request('GET', '/');
-
         $this->assertSelectorExists('header');
     }
 

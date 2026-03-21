@@ -106,6 +106,8 @@ class AppFixtures extends Fixture
         $quiz->setTitle('Échelle d\'Évaluation de Réajustement Social de Holmes et Rahe');
         $quiz->setDescription("L'échelle de Holmes et Rahe permet d'évaluer de manière statistique la corrélation existant entre le stress induit par divers événements de l'existence et la probabilité d'apparition de maladies (physiques, psychiques ou émotionnelles). Le postulat de départ est que le changement, qu'il soit heureux ou non, est par essence anxiogène.\n\nVeuillez cocher les événements suivants s'ils vous sont arrivés **au cours des 12 derniers mois**. Si un événement exceptionnel s'est produit plus d'une fois au cours des 12 derniers mois, vous ne devez cocher la case qu'une seule fois.");
         $quiz->setIsActive(true);
+        $quiz->addCategory($categories[0]); // Santé Mentale
+        $quiz->addCategory($categories[1]); // Gestion du Stress
         $manager->persist($quiz);
 
         // 5. Seuils de stress attachés au Quiz

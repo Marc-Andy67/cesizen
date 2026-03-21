@@ -18,8 +18,7 @@ class ApplicationFlowTest extends PantherTestCase
     {
         $client = static::createPantherClient();
         $client->request('GET', '/login');
-
-        $this->assertSelectorExists('form');
+        $this->assertSelectorExists('input[type="email"]');
     }
 
     public function testDiagnosticIndexPage(): void

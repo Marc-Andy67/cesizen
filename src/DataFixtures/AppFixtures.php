@@ -149,7 +149,7 @@ class AppFixtures extends Fixture
             $manager->persist($threshold);
         }
 
-        // Liste partielle des 43 items (ceux de poids hétérogène, pour démonstration)
+        // Liste partielle des 43 item (ceux de poids hétérogène, pour démonstration)
         // Normalement il faut les 43, ici on en met une sélection représentative.
         $holmesRaheItems = [
             ['title' => 'Décès du conjoint', 'score' => 100],

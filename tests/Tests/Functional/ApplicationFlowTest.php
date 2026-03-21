@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Tests\Functional;
+
 use Symfony\Component\Panther\PantherTestCase;
 
 class ApplicationFlowTest extends PantherTestCase

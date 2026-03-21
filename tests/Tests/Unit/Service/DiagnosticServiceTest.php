@@ -57,7 +57,7 @@ class DiagnosticServiceTest extends TestCase
     public function testGetThresholdForScore(): void
     {
         $quiz = new Quiz();
-        
+
         $threshold1 = new StressThreshold();
         $threshold1->setMinScore(0);
         $threshold1->setMaxScore(150);

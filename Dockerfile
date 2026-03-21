@@ -64,7 +64,7 @@ WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
 COPY --from=vendor /var/www/html/vendor vendor/
-COPY --from=tailwind_builder /var/www/html/public/assets public/assets/
+COPY --from=tailwind_builder /var/www/html/public public/
 COPY --from=tailwind_builder /var/www/html/var/tailwind var/tailwind/
 
 ENV APP_ENV=prod

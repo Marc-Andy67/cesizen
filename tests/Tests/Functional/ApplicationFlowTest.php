@@ -17,6 +17,7 @@ class ApplicationFlowTest extends PantherTestCase
     {
         $client = static::createPantherClient();
         $client->request('GET', '/login');
+        $client->waitFor('input[type="email"]');
         $client->takeScreenshot('var/panther/login-debug.png');
         $this->assertSelectorExists('input[type="email"]');
     }
@@ -25,6 +26,7 @@ class ApplicationFlowTest extends PantherTestCase
     {
         $client = static::createPantherClient();
         $client->request('GET', '/diagnostic/');
+        $client->waitFor('h1');
         $client->takeScreenshot('var/panther/diagnostic-debug.png');
         $this->assertSelectorExists('header');
         $this->assertSelectorTextContains('h1', 'Évaluez votre santé mentale');

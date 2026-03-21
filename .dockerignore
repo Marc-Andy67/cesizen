@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+var/cache
+var/log
+var/panther
+vendor
+.env.local
+.env.*.local
+.php-cs-fixer.cache
+phpunit.xml
+phpstan-output*
+php-cs-output*
+tests/
+drivers/

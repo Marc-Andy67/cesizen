@@ -1,19 +1,5 @@
-# ─── Stage 1 : Build Node (assets) ───────────────────────────────────────────
-FROM node:22-alpine AS node_builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci --ignore-scripts
-
-COPY assets/ assets/
-COPY tailwind.config.js ./
-COPY importmap.php ./
-COPY public/ public/
-
-# ─── Stage 2 : Base PHP ───────────────────────────────────────────────────────
+# ─── Stage 1 : Base PHP ───────────────────────────────────────────────────────
 FROM php:8.4-fpm-alpine AS base
-
 RUN apk add --no-cache \
     postgresql-dev \
     icu-dev \
@@ -29,14 +15,11 @@ RUN apk add --no-cache \
     mbstring \
     xml \
     opcache
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 
-# ─── Stage 3 : Dépendances PHP ────────────────────────────────────────────────
+# ─── Stage 2 : Dépendances PHP ────────────────────────────────────────────────
 FROM base AS vendor
-
 COPY composer.json composer.lock symfony.lock ./
 RUN composer install \
     --prefer-dist \
@@ -48,34 +31,23 @@ RUN composer install \
 # ─── Stage 3 : Image finale ───────────────────────────────────────────────────
 FROM base AS production
 WORKDIR /var/www/html
-
-# Installer Node.js + npm pour DaisyUI
 RUN apk add --no-cache nodejs npm
-
-# Copie du code source
 COPY --chown=www-data:www-data . .
 COPY --from=vendor /var/www/html/vendor vendor/
-
-# Installer les dépendances npm (DaisyUI)
 RUN npm install
-
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
-
-RUN php bin/console importmap:install --no-interaction \
-    && php bin/console assets:install --no-interaction \
-    && php bin/console cache:warmup --env=prod --no-debug
-
+RUN php -d memory_limit=-1 bin/console tailwind:build --minify --no-interaction \
+    && php bin/console importmap:install --no-interaction \
+    && php bin/console assets:install --no-interaction
+RUN php bin/console cache:warmup --env=prod --no-debug
 RUN chown -R www-data:www-data var/ public/
-
 EXPOSE 9000
 USER www-data
 CMD ["php-fpm"]
 
-# ─── Stage 6 : Nginx ──────────────────────────────────────────────────────────
+# ─── Stage 4 : Nginx ──────────────────────────────────────────────────────────
 FROM nginx:1.27-alpine AS nginx
-
-COPY --from=php /var/www/html/public /var/www/html/public
+COPY --from=production /var/www/html/public /var/www/html/public
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-
 EXPOSE 80

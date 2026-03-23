@@ -91,4 +91,20 @@ class DocumentationController extends AbstractCrudController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Documentation $documentation, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$documentation->getId(), $request->request->get('_token'))) {
+            try {
+                $em->remove($documentation);
+                $em->flush();
+                $this->addSuccessFlash('Documentation supprimée avec succès.');
+            } catch (\Exception $e) {
+                $this->addErrorFlash('Impossible de supprimer cette documentation en raison d\'une erreur système.');
+            }
+        }
+
+        return $this->redirectToRoute('app_admin_documentation_index');
+    }
 }

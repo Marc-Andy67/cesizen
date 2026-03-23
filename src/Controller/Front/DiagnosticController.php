@@ -57,10 +57,13 @@ class DiagnosticController extends AbstractController
             }
 
             // Si utilisateur anonyme, on stoque le résultat en session
+            $categoryIds = array_map(fn($c) => $c->getId(), $quiz->getCategories()->toArray());
+            
             $request->getSession()->set('temp_diagnostic_result', [
                 'score' => $score,
                 'quiz_id' => $quiz->getId(),
                 'quiz_title' => $quiz->getTitle(),
+                'category_ids' => $categoryIds,
                 'threshold_id' => $threshold ? $threshold->getId() : null,
                 'date' => new \DateTimeImmutable(),
             ]);
@@ -98,6 +101,7 @@ class DiagnosticController extends AbstractController
             'threshold' => $threshold,
             'date' => $result['date'],
             'is_anonymous' => true,
+            'category_ids' => $result['category_ids'] ?? [],
         ]);
     }
 
@@ -112,6 +116,8 @@ class DiagnosticController extends AbstractController
 
         $threshold = $diagnosticService->getThresholdForScore($assessment->getTotalScore(), $assessment->getQuiz());
 
+        $categoryIds = array_map(fn($c) => $c->getId(), $assessment->getQuiz()->getCategories()->toArray());
+
         return $this->render('front/diagnostic/result.html.twig', [
             'assessment' => $assessment,
             'score' => $assessment->getTotalScore(),
@@ -119,6 +125,7 @@ class DiagnosticController extends AbstractController
             'threshold' => $threshold,
             'date' => $assessment->getDate(),
             'is_anonymous' => false,
+            'category_ids' => $categoryIds,
         ]);
     }
 }

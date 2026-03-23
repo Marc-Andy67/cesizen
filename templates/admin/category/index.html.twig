@@ -33,6 +33,13 @@
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ path('app_admin_category_edit', {'id': category.id}) }}" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-blue font-medium">Éditer</a>
+
+                                <form method="post" action="{{ path('app_admin_category_delete', {'id': category.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                                    <button type="submit" class="btn btn-xs rounded-sm btn-error btn-outline" title="Supprimer">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

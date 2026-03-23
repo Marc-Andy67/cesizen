@@ -23,7 +23,7 @@ class ProfileController extends AbstractController
 
         $assessments = $entityManager->getRepository(\App\Entity\Assessment::class)->findBy(
             ['owner' => $user],
-            ['date' => 'ASC']
+            ['date' => 'DESC']
         );
 
         $chartDates = [];
@@ -32,6 +32,11 @@ class ProfileController extends AbstractController
             $chartDates[] = $assessment->getDate()->format('d/m/Y');
             $chartScores[] = $assessment->getTotalScore();
         }
+
+        // Le graphique doit afficher l'évolution de gauche (ancien) à droite (récent)
+        // Mais la liste `assessments` est maintenant triée du plus récent au plus ancien (DESC)
+        $chartDates = array_reverse($chartDates);
+        $chartScores = array_reverse($chartScores);
 
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);

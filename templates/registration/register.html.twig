@@ -75,11 +75,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('registration_form_plainPassword') 
-    ?? document.querySelector('input[type="password"]');
-            if (!passwordInput) return;
-
+        function checkPassword(value) {
             const criteria = {
                 'req-length': (v) => v.length >= 12,
                 'req-upper': (v) => /[A-Z]/.test(v),
@@ -88,24 +84,41 @@
                 'req-special': (v) => /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(v)
             };
 
-            passwordInput.addEventListener('input', (e) => {
-                const value = e.target.value;
-                for (const [id, testFn] of Object.entries(criteria)) {
-                    const el = document.getElementById(id);
-                    if (!el) continue;
-                    
-                    const icon = el.querySelector('.icon');
-                    if (testFn(value)) {
-                        el.classList.remove('text-error');
-                        el.classList.add('text-success');
-                        icon.textContent = '✓';
-                    } else {
-                        el.classList.remove('text-success');
-                        el.classList.add('text-error');
-                        icon.textContent = '✗';
-                    }
+            for (const [id, testFn] of Object.entries(criteria)) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                
+                const icon = el.querySelector('.icon');
+                if (testFn(value)) {
+                    el.classList.remove('text-error');
+                    el.classList.add('text-success');
+                    icon.textContent = '✓';
+                } else {
+                    el.classList.remove('text-success');
+                    el.classList.add('text-error');
+                    icon.textContent = '✗';
                 }
-            });
-        });
+            }
+        }
+
+        function initPasswordCheck() {
+            const passwordInput = document.getElementById('registration_form_plainPassword') 
+                || document.querySelector('input[type="password"]');
+
+            if (!passwordInput) return;
+            
+            // Check immediate state (e.g., if reloaded by submission error)
+            checkPassword(passwordInput.value);
+
+            // Avoid adding listener multiple times
+            if (!passwordInput.dataset.listenerAdded) {
+                passwordInput.addEventListener('input', (e) => checkPassword(e.target.value));
+                passwordInput.dataset.listenerAdded = 'true';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPasswordCheck);
+        document.addEventListener('turbo:load', initPasswordCheck);
+        document.addEventListener('turbo:render', initPasswordCheck);
     </script>
 {% endblock %}

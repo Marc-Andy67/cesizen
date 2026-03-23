@@ -233,8 +233,8 @@ jobs:
             -e APP_SECRET=smoketest_secret_not_real \
             -e DATABASE_URL="postgresql://fake:fake@localhost:5432/fake?serverVersion=18" \
             ghcr.io/${REPO}:latest \
-            php -v
-          echo "✅ PHP démarre correctement dans le conteneur"
+            php-fpm -v
+          echo "✅ PHP-FPM démarre correctement dans le conteneur"
 
       - name: 📋 Résumé du déploiement
         run: |

@@ -162,7 +162,7 @@ jobs:
             junit-functional.xml
             var/panther/
 
-  # ─── Docker Build & Push (uniquement sur master après CI vert) ────────────────
+  # ─── Docker Build & Push (uniquement sur master après CI vert) -────────────────
   docker:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest

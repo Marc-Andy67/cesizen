@@ -36,14 +36,19 @@ RUN composer install \
 
 # ─── Stage 3 : Image finale ───────────────────────────────────────────────────
 FROM base AS production
-
 WORKDIR /var/www/html
+
+# Installer Node.js + npm pour DaisyUI
+RUN apk add --no-cache nodejs npm
 
 # Copie du code source
 COPY --chown=www-data:www-data . .
 
 # Copie des dépendances compilées
 COPY --from=vendor /var/www/html/vendor vendor/
+
+# Installer les dépendances npm (DaisyUI)
+RUN npm install
 
 # Variables d'environnement Symfony
 ENV APP_ENV=prod

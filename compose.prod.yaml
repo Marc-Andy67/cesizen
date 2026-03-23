@@ -1,0 +1,45 @@
+services:
+  php:
+    build:
+      context: .
+      target: php
+    restart: unless-stopped
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-cesizen2024}@database:5432/${POSTGRES_DB:-cesizen}?serverVersion=18&charset=utf8
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - app_var:/var/www/html/var
+
+  nginx:
+    build:
+      context: .
+      target: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+
+  database:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cesizen}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cesizen2024}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB:-cesizen}", "-U", "${POSTGRES_USER:-postgres}" ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+
+volumes:
+  database_data:
+  app_var:

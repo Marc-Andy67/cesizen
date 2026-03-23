@@ -2,9 +2,9 @@ name: 🔬 CI/CD — Tests, Qualité & Docker
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "master", "develop" , "ci-cd-fix" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "master", "develop" , "ci-cd-fix" ]
 
 concurrency:
   group: ci-${{ github.ref }}

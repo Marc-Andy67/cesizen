@@ -184,22 +184,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🏷️ Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=sha,prefix=sha-
+      - name: 🏷️ Set lowercase owner
+        id: vars
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
-      - name: 🐳 Build & Push Docker image
+      - name: 🐳 Build & Push image app (production)
         uses: docker/build-push-action@v6
         with:
           context: .
+          target: production
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:latest
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:sha-${{ github.sha }}
+
+      - name: 🐳 Build & Push image nginx
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: nginx
+          push: true
+          tags: |
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:nginx-latest
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:nginx-sha-${{ github.sha }}
 
   # ─── CD : Vérification & instructions de déploiement local ──────────────────
   deploy-ready:
@@ -219,33 +226,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: ✅ Vérifier que l'image est pullable
+      - name: 🏷️ Set lowercase owner
+        id: vars
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: ✅ Vérifier que l'image app est pullable
         run: |
-          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker pull ghcr.io/${REPO}:latest
-          echo "✅ Image pullée avec succès depuis ghcr.io"
+          docker pull ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:latest
+          echo "✅ Image app pullée avec succès depuis ghcr.io"
 
       - name: 🧪 Smoke test — vérifier que php-fpm démarre
         run: |
-          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           docker run --rm \
             -e APP_ENV=prod \
             -e APP_SECRET=smoketest_secret_not_real \
             -e DATABASE_URL="postgresql://fake:fake@localhost:5432/fake?serverVersion=18" \
-            ghcr.io/${REPO}:latest \
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:latest \
             php-fpm -v
           echo "✅ PHP-FPM démarre correctement dans le conteneur"
 
       - name: 📋 Résumé du déploiement
         run: |
-          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           echo "================================================"
-          echo "🎉 CESIZen — Image Docker publiée avec succès !"
+          echo "🎉 CESIZen — Images Docker publiées avec succès !"
           echo "================================================"
           echo ""
           echo "📦 Images disponibles :"
-          echo "   ghcr.io/${REPO}:latest"
-          echo "   ghcr.io/${REPO}:sha-$(echo ${{ github.sha }} | cut -c1-7)"
+          echo "   ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:latest"
+          echo "   ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:nginx-latest"
           echo ""
           echo "🖥️  Pour lancer le projet en local :"
           echo ""

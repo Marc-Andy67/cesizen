@@ -1,5 +1,6 @@
 # ─── Stage 1 : Base PHP ───────────────────────────────────────────────────────
 FROM php:8.4-fpm-alpine AS base
+# Dans le stage production, avant EXPOSE
 RUN apk add --no-cache \
     postgresql-dev \
     icu-dev \
@@ -42,10 +43,10 @@ RUN php -d memory_limit=-1 bin/console tailwind:build --minify --no-interaction 
     && php bin/console assets:install --no-interaction
 RUN php bin/console cache:warmup --env=prod --no-debug
 RUN chown -R www-data:www-data var/ public/
+RUN ln -sf /usr/local/bin/php /usr/bin/php
 EXPOSE 9000
 USER www-data
 CMD ["php-fpm"]
-
 # ─── Stage 4 : Nginx ──────────────────────────────────────────────────────────
 FROM nginx:1.27-alpine AS nginx
 COPY --from=production /var/www/html/public /var/www/html/public

@@ -196,6 +196,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:latest
+            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:php-latest
             ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:sha-${{ github.sha }}
 
       - name: 🐳 Build & Push image nginx

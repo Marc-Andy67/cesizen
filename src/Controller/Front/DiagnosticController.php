@@ -57,8 +57,8 @@ class DiagnosticController extends AbstractController
             }
 
             // Si utilisateur anonyme, on stoque le résultat en session
-            $categoryIds = array_map(fn($c) => $c->getId(), $quiz->getCategories()->toArray());
-            
+            $categoryIds = array_map(fn ($c) => $c->getId(), $quiz->getCategories()->toArray());
+
             $request->getSession()->set('temp_diagnostic_result', [
                 'score' => $score,
                 'quiz_id' => $quiz->getId(),
@@ -116,7 +116,7 @@ class DiagnosticController extends AbstractController
 
         $threshold = $diagnosticService->getThresholdForScore($assessment->getTotalScore(), $assessment->getQuiz());
 
-        $categoryIds = array_map(fn($c) => $c->getId(), $assessment->getQuiz()->getCategories()->toArray());
+        $categoryIds = array_map(fn ($c) => $c->getId(), $assessment->getQuiz()->getCategories()->toArray());
 
         return $this->render('front/diagnostic/result.html.twig', [
             'assessment' => $assessment,

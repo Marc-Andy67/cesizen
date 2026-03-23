@@ -1,8 +1,9 @@
 services:
   php:
+    image: ghcr.io/marc-andy67/cesizen:php-latest
     build:
       context: .
-      target: php
+      target: production
     restart: unless-stopped
     environment:
       APP_ENV: prod
@@ -14,8 +15,11 @@ services:
         condition: service_healthy
     volumes:
       - app_var:/var/www/html/var
+    networks:
+      - backend
 
   nginx:
+    image: ghcr.io/marc-andy67/cesizen:nginx-latest
     build:
       context: .
       target: nginx
@@ -24,6 +28,8 @@ services:
       - "80:80"
     depends_on:
       - php
+    networks:
+      - backend
 
   database:
     image: postgres:18-alpine
@@ -39,7 +45,14 @@ services:
       start_period: 60s
     volumes:
       - database_data:/var/lib/postgresql/data:rw
+    networks:
+      - backend
 
 volumes:
   database_data:
   app_var:
+
+
+networks:
+  backend:
+    driver: bridge

@@ -221,16 +221,18 @@ jobs:
 
       - name: ✅ Vérifier que l'image est pullable
         run: |
-          docker pull ghcr.io/${{ github.repository }}:latest
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker pull ghcr.io/${REPO}:latest
           echo "✅ Image pullée avec succès depuis ghcr.io"
 
       - name: 🧪 Smoke test — vérifier que php-fpm démarre
         run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           docker run --rm \
             -e APP_ENV=prod \
             -e APP_SECRET=smoketest_secret_not_real \
             -e DATABASE_URL="postgresql://fake:fake@localhost:5432/fake?serverVersion=18" \
-            ghcr.io/${{ github.repository }}:latest \
+            ghcr.io/${REPO}:latest \
             php -v
           echo "✅ PHP démarre correctement dans le conteneur"
 
@@ -241,8 +243,9 @@ jobs:
           echo "================================================"
           echo ""
           echo "📦 Images disponibles :"
-          echo "   ghcr.io/${{ github.repository }}:latest"
-          echo "   ghcr.io/${{ github.repository }}:sha-$(echo ${{ github.sha }} | cut -c1-7)"
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "   ghcr.io/${REPO}:latest"
+          echo "   ghcr.io/${REPO}:sha-$(echo ${{ github.sha }} | cut -c1-7)"
           echo ""
           echo "🖥️  Pour lancer le projet en local :"
           echo ""

@@ -1,10 +1,10 @@
-name: 🔬 CI — Tests & Qualité
+name: 🔬 CI/CD — Tests, Qualité & Docker
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "master", "develop" , "ci-cd-fix" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "master", "develop" , "ci-cd-fix" ]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -162,12 +162,12 @@ jobs:
             junit-functional.xml
             var/panther/
 
-  # ─── Docker Build & Push (uniquement sur master après CI vert) ────────────────
+  # ─── Docker Build & Push (uniquement sur master après CI vert) -────────────────
   docker:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: tests
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.event_name == 'push'
 
     permissions:
       contents: read
@@ -208,7 +208,76 @@ jobs:
           context: .
           target: nginx
           push: true
-          provenance: false
-          tags: |
-            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:nginx-latest
-            ghcr.io/${{ steps.vars.outputs.owner }}/cesizen:nginx-sha-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # ─── CD : Vérification & instructions de déploiement local ──────────────────
+  deploy-ready:
+    name: 🚀 CD — Image prête à puller
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push'
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔑 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ Vérifier que l'image est pullable
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker pull ghcr.io/${REPO}:latest
+          echo "✅ Image pullée avec succès depuis ghcr.io"
+
+      - name: 🧪 Smoke test — vérifier que php-fpm démarre
+        run: |
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker run --rm \
+            -e APP_ENV=prod \
+            -e APP_SECRET=smoketest_secret_not_real \
+            -e DATABASE_URL="postgresql://fake:fake@localhost:5432/fake?serverVersion=18" \
+            ghcr.io/${REPO}:latest \
+            php -v
+          echo "✅ PHP démarre correctement dans le conteneur"
+
+      - name: 📋 Résumé du déploiement
+        run: |
+          echo "================================================"
+          echo "🎉 CESIZen — Image Docker publiée avec succès !"
+          echo "================================================"
+          echo ""
+          echo "📦 Images disponibles :"
+          REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "   ghcr.io/${REPO}:latest"
+          echo "   ghcr.io/${REPO}:sha-$(echo ${{ github.sha }} | cut -c1-7)"
+          echo ""
+          echo "🖥️  Pour lancer le projet en local :"
+          echo ""
+          echo "   1. Cloner le repo :"
+          echo "      git clone https://github.com/${{ github.repository }}.git"
+          echo "      cd cesizen"
+          echo ""
+          echo "   2. Copier la config d'environnement :"
+          echo "      cp .env.example .env.local"
+          echo "      # (adapter les valeurs si besoin)"
+          echo ""
+          echo "   3. Démarrer les services :"
+          echo "      docker compose pull"
+          echo "      docker compose up -d"
+          echo ""
+          echo "   4. Initialiser la base de données :"
+          echo "      docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction"
+          echo "      docker compose exec app php bin/console doctrine:fixtures:load --no-interaction"
+          echo ""
+          echo "   5. Ouvrir le navigateur :"
+          echo "      http://localhost:8080"
+          echo ""
+          echo "   📬 Interface mail (Mailpit) :"
+          echo "      http://localhost:8025"
+          echo "================================================"

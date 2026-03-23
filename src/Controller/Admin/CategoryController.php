@@ -74,4 +74,20 @@ class CategoryController extends AbstractCrudController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Category $category, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+            try {
+                $em->remove($category);
+                $em->flush();
+                $this->addSuccessFlash('Catégorie supprimée avec succès.');
+            } catch (\Exception $e) {
+                $this->addErrorFlash('Impossible de supprimer cette catégorie car elle est actuellement liée à des documentations ou d\'autres ressources.');
+            }
+        }
+
+        return $this->redirectToRoute('app_admin_category_index');
+    }
 }

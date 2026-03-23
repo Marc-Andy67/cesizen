@@ -45,27 +45,19 @@ RUN composer install \
     --no-interaction \
     --optimize-autoloader
 
-# ─── Stage 4 : Build Tailwind via PHP console ─────────────────────────────────
-FROM base AS tailwind_builder
-
-ENV APP_ENV=prod
-ENV APP_DEBUG=0
-
-COPY --from=vendor /var/www/html/vendor vendor/
-COPY . .
-COPY --from=node_builder /app/node_modules node_modules/
-
-RUN php -d memory_limit=-1 bin/console tailwind:build --minify --no-interaction
-
-# ─── Stage 5 : Image PHP-FPM finale ──────────────────────────────────────────
-FROM base AS php
-
+# ─── Stage 3 : Image finale ───────────────────────────────────────────────────
+FROM base AS production
 WORKDIR /var/www/html
 
+# Installer Node.js + npm pour DaisyUI
+RUN apk add --no-cache nodejs npm
+
+# Copie du code source
 COPY --chown=www-data:www-data . .
 COPY --from=vendor /var/www/html/vendor vendor/
-COPY --from=tailwind_builder /var/www/html/public public/
-COPY --from=tailwind_builder /var/www/html/var/tailwind var/tailwind/
+
+# Installer les dépendances npm (DaisyUI)
+RUN npm install
 
 ENV APP_ENV=prod
 ENV APP_DEBUG=0

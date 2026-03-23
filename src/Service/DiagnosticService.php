@@ -30,7 +30,8 @@ class DiagnosticService
             return $score;
         }
 
-        $responses = $this->responseRepository->findBy(['id' => $responseIds]);
+        // Assure que c'est un tableau de valeurs indexé
+        $responses = $this->responseRepository->findBy(['id' => array_values($responseIds)]);
 
         foreach ($responses as $response) {
             $score += $response->getPoints();

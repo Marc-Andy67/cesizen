@@ -54,6 +54,13 @@
                                         {% if doc.isActive %}Dépublier{% else %}Publier{% endif %}
                                     </button>
                                 </form>
+
+                                <form method="post" action="{{ path('app_admin_documentation_delete', {'id': doc.id}) }}" class="inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette documentation ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ doc.id) }}">
+                                    <button type="submit" class="btn btn-xs rounded-sm btn-error btn-outline" title="Supprimer">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

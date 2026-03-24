@@ -20,14 +20,18 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function initQuestionForm() {
             const wrapper = document.getElementById('responses-wrapper');
             const addButton = document.getElementById('add-response');
             if (!wrapper || !addButton) return;
             
+            // Remove previous event listeners to avoid duplicates if Turbo loads multiple times
+            const newAddButton = addButton.cloneNode(true);
+            addButton.parentNode.replaceChild(newAddButton, addButton);
+            
             let index = parseInt(wrapper.dataset.index) || 0;
             
-            addButton.addEventListener('click', function() {
+            newAddButton.addEventListener('click', function() {
                 let visualIndex = document.querySelectorAll('.response-item').length + 1;
                 const prototype = wrapper.dataset.prototype;
                 const newFormStr = prototype.replace(/__name__/g, index).replace(/__number__/g, visualIndex);
@@ -39,16 +43,22 @@
                 index++;
             });
             
-            wrapper.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-remove-response')) {
-                    e.target.closest('.response-item').remove();
-                    document.querySelectorAll('.response-number').forEach((badge, idx) => {
-                        badge.textContent = 'Réponse ' + (idx + 1);
-                    });
+            // For event delegation, ensure we don't bind multiple times on wrapper
+            wrapper.onclick = function(e) {
+                const removeBtn = e.target.closest('.btn-remove-response');
+                if (removeBtn) {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?')) {
+                        removeBtn.closest('.response-item').remove();
+                        document.querySelectorAll('.response-number').forEach((badge, idx) => {
+                            badge.textContent = 'Réponse ' + (idx + 1);
+                        });
+                    }
                 }
-            });
-        });
-    </script>
-{% endblock %}
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', initQuestionForm);
+        document.addEventListener('turbo:load', initQuestionForm);
+        document.addEventListener('turbo:render', initQuestionForm);
     </script>
 {% endblock %}

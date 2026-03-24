@@ -80,4 +80,22 @@ class QuestionController extends AbstractCrudController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
+    public function delete(Request $request, Question $question, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete_question' . $question->getId(), $request->request->getString('_token'))) {
+            try {
+                $em->remove($question);
+                $em->flush();
+                $this->addSuccessFlash('La question a été supprimée avec succès.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Impossible de supprimer cette question car elle est probablement liée à un questionnaire existant.');
+            }
+        } else {
+            $this->addFlash('error', 'Token de sécurité invalide.');
+        }
+
+        return $this->redirectToRoute('app_admin_question_index');
+    }
 }

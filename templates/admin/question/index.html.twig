@@ -36,7 +36,14 @@
                         </td>
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
-                                <a href="{{ path('app_admin_question_edit', {'id': question.id}) }}" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-blue font-medium">Éditer</a>
+                                <a href="{{ path('app_admin_question_edit', {'id': question.id}) }}" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-blue font-medium shadow-sm">Éditer</a>
+                                
+                                <form method="post" action="{{ path('app_admin_question_delete', {'id': question.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette question ? Cette action est irréversible.');" class="inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_question' ~ question.id) }}">
+                                    <button type="submit" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-red hover:bg-red-50 font-medium shadow-sm">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

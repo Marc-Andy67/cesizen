@@ -48,6 +48,13 @@
                                         {% if quiz.isActive %}Désactiver{% else %}Activer{% endif %}
                                     </button>
                                 </form>
+
+                                <form method="post" action="{{ path('app_admin_quiz_delete', {'id': quiz.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce questionnaire ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quiz.id) }}">
+                                    <button class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-red hover:bg-red-50 font-medium">
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

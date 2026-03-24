@@ -25,12 +25,12 @@ class StressThresholdType extends AbstractType
             ])
             ->add('minScore', IntegerType::class, [
                 'label' => 'Score Minimum',
-                'attr' => ['class' => 'input input-bordered w-full'],
+                'attr' => ['class' => 'input input-bordered w-full', 'min' => 0],
             ])
             ->add('maxScore', IntegerType::class, [
                 'label' => 'Score Maximum (Optionnel)',
                 'required' => false,
-                'attr' => ['class' => 'input input-bordered w-full'],
+                'attr' => ['class' => 'input input-bordered w-full', 'min' => 0],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',

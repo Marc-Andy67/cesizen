@@ -1,9 +1,18 @@
 {% extends 'admin/base_admin.html.twig' %}
 
 {% block admin_content %}
-    <div class="mb-6">
-        <h1 class="text-2xl md:text-3xl font-extrabold text-dsfr-blue tracking-tight">Configuration des Seuils de Stress</h1>
-        <p class="text-base-content/70 mt-2 font-medium">Définit les paliers de stress et les recommandations qui s'afficheront après le questionnaire de Holmes & Rahe.</p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-dsfr-blue tracking-tight">Configuration des Seuils de Stress</h1>
+            <p class="text-base-content/70 mt-2 font-medium">Définit les paliers de stress et les recommandations qui s'afficheront après le questionnaire de Holmes & Rahe.</p>
+        </div>
+        
+        {{ include('components/_button.html.twig', {
+            label: 'Nouveau Seuil',
+            variant: 'primary',
+            attr: 'href="' ~ path('app_admin_stress_threshold_new') ~ '"',
+            icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>'
+        }) }}
     </div>
 
     <div class="overflow-x-auto rounded-sm border border-base-200">

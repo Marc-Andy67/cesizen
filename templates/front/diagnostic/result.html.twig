@@ -8,7 +8,7 @@
     {# EN-TÊTE #}
     <div class="text-center mb-8">
         <h1 class="text-3xl md:text-5xl font-extrabold text-dsfr-blue tracking-tight mb-2">Résultat de l'évaluation</h1>
-        <p class="text-lg text-base-content/70 font-medium">Basé sur l'échelle de "{{ quiz_title }}" réalisé le {{ date|date('d/m/Y') }}.</p>
+        <p class="text-lg text-base-content/70 font-medium">Basé sur le questionnaire de "{{ quiz_title }}" réalisé le {{ date|date('d/m/Y') }}.</p>
         
         {% if is_anonymous %}
             <div class="mt-6 inline-flex max-w-xl text-left">
@@ -27,12 +27,9 @@
         <div class="p-8 md:p-12 text-center border-b border-base-200 bg-base-200/50">
             <p class="text-sm font-bold text-base-content/60 uppercase tracking-widest mb-2">Votre Score LCU</p>
             
-            <div class="text-lg font-semibold text-dsfr-blue mt-2">
-                Résultat calculé et traité conformément au RGPD.
+            <div class="text-4xl font-black text-dsfr-blue mt-2">
+                {{ score }} points
             </div>
-            <p class="text-sm text-base-content/60 mt-1 font-medium">
-                Vos données ne sont pas conservées sans votre consentement.
-            </p>
         </div>
 
         {# RÉSULTAT ET SEUIL #}
@@ -55,8 +52,8 @@
                 </div>
             </div>
         {% else %}
-            <div class="p-12 text-center text-base-content/60 font-medium">
-                Impossible de déterminer un profil pour ce score. Veuillez contacter l'administration.
+            <div class="p-12 text-center text-base-content/60 font-medium font-bold text-lg">
+                Seuil de stress non supporté
             </div>
         {% endif %}
     </div>

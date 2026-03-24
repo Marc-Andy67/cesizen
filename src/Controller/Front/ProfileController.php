@@ -3,12 +3,14 @@
 namespace App\Controller\Front;
 
 use App\Form\ProfileFormType;
+use App\Form\ChangePasswordFormType;
 use App\Service\RgpdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -89,5 +91,41 @@ class ProfileController extends AbstractController
         $this->addFlash('error', 'Token de sécurité invalide.');
 
         return $this->redirectToRoute('app_profile_index');
+    }
+
+    #[Route('/mot-de-passe', name: 'change_password', methods: ['GET', 'POST'])]
+    public function changePassword(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager
+    ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(ChangePasswordFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $newPassword = $form->get('plainPassword')->getData();
+            
+            // Hash le nouveau mot de passe (les vérifications de complexité et de l'ancien mot de passe sont faites par le formulaire)
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $newPassword
+                )
+            );
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a été modifié avec succès.');
+
+            return $this->redirectToRoute('app_profile_index');
+        }
+
+        return $this->render('front/profile/change_password.html.twig', [
+            'passwordForm' => $form->createView(),
+        ]);
     }
 }

@@ -7,9 +7,9 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 class ChangePasswordFormType extends AbstractType
@@ -17,42 +17,56 @@ class ChangePasswordFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('oldPassword', PasswordType::class, [
+                'label' => 'Ancien mot de passe',
+                'mapped' => false,
+                'constraints' => [
+                    new NotBlank(message: 'Veuillez saisir votre ancien mot de passe'),
+                    new UserPassword(message: 'L\'ancien mot de passe est incorrect.'),
+                ],
+                'attr' => [
+                    'class' => 'input input-bordered w-full border-base-300 focus:border-dsfr-blue focus:ring-1 focus:ring-dsfr-blue transition-shadow rounded-sm',
+                    'autocomplete' => 'current-password',
+                ],
+            ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'options' => [
+                'mapped' => false,
+                'first_options'  => [
+                    'label' => 'Nouveau mot de passe',
                     'attr' => [
+                        'class' => 'input input-bordered w-full border-base-300 focus:border-dsfr-blue focus:ring-1 focus:ring-dsfr-blue transition-shadow rounded-sm',
                         'autocomplete' => 'new-password',
                     ],
                 ],
-                'first_options' => [
-                    'constraints' => [
-                        new NotBlank(
-                            message: 'Please enter a password',
-                        ),
-                        new Length(
-                            min: 12,
-                            minMessage: 'Your password should be at least {{ limit }} characters',
-                            // max length allowed by Symfony for security reasons
-                            max: 4096,
-                        ),
-                        new PasswordStrength(),
-                        new NotCompromisedPassword(),
-                    ],
-                    'label' => 'New password',
-                ],
                 'second_options' => [
-                    'label' => 'Repeat Password',
+                    'label' => 'Confirmer le nouveau mot de passe',
+                    'attr' => [
+                        'class' => 'input input-bordered w-full border-base-300 focus:border-dsfr-blue focus:ring-1 focus:ring-dsfr-blue transition-shadow rounded-sm',
+                        'autocomplete' => 'new-password',
+                    ],
                 ],
-                'invalid_message' => 'The password fields must match.',
-                // Instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
+                'invalid_message' => 'Les mots de passe doivent être identiques.',
+                'constraints' => [
+                    new NotBlank(message: 'Veuillez saisir un nouveau mot de passe'),
+                    new Length(
+                        min: 12,
+                        max: 4096,
+                        minMessage: 'Votre mot de passe doit faire au moins {{ limit }} caractères'
+                    ),
+                    new PasswordStrength(
+                        minScore: PasswordStrength::STRENGTH_STRONG,
+                        message: 'Votre mot de passe est trop faible. Veuillez utiliser des majuscules, minuscules, chiffres et caractères spéciaux.'
+                    )
+                ],
             ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            // Pas de mappage automatique sur l'entité User pour les mots de passe
+        ]);
     }
 }

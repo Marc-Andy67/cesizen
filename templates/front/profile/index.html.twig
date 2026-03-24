@@ -27,11 +27,7 @@
                     <div class="card bg-base-100 shadow-sm border border-base-200 rounded-sm overflow-hidden">
                         <div class="card-body p-6">
                             
-                            <div class="relative h-64 md:h-80 w-full mb-8">
-                                <canvas id="stressHistoryChart" aria-label="Graphique d'évolution du niveau de stress" role="img"></canvas>
-                            </div>
-                            
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto mb-8">
                                 <table class="table table-zebra w-full rounded-sm">
                                     <caption class="sr-only">Historique détaillé de mes tests de stress</caption>
                                     <thead class="bg-base-200 text-base-content">
@@ -56,6 +52,11 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <div class="relative h-64 md:h-80 w-full mt-4">
+                                <canvas id="stressHistoryChart" aria-label="Graphique d'évolution du niveau de stress" role="img"></canvas>
+                            </div>
+                            
                         </div>
                     </div>
                 {% else %}
@@ -127,9 +128,9 @@
                     {# Password reset #}
                     <div class="bg-base-100 border border-base-200 p-4 rounded-sm shadow-sm">
                         <h3 class="font-bold text-base-content mb-1">Authentification</h3>
-                        <p class="text-sm text-base-content/70 mb-4">Modifier mon mot de passe via l'envoi d'un courriel.</p>
+                        <p class="text-sm text-base-content/70 mb-4">Mettre à jour le mot de passe d'accès à votre compte.</p>
                         
-                        <a href="{{ path('app_forgot_password_request') }}" class="btn btn-sm btn-neutral bg-white text-base-content hover:bg-base-200 border-base-300 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-dsfr-blue outline-none rounded-sm w-full md:w-auto">
+                        <a href="{{ path('app_profile_change_password') }}" class="btn btn-sm btn-neutral bg-white text-base-content hover:bg-base-200 border-base-300 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-dsfr-blue outline-none rounded-sm w-full md:w-auto">
                             Changer mon mot de passe
                         </a>
                     </div>
@@ -166,13 +167,21 @@
     {% if assessments is not empty %}
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const ctx = document.getElementById('stressHistoryChart').getContext('2d');
+            function initChart() {
+                const canvas = document.getElementById('stressHistoryChart');
+                if (!canvas) return;
+                
+                // Détruire l'ancien graphique s'il existe déjà pour éviter les duplications via Turbo
+                if (window.stressChart instanceof Chart) {
+                    window.stressChart.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
                 
                 const labels = {{ chartDates|raw }};
                 const dataPoints = {{ chartScores|raw }};
                 
-                new Chart(ctx, {
+                window.stressChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
@@ -234,7 +243,12 @@
                         }
                     }
                 });
-            });
+            }
+
+            // Exécution au chargement initial et lors des navigations Turbo
+            document.addEventListener('DOMContentLoaded', initChart);
+            document.addEventListener('turbo:load', initChart);
+            document.addEventListener('turbo:render', initChart);
         </script>
     {% endif %}
 {% endblock %}

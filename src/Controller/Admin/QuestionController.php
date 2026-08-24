@@ -84,7 +84,7 @@ class QuestionController extends AbstractCrudController
     #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Question $question, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete_question' . $question->getId(), $request->request->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete_question'.$question->getId(), $request->request->getString('_token'))) {
             try {
                 $em->remove($question);
                 $em->flush();

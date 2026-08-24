@@ -28,11 +28,11 @@ class StressThreshold
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Assert\PositiveOrZero(message: "Le score minimum ne peut pas être négatif.")]
+    #[Assert\PositiveOrZero(message: 'Le score minimum ne peut pas être négatif.')]
     private ?int $minScore = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero(message: "Le score maximum ne peut pas être négatif.")]
+    #[Assert\PositiveOrZero(message: 'Le score maximum ne peut pas être négatif.')]
     private ?int $maxScore = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -157,7 +157,7 @@ class StressThreshold
     #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, mixed $payload): void
     {
-        if ($this->maxScore !== null && $this->minScore > $this->maxScore) {
+        if (null !== $this->maxScore && $this->minScore > $this->maxScore) {
             $context->buildViolation('Le score minimum ne peut pas être supérieur au score maximum.')
                 ->atPath('minScore')
                 ->addViolation();

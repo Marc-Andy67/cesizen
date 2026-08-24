@@ -78,7 +78,7 @@ class CategoryController extends AbstractCrudController
     #[Route('/{id}/supprimer', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete_category' . $category->getId(), $request->request->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete_category'.$category->getId(), $request->request->getString('_token'))) {
             try {
                 $em->remove($category);
                 $em->flush();

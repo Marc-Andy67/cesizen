@@ -32,7 +32,7 @@ class ChangePasswordFormType extends AbstractType
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
-                'first_options'  => [
+                'first_options' => [
                     'label' => 'Nouveau mot de passe',
                     'attr' => [
                         'class' => 'input input-bordered w-full border-base-300 focus:border-dsfr-blue focus:ring-1 focus:ring-dsfr-blue transition-shadow rounded-sm',
@@ -57,7 +57,7 @@ class ChangePasswordFormType extends AbstractType
                     new PasswordStrength(
                         minScore: PasswordStrength::STRENGTH_STRONG,
                         message: 'Votre mot de passe est trop faible. Veuillez utiliser des majuscules, minuscules, chiffres et caractères spéciaux.'
-                    )
+                    ),
                 ],
             ])
         ;

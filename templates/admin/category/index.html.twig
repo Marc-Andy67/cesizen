@@ -33,6 +33,19 @@
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ path('app_admin_category_edit', {'id': category.id}) }}" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-blue font-medium">Éditer</a>
+                                
+                                {% if category.documentations|length == 0 and category.quizzes|length == 0 %}
+                                    <form method="post" action="{{ path('app_admin_category_delete', {'id': category.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');" class="inline-block">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_category' ~ category.id) }}">
+                                        <button type="submit" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-dsfr-red hover:bg-red-50 font-medium">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" class="btn btn-xs rounded-sm btn-ghost border border-base-300 text-base-content/40 cursor-not-allowed cursor-help" title="Cette catégorie est liée à {{ category.documentations|length }} documentation(s) et {{ category.quizzes|length }} quiz.">
+                                        Supprimer
+                                    </button>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

@@ -9,6 +9,8 @@ RUN apk add --no-cache \
     libxml2-dev \
     oniguruma-dev \
     curl \
+    nodejs \
+    npm \
     && docker-php-ext-install \
     pdo \
     pdo_pgsql \
@@ -48,6 +50,9 @@ COPY --from=vendor /var/www/html/vendor vendor/
 # Variables d'environnement Symfony
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+
+# Dépendances npm (plugins Tailwind CSS v4, ex. daisyui)
+RUN npm ci
 
 # Build des assets Tailwind + importmap
 RUN php -d memory_limit=-1 bin/console tailwind:build --minify --no-interaction \

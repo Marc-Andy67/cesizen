@@ -54,9 +54,9 @@ ENV APP_DEBUG=0
 # Dépendances npm (plugins Tailwind CSS v4, ex. daisyui)
 RUN npm ci
 
-# Build des assets Tailwind + importmap
 RUN php -d memory_limit=-1 bin/console tailwind:build --minify --no-interaction \
     && php bin/console importmap:install --no-interaction \
+    && php bin/console asset-map:compile --no-interaction \
     && php bin/console assets:install --no-interaction
 
 # Cache warmup

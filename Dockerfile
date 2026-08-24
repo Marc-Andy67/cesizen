@@ -34,8 +34,8 @@ RUN composer install \
     --no-interaction \
     --optimize-autoloader
 
-# ─── Stage 3 : Image finale ───────────────────────────────────────────────────
-FROM base AS production
+# ─── Stage 3 : Image finale PHP-FPM ───────────────────────────────────────────
+FROM base AS php
 
 WORKDIR /var/www/html
 
@@ -65,3 +65,16 @@ EXPOSE 9000
 USER www-data
 
 CMD ["php-fpm"]
+
+# ─── Stage 4 : nginx (sert le front + proxy fastcgi vers php-fpm) ─────────────
+FROM nginx:alpine AS nginx
+
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# Récupère les assets publics déjà buildés (Tailwind, importmap, assets:install)
+# depuis le stage php, sans avoir besoin de rebuilder quoi que ce soit ici.
+COPY --from=php /var/www/html/public /var/www/html/public
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

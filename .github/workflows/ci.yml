@@ -2,9 +2,9 @@ name: 🔬 CI/CD — Tests, Build & Déploiement
 
 on:
   push:
-    branches: [ "developp", "uat", "master" ]
+    branches: [ "develop", "uat", "master" ]
   pull_request:
-    branches: [ "developp", "uat", "master" ]
+    branches: [ "develop", "uat", "master" ]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -177,7 +177,7 @@ jobs:
         id: map
         run: |
           case "${{ github.ref_name }}" in
-            developp)
+            develop)
               echo "environment=test" >> "$GITHUB_OUTPUT"
               echo "image_tag=test" >> "$GITHUB_OUTPUT"
               echo "stack_dir=cesizen-test" >> "$GITHUB_OUTPUT"
@@ -198,7 +198,7 @@ jobs:
               ;;
           esac
 
-  # ─── Docker Build & Push (sur developp / uat / master, après CI vert) ────────
+  # ─── Docker Build & Push (sur develop / uat / master, après CI vert) ────────
   docker:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest

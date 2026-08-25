@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité — CESIZen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-12 max-w-3xl prose">
+    <h1 class="text-3xl font-bold text-primary mb-8">Politique de confidentialité</h1>
+    <p class="text-sm text-base-content/60">Dernière mise à jour : {{ "now"|date("d/m/Y") }}</p>
+
+    <h2>1. Responsable du traitement</h2>
+    <p>
+        Le responsable du traitement des données personnelles collectées sur CESIZen est
+        Marc-Andy, éditeur du site. Pour toute question relative à vos données, utilisez le
+        <a href="{{ path('app_contact') }}" class="link link-primary">formulaire de contact</a>.
+    </p>
+
+    <h2>2. Données collectées</h2>
+    <p>Dans le cadre de votre utilisation du service, nous collectons :</p>
+    <ul>
+        <li><strong>Données de compte</strong> : adresse email, nom, mot de passe (haché, jamais stocké en clair)</li>
+        <li><strong>Données d'usage</strong> : date de création du compte, date de dernière connexion</li>
+        <li><strong>Données de diagnostic</strong> : résultats de vos auto-diagnostics de stress (score, niveau de stress, réponses au questionnaire)</li>
+    </ul>
+
+    <h2>3. Finalités du traitement</h2>
+    <p>Vos données sont utilisées pour :</p>
+    <ul>
+        <li>Créer et gérer votre compte utilisateur</li>
+        <li>Vous permettre de réaliser des auto-diagnostics et de consulter votre historique</li>
+        <li>Sécuriser l'accès au service (détection de tentatives de connexion suspectes)</li>
+        <li>Améliorer le service (statistiques agrégées et anonymisées)</li>
+    </ul>
+
+    <h2>4. Base légale</h2>
+    <p>
+        Le traitement de vos données repose sur votre <strong>consentement</strong>, recueilli
+        lors de votre inscription, ainsi que sur l'exécution du contrat de service liant
+        l'utilisateur à CESIZen.
+    </p>
+
+    <h2>5. Durée de conservation</h2>
+    <p>
+        Vos données sont conservées pendant toute la durée d'utilisation active de votre
+        compte, et jusqu'à <strong>5 ans après votre dernière activité</strong>. Passé ce
+        délai, votre compte est automatiquement anonymisé.
+    </p>
+
+    <h2>6. Sécurité des données</h2>
+    <p>Nous mettons en œuvre les mesures suivantes pour protéger vos données :</p>
+    <ul>
+        <li>Chiffrement des communications (HTTPS)</li>
+        <li>Hachage des mots de passe (bcrypt)</li>
+        <li>Limitation des tentatives de connexion (protection contre le brute-force)</li>
+        <li>Sauvegardes régulières et chiffrées de la base de données</li>
+        <li>Surveillance des vulnérabilités des dépendances (Dependabot, CodeQL)</li>
+    </ul>
+
+    <h2>7. Vos droits</h2>
+    <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+    <ul>
+        <li><strong>Droit d'accès</strong> : vous pouvez exporter l'ensemble de vos données personnelles depuis votre espace profil</li>
+        <li><strong>Droit de rectification</strong> : vous pouvez modifier vos informations depuis votre profil</li>
+        <li><strong>Droit à l'effacement (droit à l'oubli)</strong> : vous pouvez demander l'anonymisation de votre compte à tout moment</li>
+        <li><strong>Droit d'opposition</strong> : vous pouvez vous opposer à tout moment au traitement de vos données</li>
+    </ul>
+    <p>
+        Pour exercer ces droits, utilisez le
+        <a href="{{ path('app_contact') }}" class="link link-primary">formulaire de contact</a>
+        du site.
+    </p>
+
+    <h2>8. Cookies</h2>
+    <p>
+        CESIZen utilise uniquement un cookie de session, strictement nécessaire au
+        fonctionnement du service (maintien de votre connexion). Aucun cookie de suivi
+        publicitaire ou d'analyse comportementale n'est utilisé.
+    </p>
+
+    <h2>9. Destinataires des données</h2>
+    <p>
+        Vos données ne sont ni vendues, ni cédées à des tiers. Elles sont uniquement
+        accessibles à l'éditeur du service, dans le cadre strict de l'exploitation technique
+        du site.
+    </p>
+</div>
+{% endblock %}

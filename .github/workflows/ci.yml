@@ -84,8 +84,7 @@ jobs:
         run: |
           cp .env.test .env.test.local
           echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&charset=utf8" >> .env.test.local
-          sed -i 's|postgresql://postgres:cesizen2024@127.0.0.1:5432/cesizen|postgresql://postgres:postgres@127.0.0.1:5432/cesizen|g' .env
-
+          sed -i 's|postgresql://postgres:!ChangeMe!@127.0.0.1:5432/cesizen|postgresql://postgres:postgres@127.0.0.1:5432/cesizen|g' .env
       - name: ⏳ Wait for PostgreSQL 18
         run: |
           until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do

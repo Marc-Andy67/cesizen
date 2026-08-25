@@ -57,4 +57,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    /**
+     * Retourne les comptes actifs inactifs depuis plus de $threshold (RGPD - droit à l'oubli).
+     *
+     * Un compte est inactif si sa dernière connexion est antérieure au seuil, ou, à défaut de
+     * connexion, si sa date de création est antérieure au seuil. Les comptes déjà anonymisés
+     * (isActive = false) sont exclus naturellement par le filtre isActive = true.
+     *
+     * @return User[]
+     */
+    public function findInactiveUsersOlderThan(\DateTimeImmutable $threshold): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.isActive = :active')
+            ->andWhere('(u.lastConnection IS NOT NULL AND u.lastConnection < :threshold) OR (u.lastConnection IS NULL AND u.creationDate < :threshold)')
+            ->setParameter('active', true)
+            ->setParameter('threshold', $threshold)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

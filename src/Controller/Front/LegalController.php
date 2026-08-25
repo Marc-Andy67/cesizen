@@ -25,4 +25,16 @@ class LegalController extends AbstractController
     {
         return $this->render('front/legal/confidentialite.html.twig');
     }
+
+    #[Route('/accessibilite', name: 'app_accessibilite')]
+    public function accessibilite(): Response
+    {
+        return $this->render('front/legal/accessibilite.html.twig');
+    }
+
+    #[Route('/contact', name: 'app_contact')]
+    public function contact(): Response
+    {
+        return $this->render('front/legal/contact.html.twig');
+    }
 }

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déclaration d'accessibilité — CESIZen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-12 max-w-3xl prose">
+    <h1 class="text-3xl font-bold text-primary mb-8">Déclaration d'accessibilité</h1>
+
+    <p>
+        Le Ministère de la Santé et de la Prévention s'engage à rendre son service CESIZen
+        accessible conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005 et
+        au Référentiel Général d'Amélioration de l'Accessibilité (RGAA).
+    </p>
+
+    <h2>État de conformité</h2>
+    <p>
+        CESIZen est actuellement <strong>non conforme</strong> avec le RGAA. Le service est
+        en cours de développement dans le cadre d'un projet pédagogique (titre professionnel
+        Concepteur Développeur d'Applications) et n'a pas encore fait l'objet d'un audit
+        RGAA complet.
+    </p>
+
+    <h2>Résultats des tests</h2>
+    <p>
+        [À COMPLÉTER : taux de conformité global, une fois un audit RGAA réalisé sur un
+        échantillon de pages représentatif.]
+    </p>
+
+    <h2>Contenus non accessibles</h2>
+    <p>
+        [À COMPLÉTER : liste des non-conformités connues et contenus non soumis à
+        l'obligation d'accessibilité, le cas échéant.]
+    </p>
+
+    <h2>Établissement de cette déclaration</h2>
+    <p>Cette déclaration a été établie le {{ "now"|date("d/m/Y") }}.</p>
+
+    <h2>Retour d'information et contact</h2>
+    <p>
+        Si vous rencontrez un contenu ou une fonctionnalité non accessible, vous pouvez
+        contacter l'éditeur du site via le
+        <a href="{{ path('app_contact') }}" class="link link-primary">formulaire de contact</a>
+        afin d'être orienté vers une solution accessible.
+    </p>
+
+    <h2>Voies de recours</h2>
+    <p>
+        Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable
+        du site un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des
+        services du portail et vous n'avez pas obtenu de réponse satisfaisante.
+    </p>
+    <p>Vous pouvez :</p>
+    <ul>
+        <li>Écrire un message au <a href="https://formulaire.defenseurdesdroits.fr/" target="_blank" rel="noopener" class="link link-primary">Défenseur des droits</a></li>
+        <li>Contacter le <a href="https://www.defenseurdesdroits.fr/carte-des-delegues" target="_blank" rel="noopener" class="link link-primary">délégué du Défenseur des droits</a> dans votre région</li>
+        <li>Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) : Défenseur des droits — Libre réponse 71120 — 75342 Paris CEDEX 07</li>
+    </ul>
+</div>
+{% endblock %}

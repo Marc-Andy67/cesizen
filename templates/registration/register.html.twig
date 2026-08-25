@@ -6,7 +6,7 @@
 <div class="flex justify-center items-center py-12 md:py-20 animate-fade-in">
     <div class="card bg-base-100 shadow-sm border border-base-200 w-full max-w-lg rounded-sm">
         <div class="card-body p-8 sm:p-10">
-            
+
             <h1 class="text-3xl font-extrabold text-dsfr-blue mb-2 tracking-tight">Créer un compte</h1>
             <p class="text-base-content/70 mb-8 font-medium">Rejoignez CESIZen pour accéder à vos diagnostics et conserver votre historique de façon sécurisée.</p>
 
@@ -18,7 +18,7 @@
             {% endif %}
 
             {{ form_start(registrationForm, {'attr': {'class': 'flex flex-col gap-5'}}) }}
-                
+
                 <div class="form-control w-full">
                     {{ form_label(registrationForm.name, 'Nom ou pseudo', {'label_attr': {'class': 'label pb-1'}}) }}
                     {{ form_widget(registrationForm.name, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm'}}) }}
@@ -34,7 +34,7 @@
                 <div class="form-control w-full">
                     {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'label pb-1'}}) }}
                     {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'input input-bordered w-full border-base-300 focus:outline-none focus:border-dsfr-blue-light focus:ring-2 focus:ring-dsfr-blue-light/50 transition-shadow rounded-sm'}}) }}
-                    
+
                     <div id="password-checklist" aria-live="polite" class="bg-base-200 rounded p-3 mt-2 text-sm">
                         <ul class="space-y-1">
                             <li id="req-length" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Au moins 12 caractères</li>
@@ -43,14 +43,17 @@
                             <li id="req-number" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Un chiffre (0-9)</li>
                             <li id="req-special" class="text-error transition-colors duration-200"><span class="icon mr-1">✗</span> Un caractère spécial (!@#$%^&*...)</li>
                         </ul>
-                    </div>       
+                    </div>
                     <!-- <div class="text-sm text-dsfr-red mt-1 font-medium">{{ form_errors(registrationForm.plainPassword) }}</div> -->
                 </div>
 
                 <div class="form-control mt-2">
                     <label class="label cursor-pointer justify-start gap-3 items-start">
                         {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'checkbox checkbox-primary mt-1 border-base-300 rounded-sm [--chkbg:theme(colors.dsfr-blue)] [--chkfg:white]'}}) }}
-                        <span class="label-text font-medium text-base-content/90 leading-tight">J'accepte les conditions d'utilisation et la politique de confidentialité.</span>
+                        <span class="label-text font-medium text-base-content/90 leading-tight">
+                            J'accepte les <a href="{{ path('app_legal_cgu') }}" target="_blank" class="link link-primary">conditions d'utilisation</a>
+                            et la <a href="{{ path('app_legal_confidentialite') }}" target="_blank" class="link link-primary">politique de confidentialité</a>.
+                        </span>
                     </label>
                     <div class="text-sm text-dsfr-red mt-1 font-medium pl-8">{{ form_errors(registrationForm.agreeTerms) }}</div>
                 </div>
@@ -61,12 +64,12 @@
                     </button>
                 </div>
             {{ form_end(registrationForm) }}
-            
+
              <div class="text-center mt-6 text-sm font-medium text-base-content/80">
-                Vous avez déjà un compte ? 
+                Vous avez déjà un compte ?
                 <a href="{{ path('app_login') }}" class="text-dsfr-blue font-bold hover:underline focus-visible:ring-2 focus-visible:ring-dsfr-blue-light outline-none rounded-sm transition-colors">Se connecter</a>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -76,7 +79,7 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('registration_form_plainPassword') 
+            const passwordInput = document.getElementById('registration_form_plainPassword')
     ?? document.querySelector('input[type="password"]');
             if (!passwordInput) return;
 
@@ -93,7 +96,7 @@
                 for (const [id, testFn] of Object.entries(criteria)) {
                     const el = document.getElementById(id);
                     if (!el) continue;
-                    
+
                     const icon = el.querySelector('.icon');
                     if (testFn(value)) {
                         el.classList.remove('text-error');

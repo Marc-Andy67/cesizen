@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions légales — CESIZen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-12 max-w-3xl prose">
+    <h1 class="text-3xl font-bold text-primary mb-8">Mentions légales</h1>
+
+    <h2>Éditeur du site</h2>
+    <p>
+        Le site CESIZen est édité par <strong>Marc-Andy</strong>, dans le cadre d'un projet
+        réalisé pour le titre professionnel Concepteur Développeur d'Applications (CDA),
+        promotion 2023-2024.
+    </p>
+    <p>Contact : via le <a href="{{ path('app_contact') }}" class="link link-primary">formulaire de contact</a> du site.</p>
+
+    <h2>Hébergement</h2>
+    <p>
+        Le site est hébergé sur un serveur personnel, situé en France.
+        [Précisez ici : adresse ou zone géographique du serveur, et éventuellement le nom
+        du fournisseur d'accès à Internet, si vous souhaitez être exhaustif.]
+    </p>
+
+    <h2>Objet du site</h2>
+    <p>
+        CESIZen est une application de diagnostic et de suivi du stress, développée à des
+        fins pédagogiques dans le cadre d'une formation CDA. Elle n'a pas vocation à se
+        substituer à un avis médical professionnel.
+    </p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>
+        L'ensemble des contenus présents sur le site CESIZen (textes, structure, code source)
+        est la propriété de son éditeur, sauf mention contraire. Toute reproduction sans
+        autorisation est interdite.
+    </p>
+
+    <h2>Accessibilité</h2>
+    <p>
+        CESIZen s'engage à rendre son service accessible conformément au Référentiel Général
+        d'Amélioration de l'Accessibilité (RGAA). L'état de conformité actuel est détaillé
+        dans notre déclaration d'accessibilité.
+    </p>
+</div>
+{% endblock %}

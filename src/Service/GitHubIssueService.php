@@ -37,10 +37,10 @@ class GitHubIssueService
     /**
      * Crée un ticket GitHub Issues à partir d'un signalement utilisateur.
      *
-     * @param string   $environnement Rubrique/module concerné, choisi dans le formulaire
-     * @param string   $sujet         Résumé court du problème (devient le titre du ticket)
-     * @param string   $description   Description détaillée fournie par l'utilisateur
-     * @param string|null $email      Email de contact optionnel de la personne signalant le problème
+     * @param string $environnement Rubrique/module concerné, choisi dans le formulaire
+     * @param string $sujet Résumé court du problème (devient le titre du ticket)
+     * @param string $description Description détaillée fournie par l'utilisateur
+     * @param string|null $email Email de contact optionnel de la personne signalant le problème
      *
      * @return bool true si le ticket a bien été créé, false en cas d'échec (l'échec est journalisé
      *              mais ne doit jamais faire planter le parcours utilisateur)

@@ -15,11 +15,13 @@ services:
       APP_DEBUG: "0"
       APP_SECRET: ${APP_SECRET}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?serverVersion=18&charset=utf8
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}
     depends_on:
       database:
         condition: service_healthy
     volumes:
-      - app_var:/var/www/html/var
+      - app_log:/var/www/html/var/log
 
   nginx:
     image: ghcr.io/${GHCR_REPOSITORY}-nginx:${IMAGE_TAG}
@@ -46,4 +48,4 @@ services:
 
 volumes:
   database_data:
-  app_var:
+  app_log:

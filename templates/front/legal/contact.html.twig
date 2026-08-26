@@ -22,5 +22,42 @@
         Nous nous efforçons de répondre à toute demande dans un délai raisonnable et, pour
         les demandes liées à vos droits RGPD, dans le délai légal d'un mois.
     </p>
+
+    <hr class="my-10">
+
+    <h2 class="text-2xl font-bold text-primary mb-4">Signaler un problème sur l'application</h2>
+    <p class="text-sm text-base-content/70 mb-6">
+        Vous avez rencontré un bug, un affichage incorrect ou un blocage ? Décrivez-le
+        ci-dessous : votre signalement est transmis directement à notre équipe technique
+        et pris en charge selon sa gravité.
+    </p>
+
+    {{ form_start(issueReportForm, {'attr': {'class': 'space-y-4 not-prose'}}) }}
+        <div>
+            {{ form_label(issueReportForm.environnement) }}
+            {{ form_widget(issueReportForm.environnement, {'attr': {'class': 'select select-bordered w-full'}}) }}
+            {{ form_errors(issueReportForm.environnement) }}
+        </div>
+
+        <div>
+            {{ form_label(issueReportForm.sujet) }}
+            {{ form_widget(issueReportForm.sujet, {'attr': {'class': 'input input-bordered w-full'}}) }}
+            {{ form_errors(issueReportForm.sujet) }}
+        </div>
+
+        <div>
+            {{ form_label(issueReportForm.description) }}
+            {{ form_widget(issueReportForm.description, {'attr': {'class': 'textarea textarea-bordered w-full'}}) }}
+            {{ form_errors(issueReportForm.description) }}
+        </div>
+
+        <div>
+            {{ form_label(issueReportForm.email) }}
+            {{ form_widget(issueReportForm.email, {'attr': {'class': 'input input-bordered w-full'}}) }}
+            {{ form_errors(issueReportForm.email) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Envoyer le signalement</button>
+    {{ form_end(issueReportForm) }}
 </div>
 {% endblock %}

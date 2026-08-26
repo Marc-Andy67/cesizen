@@ -2,7 +2,10 @@
 
 namespace App\Controller\Front;
 
+use App\Form\IssueReportType;
+use App\Service\GitHubIssueService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -33,8 +36,32 @@ class LegalController extends AbstractController
     }
 
     #[Route('/contact', name: 'app_contact')]
-    public function contact(): Response
+    public function contact(Request $request, GitHubIssueService $gitHubIssueService): Response
     {
-        return $this->render('front/legal/contact.html.twig');
+        $form = $this->createForm(IssueReportType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $created = $gitHubIssueService->createIssueFromReport(
+                environnement: $data['environnement'],
+                sujet: $data['sujet'],
+                description: $data['description'],
+                email: $data['email'] ?? null,
+            );
+
+            if ($created) {
+                $this->addFlash('success', 'Merci, votre signalement a bien été transmis à notre équipe.');
+            } else {
+                $this->addFlash('error', "Votre signalement n'a pas pu être transmis automatiquement. Merci de réessayer plus tard ou de nous écrire directement par email.");
+            }
+
+            return $this->redirectToRoute('app_contact');
+        }
+
+        return $this->render('front/legal/contact.html.twig', [
+            'issueReportForm' => $form,
+        ]);
     }
 }

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class LegalController extends AbstractController
+class LegalController extends AbstractControllers
 {
     #[Route('/mentions-legales', name: 'app_legal_mentions')]
     public function mentionsLegales(): Response

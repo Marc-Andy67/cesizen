@@ -38,9 +38,6 @@ jobs:
           key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ env.PHP_VERSION }}-
 
-      - name: 📦 Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-scripts --no-interaction
-
       - name: 🎨 Cache Tailwind binary
         uses: actions/cache@v4
         with:

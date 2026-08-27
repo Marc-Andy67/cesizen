@@ -1,0 +1,59 @@
+name: 🎨 Frontend CI
+
+on:
+  pull_request:
+    branches: [ "develop", "uat", "master" ]
+    paths:
+      - "assets/**"
+      - "templates/**"
+      - "tailwind.config.js"
+  workflow_call:
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.4"
+
+jobs:
+  frontend-build:
+    name: 🎨 Build Tailwind & Importmap
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: pdo, pdo_pgsql, intl, mbstring, xml, zip
+
+      - name: 📦 Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ env.PHP_VERSION }}-
+
+      - name: 📦 Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-scripts --no-interaction
+
+      - name: 🎨 Cache Tailwind binary
+        uses: actions/cache@v4
+        with:
+          path: var/tailwind
+          key: tailwind-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: tailwind-${{ runner.os }}-
+
+      - name: 🎨 Build Tailwind CSS
+        run: php -d memory_limit=-1 bin/console tailwind:build --minify
+
+      - name: 📦 Install importmap assets
+        run: php bin/console importmap:install
+
+      - name: ✅ Verify build output
+        run: |
+          test -f public/assets/tailwind/app.css || (echo "❌ Tailwind build output missing" && exit 1)

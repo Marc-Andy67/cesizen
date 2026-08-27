@@ -26,7 +26,7 @@ jobs:
     name: 🧭 Résolution environnement
     runs-on: ubuntu-latest
     needs: [ backend-ci, frontend-ci ]
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event_name == 'push'
     outputs:
       environment: ${{ steps.map.outputs.environment }}
       image_tag: ${{ steps.map.outputs.image_tag }}
@@ -47,6 +47,11 @@ jobs:
               echo "stack_dir=cesizen-qualif" >> "$GITHUB_OUTPUT"
               ;;
             master)
+              echo "environment=production" >> "$GITHUB_OUTPUT"
+              echo "image_tag=prod" >> "$GITHUB_OUTPUT"
+              echo "stack_dir=cesizen-production" >> "$GITHUB_OUTPUT"
+              ;;
+            v*.*.*)
               echo "environment=production" >> "$GITHUB_OUTPUT"
               echo "image_tag=prod" >> "$GITHUB_OUTPUT"
               echo "stack_dir=cesizen-production" >> "$GITHUB_OUTPUT"

@@ -3,6 +3,7 @@ name: 🔬 CI/CD — Tests, Build & Déploiement
 on:
   push:
     branches: [ "develop", "uat", "master" ]
+    tags: [ "v*.*.*" ]
   pull_request:
     branches: [ "develop", "uat", "master" ]
 
@@ -25,7 +26,7 @@ jobs:
     name: 🧭 Résolution environnement
     runs-on: ubuntu-latest
     needs: [ backend-ci, frontend-ci ]
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     outputs:
       environment: ${{ steps.map.outputs.environment }}
       image_tag: ${{ steps.map.outputs.image_tag }}
@@ -83,8 +84,11 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=${{ needs.resolve-env.outputs.image_tag }}
-            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-
+            type=raw,value=${{ needs.resolve-env.outputs.image_tag }},enable=${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
+            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-,enable=${{ !startsWith(github.ref, 'refs/tags/') }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       - name: 🐳 Build & Push Docker image
         uses: docker/build-push-action@v6
@@ -117,7 +121,7 @@ jobs:
 
   deploy:
     name: 🚀 Déploiement (${{ needs.resolve-env.outputs.environment }})
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     needs: [ resolve-env, docker ]
     if: github.event_name == 'push'
     environment: ${{ needs.resolve-env.outputs.environment }}
@@ -126,42 +130,43 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 📤 Copie du compose.yaml sur le serveur
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "compose.yaml"
-          target: "${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}"
-          overwrite: true
+      - name: 📤 Copie du compose.yaml vers la stack
+        run: |
+          cp compose.yaml "${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}/compose.yaml"
 
-      - name: 🚀 Pull & redéploiement via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: IMAGE_TAG
-          script: |
-            set -e
-            cd ${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}
-            echo "IMAGE_TAG=${{ needs.resolve-env.outputs.image_tag }}" > .env.image
-            docker compose --env-file .env --env-file .env.image pull
-            docker compose --env-file .env --env-file .env.image up -d --remove-orphans
-            docker compose --env-file .env --env-file .env.image exec -T php \
-              php bin/console doctrine:migrations:migrate --no-interaction
+      - name: 🚀 Déploiement, healthcheck & rollback automatique
+        run: |
+          set -e
+          cd "${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}"
+
+          # Sauvegarde du tag actuellement déployé, pour rollback éventuel
+          PREVIOUS_TAG=""
+          if [ -f .env.image ]; then
+            PREVIOUS_TAG=$(grep '^IMAGE_TAG=' .env.image | cut -d '=' -f2)
+          fi
+          echo "Image actuellement en production : ${PREVIOUS_TAG:-aucune}"
+
+          NEW_TAG="${{ needs.resolve-env.outputs.image_tag }}"
+          echo "IMAGE_TAG=$NEW_TAG" > .env.image
+
+          docker compose --env-file .env --env-file .env.image pull
+          docker compose --env-file .env --env-file .env.image up -d --remove-orphans
+          docker compose --env-file .env --env-file .env.image exec -T php \
+            php bin/console doctrine:migrations:migrate --no-interaction
+
+          sleep 5
+          if curl -fsS "${{ secrets.DEPLOY_HEALTHCHECK_URL }}" > /dev/null; then
+            echo "✅ Healthcheck OK — déploiement validé"
             docker image prune -f
-
-      - name: ✅ Healthcheck post-déploiement
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            sleep 5
-            curl -fsS ${{ secrets.DEPLOY_HEALTHCHECK_URL }} > /dev/null
+          else
+            echo "❌ Healthcheck KO"
+            if [ -n "$PREVIOUS_TAG" ]; then
+              echo "↩️ Rollback vers l'image précédente : $PREVIOUS_TAG"
+              echo "IMAGE_TAG=$PREVIOUS_TAG" > .env.image
+              docker compose --env-file .env --env-file .env.image up -d --remove-orphans
+              echo "⚠️ Rollback effectué — service restauré, mais $NEW_TAG a échoué."
+            else
+              echo "⚠️ Aucune version précédente connue — rollback impossible."
+            fi
+            exit 1
+          fi

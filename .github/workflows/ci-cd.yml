@@ -181,6 +181,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ resolve-env, deploy ]
     if: github.event_name == 'push' && needs.resolve-env.outputs.environment == 'test'
+    environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
       - name: 🛡️ ZAP Baseline Scan

@@ -32,7 +32,7 @@ jobs:
           extensions: pdo, pdo_pgsql, intl, mbstring, xml, zip
 
       - name: 📦 Cache Composer
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: vendor
           key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
@@ -42,7 +42,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-scripts --no-interaction
 
       - name: 🎨 Cache Tailwind binary
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: var/tailwind
           key: tailwind-${{ runner.os }}-${{ hashFiles('package.json') }}

@@ -1,25 +1,28 @@
-name: 🔬 CI/CD — Tests, Build & Déploiement
+name: 🧪 Backend CI
 
 on:
-  push:
-    branches: [ "develop", "uat", "master" ]
   pull_request:
     branches: [ "develop", "uat", "master" ]
+    paths:
+      - "src/**"
+      - "composer.*"
+      - "migrations/**"
+      - "tests/**"
+  workflow_call:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: backend-ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   PHP_VERSION: "8.4"
 
 jobs:
-  tests:
-    name: 🧪 Tests (PHPUnit & Panther)
+  backend-tests:
+    name: 🧪 Tests Backend (PHPUnit, PHPStan, CS Fixer)
     runs-on: ubuntu-latest
 
     permissions:
-      checks: write
       contents: read
 
     env:
@@ -85,6 +88,7 @@ jobs:
           cp .env.test .env.test.local
           echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/cesizen_test?serverVersion=18&charset=utf8" >> .env.test.local
           sed -i 's|postgresql://postgres:!ChangeMe!@127.0.0.1:5432/cesizen|postgresql://postgres:postgres@127.0.0.1:5432/cesizen|g' .env
+
       - name: ⏳ Wait for PostgreSQL 18
         run: |
           until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do
@@ -153,144 +157,10 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-reports
+          name: backend-test-reports
           retention-days: 7
           path: |
             coverage.xml
             junit-unit.xml
             junit-functional.xml
             var/panther/
-
-  # ─── Détermination de l'environnement cible en fonction de la branche ────────
-  resolve-env:
-    name: 🧭 Résolution environnement
-    runs-on: ubuntu-latest
-    needs: tests
-    if: github.event_name == 'push'
-    outputs:
-      environment: ${{ steps.map.outputs.environment }}
-      image_tag: ${{ steps.map.outputs.image_tag }}
-      stack_dir: ${{ steps.map.outputs.stack_dir }}
-    steps:
-      - name: 🗺️ Mapper branche → environnement
-        id: map
-        run: |
-          case "${{ github.ref_name }}" in
-            develop)
-              echo "environment=test" >> "$GITHUB_OUTPUT"
-              echo "image_tag=test" >> "$GITHUB_OUTPUT"
-              echo "stack_dir=cesizen-test" >> "$GITHUB_OUTPUT"
-              ;;
-            uat)
-              echo "environment=qualif" >> "$GITHUB_OUTPUT"
-              echo "image_tag=qualif" >> "$GITHUB_OUTPUT"
-              echo "stack_dir=cesizen-qualif" >> "$GITHUB_OUTPUT"
-              ;;
-            master)
-              echo "environment=production" >> "$GITHUB_OUTPUT"
-              echo "image_tag=prod" >> "$GITHUB_OUTPUT"
-              echo "stack_dir=cesizen-production" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Branche non mappée : ${{ github.ref_name }}" >&2
-              exit 1
-              ;;
-          esac
-
-  # ─── Docker Build & Push (sur develop / uat / master, après CI vert) ────────
-  docker:
-    name: 🐳 Build & Push Docker Image
-    runs-on: ubuntu-latest
-    needs: resolve-env
-    if: github.event_name == 'push'
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-
-      - name: 🔑 Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🏷️ Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=${{ needs.resolve-env.outputs.image_tag }}
-            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-
-
-      - name: 🐳 Build & Push Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: php
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            APP_ENV=prod
-
-      - name: 🏷️ Extract Docker metadata (nginx)
-        id: meta-nginx
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}-nginx
-          tags: |
-            type=raw,value=${{ needs.resolve-env.outputs.image_tag }}
-            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-
-
-      - name: 🐳 Build & Push Docker image (nginx)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: nginx
-          push: true
-          tags: ${{ steps.meta-nginx.outputs.tags }}
-          labels: ${{ steps.meta-nginx.outputs.labels }}
-
-  # ─── Déploiement sur radiance via SSH ─────────────────────────────────────────
-  deploy:
-    name: 🚀 Déploiement (${{ needs.resolve-env.outputs.environment }})
-    runs-on: ubuntu-latest
-    needs: [ resolve-env, docker ]
-    if: github.event_name == 'push'
-    environment: ${{ needs.resolve-env.outputs.environment }}
-
-    steps:
-      - name: 🚀 Pull & redéploiement via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: IMAGE_TAG
-          script: |
-            set -e
-            cd ${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}
-            echo "IMAGE_TAG=${{ needs.resolve-env.outputs.image_tag }}" > .env.image
-            docker compose --env-file .env --env-file .env.image pull
-            docker compose --env-file .env --env-file .env.image up -d --remove-orphans
-            docker compose --env-file .env --env-file .env.image exec -T php \
-              php bin/console doctrine:migrations:migrate --no-interaction
-            docker image prune -f
-
-      - name: ✅ Healthcheck post-déploiement
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            sleep 5
-            curl -fsS ${{ secrets.DEPLOY_HEALTHCHECK_URL }} > /dev/null

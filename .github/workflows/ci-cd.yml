@@ -1,0 +1,203 @@
+name: 🔬 CI/CD — Tests, Build & Déploiement
+
+on:
+  push:
+    branches: [ "develop", "uat", "master" ]
+    tags: [ "v*.*.*" ]
+  pull_request:
+    branches: [ "develop", "uat", "master" ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-ci:
+    name: 🧪 Backend CI
+    uses: ./.github/workflows/backend-ci.yml
+    secrets: inherit
+
+  frontend-ci:
+    name: 🎨 Frontend CI
+    uses: ./.github/workflows/frontend-ci.yml
+    secrets: inherit
+
+  resolve-env:
+    name: 🧭 Résolution environnement
+    runs-on: ubuntu-latest
+    needs: [ backend-ci, frontend-ci ]
+    if: github.event_name == 'push'
+    outputs:
+      environment: ${{ steps.map.outputs.environment }}
+      image_tag: ${{ steps.map.outputs.image_tag }}
+      stack_dir: ${{ steps.map.outputs.stack_dir }}
+    steps:
+      - name: 🗺️ Mapper branche → environnement
+        id: map
+        run: |
+          case "${{ github.ref_name }}" in
+            develop)
+              echo "environment=test" >> "$GITHUB_OUTPUT"
+              echo "image_tag=test" >> "$GITHUB_OUTPUT"
+              echo "stack_dir=cesizen-test" >> "$GITHUB_OUTPUT"
+              ;;
+            uat)
+              echo "environment=qualif" >> "$GITHUB_OUTPUT"
+              echo "image_tag=qualif" >> "$GITHUB_OUTPUT"
+              echo "stack_dir=cesizen-qualif" >> "$GITHUB_OUTPUT"
+              ;;
+            master)
+              echo "environment=production" >> "$GITHUB_OUTPUT"
+              echo "image_tag=prod" >> "$GITHUB_OUTPUT"
+              echo "stack_dir=cesizen-production" >> "$GITHUB_OUTPUT"
+              ;;
+            v*.*.*)
+              echo "environment=production" >> "$GITHUB_OUTPUT"
+              echo "image_tag=prod" >> "$GITHUB_OUTPUT"
+              echo "stack_dir=cesizen-production" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Branche non mappée : ${{ github.ref_name }}" >&2
+              exit 1
+              ;;
+          esac
+
+  docker:
+    name: 🐳 Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: resolve-env
+    if: github.event_name == 'push'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔑 Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=${{ needs.resolve-env.outputs.image_tag }},enable=${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
+            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-,enable=${{ !startsWith(github.ref, 'refs/tags/') }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: 🐳 Build & Push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: php
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_ENV=prod
+
+      - name: 🏷️ Extract Docker metadata (nginx)
+        id: meta-nginx
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}-nginx
+          tags: |
+            type=raw,value=${{ needs.resolve-env.outputs.image_tag }}
+            type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-
+
+      - name: 🐳 Build & Push Docker image (nginx)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: nginx
+          push: true
+          tags: ${{ steps.meta-nginx.outputs.tags }}
+          labels: ${{ steps.meta-nginx.outputs.labels }}
+
+  deploy:
+    name: 🚀 Déploiement (${{ needs.resolve-env.outputs.environment }})
+    runs-on: [self-hosted, linux, x64]
+    needs: [ resolve-env, docker ]
+    if: github.event_name == 'push'
+    environment: ${{ needs.resolve-env.outputs.environment }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📤 Copie du compose.yaml vers la stack
+        run: |
+          cp compose.yaml "${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}/compose.yaml"
+
+      - name: 🚀 Déploiement, healthcheck & rollback automatique
+        run: |
+          set -e
+          cd "${{ secrets.DEPLOY_BASE_PATH }}/${{ needs.resolve-env.outputs.stack_dir }}"
+
+          # Sauvegarde du tag actuellement déployé, pour rollback éventuel
+          PREVIOUS_TAG=""
+          if [ -f .env.image ]; then
+            PREVIOUS_TAG=$(grep '^IMAGE_TAG=' .env.image | cut -d '=' -f2)
+          fi
+          echo "Image actuellement en production : ${PREVIOUS_TAG:-aucune}"
+
+          NEW_TAG="${{ needs.resolve-env.outputs.image_tag }}"
+          echo "IMAGE_TAG=$NEW_TAG" > .env.image
+
+          docker compose --env-file .env --env-file .env.image pull
+          docker compose --env-file .env --env-file .env.image up -d --remove-orphans
+          docker compose --env-file .env --env-file .env.image exec -T php \
+            php bin/console doctrine:migrations:migrate --no-interaction
+
+          sleep 5
+          if curl -fsS "${{ secrets.DEPLOY_HEALTHCHECK_URL }}" > /dev/null; then
+            echo "✅ Healthcheck OK — déploiement validé"
+            docker image prune -f
+          else
+            echo "❌ Healthcheck KO"
+            if [ -n "$PREVIOUS_TAG" ]; then
+              echo "↩️ Rollback vers l'image précédente : $PREVIOUS_TAG"
+              echo "IMAGE_TAG=$PREVIOUS_TAG" > .env.image
+              docker compose --env-file .env --env-file .env.image up -d --remove-orphans
+              echo "⚠️ Rollback effectué — service restauré, mais $NEW_TAG a échoué."
+            else
+              echo "⚠️ Aucune version précédente connue — rollback impossible."
+            fi
+            exit 1
+          fi
+
+  dast:
+    name: 🛡️ DAST — OWASP ZAP
+    runs-on: ubuntu-latest
+    needs: [ resolve-env, deploy ]
+    if: github.event_name == 'push' && needs.resolve-env.outputs.environment == 'test'
+    environment: ${{ needs.resolve-env.outputs.environment }}
+    permissions:
+      contents: read
+      issues: write
+
+
+    steps:
+      - name: 🛡️ ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ secrets.DEPLOY_HEALTHCHECK_URL }}
+          fail_action: false
+
+      - name: 📤 Upload rapport ZAP
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-scan-report
+          retention-days: 7
+          path: report_html.html

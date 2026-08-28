@@ -1,0 +1,36 @@
+name: "Branch flow policy"
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-branch-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier que la PR cible la bonne branche
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD: ${{ github.event.pull_request.head.ref }}
+        run: |
+          echo "PR de '$HEAD' vers '$BASE'"
+
+          # Règle 1 : une PR qui vise 'master' ne peut venir que de 'uat'
+          if [ "$BASE" = "master" ] && [ "$HEAD" != "uat" ]; then
+            echo "::error::Les PR vers master doivent venir de la branche 'uat' uniquement (reçu: $HEAD)"
+            exit 1
+          fi
+
+          # Règle 2 : une PR qui vise 'uat' ne peut venir que de 'develop'
+          if [ "$BASE" = "uat" ] && [ "$HEAD" != "develop" ]; then
+            echo "::error::Les PR vers uat doivent venir de la branche 'develop' uniquement (reçu: $HEAD)"
+            exit 1
+          fi
+
+          # Règle 3 : une PR qui vise 'develop' ne peut PAS venir de 'uat' ou 'master' (évite les flux inversés)
+          if [ "$BASE" = "develop" ] && { [ "$HEAD" = "uat" ] || [ "$HEAD" = "master" ]; }; then
+            echo "::error::Impossible de merger $HEAD dans develop (flux inversé interdit)"
+            exit 1
+          fi
+
+          echo "OK — flux de branches respecté."

@@ -182,6 +182,10 @@ jobs:
     needs: [ resolve-env, deploy ]
     if: github.event_name == 'push' && needs.resolve-env.outputs.environment == 'test'
     environment: ${{ needs.resolve-env.outputs.environment }}
+    permissions:
+      contents: read
+      issues: write
+
 
     steps:
       - name: 🛡️ ZAP Baseline Scan

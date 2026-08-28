@@ -96,7 +96,7 @@ jobs:
             type=semver,pattern={{major}}
 
       - name: 🐳 Build & Push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: php
@@ -116,7 +116,7 @@ jobs:
             type=sha,prefix=${{ needs.resolve-env.outputs.image_tag }}-sha-
 
       - name: 🐳 Build & Push Docker image (nginx)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: nginx
